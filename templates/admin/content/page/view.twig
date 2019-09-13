@@ -1,0 +1,65 @@
+{% extends 'admin/content/_layout.twig' %}
+
+{% block title %}Pages{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Pages</h5>
+      <div class="heading-right">
+        <div class="input">
+          <label for="show-section">Section:</label>
+          <select id="show-section" data-filter="section" data-table="pages">
+            {% for id, s in sections %}
+              <option value="{{ id }}"{% if section == id %} selected="selected"{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="input">
+          <a href="{{ path('admin_content_page_create') }}" class="button" data-menu="show-section"><i class="fas fa-plus"></i> New Page</a>
+        </div>
+      </div>
+    </div>
+    <p>The Hume Society web site is divided into {{ sections | length }} separate sections: {% for section in sections %}{% if loop.last %}and {% endif %}<em>{{ section }}</em>{% if not loop.last %}, {% endif %}{% endfor %}. These sections are hardwired, but can be changed by the Technical Director on request. There is also a hardwired <em>Home</em> page, which displays current society news and information about the next conference. This can likewise be changed by the Technical Director on request. Pages within all the other sections can be edited here.</p>
+    <p>Note that pages within the <em>Members</em> section are restricted to members in good standing who are signed up and logged in to the web site. Visitors who try to access these pages when they are not logged in, or are logged in but are not a member, or are logged in as a member in arrears, will instead see an appropriate message inviting them to log in, join the society, or pay their dues (as appropriate).</p>
+    <table class="loading" id="pages">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th>Section</th>
+          <th>Slug</th>
+          <th>Title</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for page in pages %}
+          <tr data-section="{{ page.section }}">
+            <td>{{ page.position }}</td>
+            <td class="controls">
+              {% if page.position > 2 %}
+                <a class="control" title="Move Up" href="{{ path('admin_content_page_up', { id: page.id }) }}"><span class="icon"><i class="fas fa-caret-up"></i></span></a>
+              {% endif %}
+            </td>
+            <td class="controls">
+              {% if page.position > 1 and not loop.last %}
+                <a class="control" title="Move Down" href="{{ path('admin_content_page_down', { id: page.id }) }}"><span class="icon"><i class="fas fa-caret-down"></i></span></a>
+              {% endif %}
+            </td>
+            <td>/{{ page.section }}</td>
+            <td>/{{ page.slug }}</td>
+            <td style="width:100%">{{ page.title }}</td>
+            <td class="controls">
+              <a class="control" href="{{ path('admin_content_page_edit', { id: page.id }) }}">Edit</a>
+              {% if page.slug != 'index' %}
+                <a class="control" href="{{ path('admin_content_page_delete', { id: page.id }) }}">Delete</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

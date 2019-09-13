@@ -1,0 +1,41 @@
+{% extends 'admin/society/_layout.twig' %}
+
+{% block title %}Send Email{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Send Membership Email</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_society_email_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
+        </div>
+      </div>
+    </div>
+    <p>{% verbatim %}The content of your email should be written in HTML (with &lt;p&gt; tags around each paragraph). The email will be sent individually to each member, and will replace &ldquo;{{ firstname }}&rdquo;, &ldquo;{{ lastname }}&rdquo;, &ldquo;{{ username }}&rdquo;, and &ldquo;{{ email }}&rdquo; with the member&rsquo;s first name, last name, username, and email address respectively.{% endverbatim %}</p>
+    {{ form_start(emailForm) }}
+      <div class="columns has-checkboxes">
+        <div class="column has-checkbox">
+          {{ form_row(emailForm.current) }}
+        </div>
+        <div class="column has-checkbox">
+          {{ form_row(emailForm.lapsed) }}
+        </div>
+        <div class="column has-checkbox">
+          {{ form_row(emailForm.declining) }}
+        </div>
+      </div>
+      {{ form_row(emailForm.subject) }}
+      {{ form_row(emailForm.attachment) }}
+      {{ form_row(emailForm.content) }}
+      {{ form_row(emailForm._token) }}
+      <div class="buttons">
+        <button type="submit">Send Email</button>
+      </div>
+    {{ form_end(emailForm) }}
+  </div>
+  <div class="box content">
+    <p>Below is a preview of what the rendered HTML of the email content will look like (though note that the precise details will depend on the email client at the other end). This preview is updated automatically as you edit the content field in the form above.</p>
+    <div class="box" data-preview="email_content"></div>
+  </div>
+{% endblock %}

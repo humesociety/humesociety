@@ -1,0 +1,31 @@
+{% extends 'admin/content/_layout.twig' %}
+
+{% block title %}Create News Item{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Create News Item</h5>
+      <div class="heading-right">
+        <a href="{{ path('admin_content_news-item_view') }}" class="button" data-menu="news_item_category"><i class="fas fa-chevron-left"></i> Back to News Item List</a>
+      </div>
+    </div>
+    {{ form_start(newsItemForm) }}
+    {{ form_row(newsItemForm.category) }}
+    {{ form_row(newsItemForm.title) }}
+    <div class="columns">
+      <div class="column">
+        {{ form_row(newsItemForm.date) }}
+      </div>
+      <div class="column">
+        {{ form_row(newsItemForm.end) }}
+      </div>
+    </div>
+    {{ form_row(newsItemForm.content) }}
+    {{ form_row(newsItemForm._token) }}
+    <div class="buttons">
+      <button type="submit" class="button">Create</button>
+    </div>
+    {{ form_end(newsItemForm) }}
+  </div>
+{% endblock %}

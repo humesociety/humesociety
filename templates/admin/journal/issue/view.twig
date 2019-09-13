@@ -1,0 +1,53 @@
+{% extends 'admin/journal/_layout.twig' %}
+
+{% block title %}Edit Journal Issues{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Edit <i>Hume Studies</i> Issues</h5>
+      <div class="heading-right">
+        {% if issues | length > 0 %}
+          <div class="input">
+            <label for="show-decade">Decade:</label>
+            <select data-filter="decade" data-table="issues">
+              {% for d in decades %}
+                <option value="{{ d }}"{% if decade == d %} selected="selected"{% endif %}>{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <div class="input">
+          <a href="{{ path('admin_journal_issue_create') }}" class="button"><i class="fas fa-plus"></i> Create Issue</a>
+        </div>
+      </div>
+    </div>
+    {% if issues | length > 0 %}
+      <table class="loading" id="issues">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Volume</th>
+            <th>Number</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues %}
+            <tr data-decade="{{ issue.decade }}">
+              <td>{{ issue.year }}</td>
+              <td>{{ issue.volume }}</td>
+              <td>{{ issue.number }}</td>
+              <td class="controls">
+                <a href="{{ path('admin_journal_issue_edit', { id: issue.id }) }}">Edit</a>
+                <a href="{{ path('admin_journal_issue_delete', { id: issue.id }) }}">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no <i>Hume Studies</i> issues in the database.</p>
+    {% endif %}
+  </div>
+{% endblock %}

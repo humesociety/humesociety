@@ -1,0 +1,97 @@
+.topbar {
+  background: $blue;
+  color: #fff;
+  height: 3.25em;
+  z-index: 2;
+  a {
+    display: inline-block;
+    padding: .5em 1em;
+  }
+  @media (min-width: $break1) {
+    height: auto;
+    position: sticky;
+    top: 0;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.topbar-small {
+  display: flex;
+  justify-content: space-between;
+  .title {
+    font-size: 1.25em;
+    font-weight: 500;
+  }
+  @media (min-width: $break1) {
+    display: none;
+  }
+}
+
+.topbar-large {
+  display: none;
+  position: relative;
+  z-index: 3;
+  background: $blue;
+  padding: 0em .5em .5em;
+  a {
+    display: block;
+    &:nth-child(7) {
+      display: none;
+    }
+    &:hover, &.is-active {
+      background: $green;
+      color: $blue;
+    }
+  }
+  &.is-active {
+    display: block;
+  }
+  @media (min-width: $break1) {
+    display: flex !important;
+    padding: 0;
+    a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: .75em 1em;
+      border-bottom: 4px solid transparent;
+      &:hover, &.is-active {
+        border-color: $offwhite;
+        color: #fff;
+      }
+      &:nth-child(1) {
+        background: $blue;
+      }
+      &:nth-child(2) {
+        background: lighten($blue, 4%);
+      }
+      &:nth-child(3) {
+        background: lighten($blue, 8%);
+      }
+      &:nth-child(4) {
+        background: lighten($blue, 12%);
+      }
+      &:nth-child(5) {
+        background: lighten($blue, 16%);
+      }
+      &:nth-child(6) {
+        background: lighten($blue, 20%);
+      }
+      &:nth-child(7) {
+        display: initial;
+        background: #fff;
+        &:hover {
+          background: lighten($blue, 24%);
+          cursor: default;
+          border-color: transparent;
+        }
+      }
+      &:nth-child(8) {
+        background: lighten($blue, 28%);
+      }
+    }
+  }
+}

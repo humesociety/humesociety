@@ -1,0 +1,80 @@
+{% apply spaceless %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="hume, david hume, hume society, hume studies, philosophy, history of philosophy">
+    <meta name="description" content="The Hume Society is an international organization of scholars whose purpose is to stimulate scholarship on all aspects of the thought and writings of David Hume, the 18th-century Scottish philosopher, historian and essayist. Membership in the society is open to everyone interested in Hume and his philosophical and literary contemporaries.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/{% block favicon %}hume{% endblock %}.ico">
+    {{ encore_entry_link_tags('site') }}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145387630-1"></script>
+    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-145387630-1');</script>
+    {% if page.section == 'hs' %}
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    {% endif %}
+    <title>{% block title %}{% endblock %} - The Hume Society</title>
+  </head>
+  <body>
+    <nav class="topbar">
+      <div class="topbar-small">
+        <a class="title" href="{{ path('society_index') }}">The Hume Society</a>
+        <a class="burger" data-toggle="topbar"><span></span><span></span><span></span></a>
+      </div>
+      <div class="topbar-large" id="topbar">
+        <a href="{{ path('society_index') }}" class="{% if page.section == 'home' %}is-active{% endif %}">Home</a>
+        {% for key, section in sections %}
+          <a href="{{ path('society_page', { section: key }) }}" class="{% if page.section == key %}is-active{% endif %}">{{ section }}</a>
+        {% endfor %}
+        <a title="The missing shade of blue"></a>
+        {% if app.user %}
+          <a href="{{ path('account_index') }}" class="{% if page.section == 'account' %}is-active{% endif %}">{{ app.user.username}}</a>
+        {% else %}
+          <a href="{{ path('security_login') }}" class="{% if page.section == 'security' %}is-active{% endif %}">Sign In</a>
+        {% endif %}
+      </div>
+    </nav>
+    <header class="header">
+      <div class="header-image"></div>
+      <div class="header-text">
+        <div class="container">
+          <h1>The Hume Society</h1>
+          <h2>Stimulating Scholarship on the Philosophy and Writings of David Hume</h2>
+        </div>
+      </div>
+    </header>
+    {% for message in app.flashes('success') %}
+      <div class="notification success">
+        <div class="container">{{ message }}</div>
+      </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+      <div class="notification error">
+        <div class="container">{{ message }}</div>
+      </div>
+    {% endfor %}
+    <div class="main-sidebar">
+      <div class="container">
+        <main class="main content">
+          {% block main %}{% endblock %}
+        </main>
+        {% if page is not defined or page.id != 'home' %}
+          <nav class="sidebar">
+            {% block sidebar %}{% endblock %}
+          </nav>
+        {% endif %}
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p>© 2019 The Hume Society / <a href="mailto:web@humesociety.org">web@humesociety.org</a></p>
+        <p>The Hume Society receives institutional support from <a href="https://www.iwu.edu/">Illinois Wesleyan University</a> and from <a href="https://wp.stolaf.edu/">St. Olaf College</a>.</p>
+      </div>
+    </footer>
+    <script src="https://www.paypal.com/sdk/js?client-id={% if app.environment == 'dev' %}{{ paypal.sandbox_client_id }}{% else %}{{ paypal.client_id }}{% endif %}"></script>
+    {{ encore_entry_script_tags('site') }}
+  </body>
+</html>
+{% endapply %}

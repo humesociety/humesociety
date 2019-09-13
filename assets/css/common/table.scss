@@ -1,0 +1,56 @@
+table {
+  width: 100%;
+  td, th {
+    border: 1px solid $grey;
+    border-width: 0 0 1px;
+    padding: 0.5em 0.75em;
+    vertical-align: top;
+  }
+  thead {
+    td, th {
+      border-width: 0 0 2px;
+    }
+  }
+  tbody + thead {
+    th {
+      padding-top: 1.5em;
+    }
+  }
+  tfoot {
+    td, th {
+      border-width: 2px 0 0;
+    }
+  }
+  tbody {
+    tr {
+      &:last-child {
+        td, th {
+          border-bottom-width: 0;
+        }
+      }
+      &.collapsed {
+        visibility: collapse;
+      }
+    }
+  }
+  .controls {
+    padding: .5em .25em;
+    text-align:right;
+    a {
+      padding: .25em .5em;
+      &:hover {
+        text-decoration: none;
+        background: $green;
+        color: #fff;
+      }
+    }
+  }
+  &.statistics {
+    td {
+      border-right: 1px solid $grey;
+      &.number {
+        text-align: right;
+      }
+    }
+  }
+}

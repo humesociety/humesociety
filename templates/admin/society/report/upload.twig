@@ -1,0 +1,30 @@
+{% extends 'admin/society/_layout.twig' %}
+
+{% block title %}Upload Report{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Upload Report</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_society_report_view', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
+        </div>
+      </div>
+    </div>
+    {{ form_start(reportForm) }}
+      <div class="columns">
+        <div class="column">
+          {{ form_row(reportForm.year) }}
+        </div>
+        <div class="column">
+          {{ form_row(reportForm.file) }}
+        </div>
+      </div>
+      {{ form_row(reportForm._token) }}
+      <div class="buttons">
+        <button type="submit" class="button">Upload</button>
+      </div>
+    {{ form_end(reportForm) }}
+  </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'site/base.twig' %}
+
+{% block sidebar %}
+  {% if app.user.isMember %}
+    <a href="{{ path('account_index') }}"{% if page.id == 'details' %} class="is-active"{% endif %}>Contact Details</a>
+    <a href="{{ path('account_settings') }}"{% if page.id == 'settings' %} class="is-active"{% endif %}>Membership Settings</a>
+    <a href="{{ path('account_pay') }}"{% if page.id == 'pay' %} class="is-active"{% endif %}>Pay Dues</a>
+    <a href="{{ path('account_password') }}"{% if page.id == 'password' %} class="is-active"{% endif %}>Change Password</a>
+  {% else %}
+    <a href="{{ path('account_pay') }}"{% if page.id == 'pay' %} class="is-active"{% endif %}>Join the Society</a>
+  {% endif %}
+  <a href="{{ path('security_logout') }}">Sign Out</a>
+  {% if is_granted('ROLE_ADMIN') %}
+    <br>
+    <a href="{{ path('admin_index') }}">Site Admin</a>
+  {% endif %}
+{% endblock %}

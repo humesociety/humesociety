@@ -1,0 +1,556 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: 'en'
+    uploads_directory: '%kernel.project_dir%/uploads/'
+    sections:
+        about: About
+        conferences: Conferences
+        hs: Hume Studies
+        scholarship: Scholarship
+        members: Members
+    templates:
+        default: Default
+        society-governance: Society Governance
+        conferences-forthcoming: Forthcoming Conferences
+        conferences-all: All Conferences
+        hs-issues-archive: Hume Studies Issues Archive
+        parallel-references: Parallel References Guide
+        news-members: Members News
+        news-conferences: Conference News
+        news-fellowships: Fellowships and Awards News
+        news-archived: Archived News
+        membership-stats: Membership Statistics
+        membership-list: List of Current Members
+        minutes-reports: Society Minutes and Reports
+        committee-voting: Commitee Voting Form
+    categories:
+        society: Society News
+        members: Members News
+        conferences: Other Conferences
+        fellowships: Fellowships and Awards
+    countries:
+        AFG: Afghanistan
+        ALA: Åland Islands
+        ALB: Albania
+        DZA: Algeria
+        ASM: American Samoa
+        AND: Andorra
+        AGO: Angola
+        AIA: Anguilla
+        ATA: Antarctica
+        ATG: Antigua and Barbuda
+        ARG: Argentina
+        ARM: Armenia
+        ABW: Aruba
+        AUS: Australia
+        AUT: Austria
+        AZE: Azerbaijan
+        BHS: Bahamas (the)
+        BHR: Bahrain
+        BGD: Bangladesh
+        BRB: Barbados
+        BLR: Belarus
+        BEL: Belgium
+        BLZ: Belize
+        BEN: Benin
+        BMU: Bermuda
+        BTN: Bhutan
+        BOL: Bolivia (Plurinational State of)
+        BES: Bonaire, Sint Eustatius and Saba
+        BIH: Bosnia and Herzegovina
+        BWA: Botswana
+        BVT: Bouvet Island
+        BRA: Brazil
+        IOT: British Indian Ocean Territory (the)
+        BRN: Brunei Darussalam
+        BGR: Bulgaria
+        BFA: Burkina Faso
+        BDI: Burundi
+        CPV: Cabo Verde
+        KHM: Cambodia
+        CMR: Cameroon
+        CAN: Canada
+        CYM: Cayman Islands (the)
+        CAF: Central African Republic (the)
+        TCD: Chad
+        CHL: Chile
+        CHN: China
+        CXR: Christmas Island
+        CCK: Cocos (Keeling) Islands (the)
+        COL: Colombia
+        COM: Comoros (the)
+        COD: Congo (the Democratic Republic of the)
+        COG: Congo (the)
+        COK: Cook Islands (the)
+        CRI: Costa Rica
+        CIV: Côte d'Ivoire
+        HRV: Croatia
+        CUB: Cuba
+        CUW: Curaçao
+        CYP: Cyprus
+        CZE: Czechia
+        DNK: Denmark
+        DJI: Djibouti
+        DMA: Dominica
+        DOM: Dominican Republic (the)
+        ECU: Ecuador
+        EGY: Egypt
+        SLV: El Salvador
+        GNQ: Equatorial Guinea
+        ERI: Eritrea
+        EST: Estonia
+        SWZ: Eswatini
+        ETH: Ethiopia
+        FLK: Falkland Islands (the) [Malvinas]
+        FRO: Faroe Islands (the)
+        FJI: Fiji
+        FIN: Finland
+        FRA: France
+        GUF: French Guiana
+        PYF: French Polynesia
+        ATF: French Southern Territories (the)
+        GAB: Gabon
+        GMB: Gambia (the)
+        GEO: Georgia
+        DEU: Germany
+        GHA: Ghana
+        GIB: Gibraltar
+        GRC: Greece
+        GRL: Greenland
+        GRD: Grenada
+        GLP: Guadeloupe
+        GUM: Guam
+        GTM: Guatemala
+        GGY: Guernsey
+        GIN: Guinea
+        GNB: Guinea-Bissau
+        GUY: Guyana
+        HTI: Haiti
+        HMD: Heard Island and McDonald Islands
+        VAT: Holy See (the)
+        HND: Honduras
+        HKG: Hong Kong
+        HUN: Hungary
+        ISL: Iceland
+        IND: India
+        IDN: Indonesia
+        IRN: Iran (Islamic Republic of)
+        IRQ: Iraq
+        IRL: Ireland
+        IMN: Isle of Man
+        ISR: Israel
+        ITA: Italy
+        JAM: Jamaica
+        JPN: Japan
+        JEY: Jersey
+        JOR: Jordan
+        KAZ: Kazakhstan
+        KEN: Kenya
+        KIR: Kiribati
+        PRK: Korea (the Democratic People's Republic of)
+        KOR: Korea (the Republic of)
+        KWT: Kuwait
+        KGZ: Kyrgyzstan
+        LAO: Lao People's Democratic Republic (the)
+        LVA: Latvia
+        LBN: Lebanon
+        LSO: Lesotho
+        LBR: Liberia
+        LBY: Libya
+        LIE: Liechtenstein
+        LTU: Lithuania
+        LUX: Luxembourg
+        MAC: Macao
+        MKD: Macedonia (the former Yugoslav Republic of)
+        MDG: Madagascar
+        MWI: Malawi
+        MYS: Malaysia
+        MDV: Maldives
+        MLI: Mali
+        MLT: Malta
+        MHL: Marshall Islands (the)
+        MTQ: Martinique
+        MRT: Mauritania
+        MUS: Mauritius
+        MYT: Mayotte
+        MEX: Mexico
+        FSM: Micronesia (Federated States of)
+        MDA: Moldova (the Republic of)
+        MCO: Monaco
+        MNG: Mongolia
+        MNE: Montenegro
+        MSR: Montserrat
+        MAR: Morocco
+        MOZ: Mozambique
+        MMR: Myanmar
+        NAM: Namibia
+        NRU: Nauru
+        NPL: Nepal
+        NLD: Netherlands (the)
+        NCL: New Caledonia
+        NZL: New Zealand
+        NIC: Nicaragua
+        NER: Niger (the)
+        NGA: Nigeria
+        NIU: Niue
+        NFK: Norfolk Island
+        MNP: Northern Mariana Islands (the)
+        NOR: Norway
+        OMN: Oman
+        PAK: Pakistan
+        PLW: Palau
+        PSE: Palestine, State of
+        PAN: Panama
+        PNG: Papua New Guinea
+        PRY: Paraguay
+        PER: Peru
+        PHL: Philippines (the)
+        PCN: Pitcairn
+        POL: Poland
+        PRT: Portugal
+        PRI: Puerto Rico
+        QAT: Qatar
+        REU: Réunion
+        ROU: Romania
+        RUS: Russian Federation (the)
+        RWA: Rwanda
+        BLM: Saint Barthélemy
+        SHN: Saint Helena, Ascension and Tristan da Cunha
+        KNA: Saint Kitts and Nevis
+        LCA: Saint Lucia
+        MAF: Saint Martin (French part)
+        SPM: Saint Pierre and Miquelon
+        VCT: Saint Vincent and the Grenadines
+        WSM: Samoa
+        SMR: San Marino
+        STP: Sao Tome and Principe
+        SAU: Saudi Arabia
+        SEN: Senegal
+        SRB: Serbia
+        SYC: Seychelles
+        SLE: Sierra Leone
+        SGP: Singapore
+        SXM: Sint Maarten (Dutch part)
+        SVK: Slovakia
+        SVN: Slovenia
+        SLB: Solomon Islands
+        SOM: Somalia
+        ZAF: South Africa
+        SGS: South Georgia and the South Sandwich Islands
+        SSD: South Sudan
+        ESP: Spain
+        LKA: Sri Lanka
+        SDN: Sudan (the)
+        SUR: Suriname
+        SJM: Svalbard and Jan Mayen
+        SWE: Sweden
+        CHE: Switzerland
+        SYR: Syrian Arab Republic (the)
+        TWN: Taiwan (Province of China)
+        TJK: Tajikistan
+        TZA: Tanzania, the United Republic of
+        THA: Thailand
+        TLS: Timor-Leste
+        TGO: Togo
+        TKL: Tokelau
+        TON: Tonga
+        TTO: Trinidad and Tobago
+        TUN: Tunisia
+        TUR: Turkey
+        TKM: Turkmenistan
+        TCA: Turks and Caicos Islands (the)
+        TUV: Tuvalu
+        UGA: Uganda
+        UKR: Ukraine
+        ARE: United Arab Emirates (the)
+        GBR: United Kingdom of Great Britain and Northern Ireland (the)
+        UMI: United States Minor Outlying Islands (the)
+        USA: United States of America (the)
+        URY: Uruguay
+        UZB: Uzbekistan
+        VUT: Vanuatu
+        VEN: Venezuela (Bolivarian Republic of)
+        VNM: Viet Nam
+        VGB: Virgin Islands (British)
+        VIR: Virgin Islands (U.S.)
+        WLF: Wallis and Futuna
+        ESH: Western Sahara
+        YEM: Yemen
+        ZMB: Zambia
+        ZWE: Zimbabwe
+    regions:
+        AFG: Asia
+        ALA: Europe
+        ALB: Europe
+        DZA: Africa
+        ASM: Oceania
+        AND: Europe
+        AGO: Africa
+        AIA: Americas
+        ATA: none
+        ATG: Americas
+        ARG: Americas
+        ARM: Asia
+        ABW: Americas
+        AUS: Oceania
+        AUT: Europe
+        AZE: Asia
+        BHS: Americas
+        BHR: Asia
+        BGD: Asia
+        BRB: Americas
+        BLR: Europe
+        BEL: Europe
+        BLZ: Americas
+        BEN: Africa
+        BMU: Americas
+        BTN: Asia
+        BOL: Americas
+        BES: Americas
+        BIH: Europe
+        BWA: Africa
+        BVT: Americas
+        BRA: Americas
+        IOT: Africa
+        BRN: Asia
+        BGR: Europe
+        BFA: Africa
+        BDI: Africa
+        CPV: Africa
+        KHM: Asia
+        CMR: Africa
+        CAN: Americas
+        CYM: Americas
+        CAF: Africa
+        TCD: Africa
+        CHL: Americas
+        CHN: Asia
+        CXR: Oceania
+        CCK: Oceania
+        COL: Americas
+        COM: Africa
+        COG: Africa
+        COD: Africa
+        COK: Oceania
+        CRI: Americas
+        CIV: Africa
+        HRV: Europe
+        CUB: Americas
+        CUW: Americas
+        CYP: Asia
+        CZE: Europe
+        DNK: Europe
+        DJI: Africa
+        DMA: Americas
+        DOM: Americas
+        ECU: Americas
+        EGY: Africa
+        SLV: Americas
+        GNQ: Africa
+        ERI: Africa
+        EST: Europe
+        SWZ: Africa
+        ETH: Africa
+        FLK: Americas
+        FRO: Europe
+        FJI: Oceania
+        FIN: Europe
+        FRA: Europe
+        GUF: Americas
+        PYF: Oceania
+        ATF: Africa
+        GAB: Africa
+        GMB: Africa
+        GEO: Asia
+        DEU: Europe
+        GHA: Africa
+        GIB: Europe
+        GRC: Europe
+        GRL: Americas
+        GRD: Americas
+        GLP: Americas
+        GUM: Oceania
+        GTM: Americas
+        GGY: Europe
+        GIN: Africa
+        GNB: Africa
+        GUY: Americas
+        HTI: Americas
+        HMD: Oceania
+        VAT: Europe
+        HND: Americas
+        HKG: Asia
+        HUN: Europe
+        ISL: Europe
+        IND: Asia
+        IDN: Asia
+        IRN: Asia
+        IRQ: Asia
+        IRL: Europe
+        IMN: Europe
+        ISR: Asia
+        ITA: Europe
+        JAM: Americas
+        JPN: Asia
+        JEY: Europe
+        JOR: Asia
+        KAZ: Asia
+        KEN: Africa
+        KIR: Oceania
+        PRK: Asia
+        KOR: Asia
+        KWT: Asia
+        KGZ: Asia
+        LAO: Asia
+        LVA: Europe
+        LBN: Asia
+        LSO: Africa
+        LBR: Africa
+        LBY: Africa
+        LIE: Europe
+        LTU: Europe
+        LUX: Europe
+        MAC: Asia
+        MKD: Europe
+        MDG: Africa
+        MWI: Africa
+        MYS: Asia
+        MDV: Asia
+        MLI: Africa
+        MLT: Europe
+        MHL: Oceania
+        MTQ: Americas
+        MRT: Africa
+        MUS: Africa
+        MYT: Africa
+        MEX: Americas
+        FSM: Oceania
+        MDA: Europe
+        MCO: Europe
+        MNG: Asia
+        MNE: Europe
+        MSR: Americas
+        MAR: Africa
+        MOZ: Africa
+        MMR: Asia
+        NAM: Africa
+        NRU: Oceania
+        NPL: Asia
+        NLD: Europe
+        NCL: Oceania
+        NZL: Oceania
+        NIC: Americas
+        NER: Africa
+        NGA: Africa
+        NIU: Oceania
+        NFK: Oceania
+        MNP: Oceania
+        NOR: Europe
+        OMN: Asia
+        PAK: Asia
+        PLW: Oceania
+        PSE: Asia
+        PAN: Americas
+        PNG: Oceania
+        PRY: Americas
+        PER: Americas
+        PHL: Asia
+        PCN: Oceania
+        POL: Europe
+        PRT: Europe
+        PRI: Americas
+        QAT: Asia
+        REU: Africa
+        ROU: Europe
+        RUS: Europe
+        RWA: Africa
+        BLM: Americas
+        SHN: Africa
+        KNA: Americas
+        LCA: Americas
+        MAF: Americas
+        SPM: Americas
+        VCT: Americas
+        WSM: Oceania
+        SMR: Europe
+        STP: Africa
+        SAU: Asia
+        SEN: Africa
+        SRB: Europe
+        SYC: Africa
+        SLE: Africa
+        SGP: Asia
+        SXM: Americas
+        SVK: Europe
+        SVN: Europe
+        SLB: Oceania
+        SOM: Africa
+        ZAF: Africa
+        SGS: Americas
+        SSD: Africa
+        ESP: Europe
+        LKA: Asia
+        SDN: Africa
+        SUR: Americas
+        SJM: Europe
+        SWE: Europe
+        CHE: Europe
+        SYR: Asia
+        TWN: Asia
+        TJK: Asia
+        TZA: Africa
+        THA: Asia
+        TLS: Asia
+        TGO: Africa
+        TKL: Oceania
+        TON: Oceania
+        TTO: Americas
+        TUN: Africa
+        TUR: Asia
+        TKM: Asia
+        TCA: Americas
+        TUV: Oceania
+        UGA: Africa
+        UKR: Europe
+        ARE: Asia
+        GBR: Europe
+        USA: Americas
+        UMI: Oceania
+        URY: Americas
+        UZB: Asia
+        VUT: Oceania
+        VEN: Americas
+        VNM: Asia
+        VGB: Americas
+        VIR: Americas
+        WLF: Oceania
+        ESH: Africa
+        YEM: Asia
+        ZMB: Africa
+        ZWE: Africa
+    logo: "data:image/jpeg;base64,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"
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones

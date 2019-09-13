@@ -1,0 +1,45 @@
+{% extends 'admin/user/_layout.twig' %}
+
+{% block title %}User Accounts{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <h5>User Accounts</h5>
+    {% if users|length > 0 %}
+      <table>
+        <thead>
+          <tr>
+            <th>username</th>
+            <th style="width:75%">email</th>
+            <th>ORGANISER</th>
+            <th>EDITOR</th>
+            <th>EVPT</th>
+            <th>TECH</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_ORGANISER' in user.roles %} checked="checked"{% endif %} data-role="ROLE_ORGANISER" data-user="{{ user.id }}"></label>
+              </td>
+              <td>
+                <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_EDITOR' in user.roles %} checked="checked"{% endif %} data-role="ROLE_EDITOR" data-user="{{ user.id }}"></label>
+              </td>
+              <td>
+                <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_EVPT' in user.roles %} checked="checked"{% endif %} data-role="ROLE_EVPT" data-user="{{ user.id }}"></label>
+              </td>
+              <td>
+                <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_TECH' in user.roles %} checked="checked"{% endif %} data-role="ROLE_TECH" data-user="{{ user.id }}"></label>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no users in the database.</p>
+    {% endif %}
+  </div>
+{% endblock %}

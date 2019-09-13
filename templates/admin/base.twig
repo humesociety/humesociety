@@ -1,0 +1,76 @@
+{% apply spaceless %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/{% block favicon %}hume{% endblock %}.ico">
+    {{ encore_entry_link_tags('admin') }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>{% block title %}{% endblock %} - Site Admin</title>
+  </head>
+  <body class="grid">
+    <header class="header">
+      <div class="header-left">
+        {% if is_granted('ROLE_EVPT') %}
+          <a href="{{ path('admin_content') }}"{% if area == 'content' %} class="is-active"{% endif %}>
+        {% else %}
+          <a class="disabled" title="access restricted to EVPT">
+        {% endif %}
+          <span class="icon"><i class="far fa-file-alt"></i></span>
+          <span class="link-text">Site Content</span>
+        </a>
+        <a href="{{ path('admin_conference') }}"{% if area == 'conference' %} class="is-active"{% endif %}>
+          <span class="icon"><i class="far fa-calendar-alt"></i></span>
+          <span class="link-text">Hume Conference</span>
+        </a>
+        <a href="{{ path('admin_journal') }}"{% if area == 'journal' %} class="is-active"{% endif %}>
+          <span class="icon"><i class="far fa-file-pdf"></i></span>
+          <span class="link-text">Hume Studies</span>
+        </a>
+        {% if is_granted('ROLE_EVPT') %}
+          <a href="{{ path('admin_society') }}"{% if area == 'society' %} class="is-active"{% endif %}>
+        {% else %}
+          <a class="disabled" title="access restricted to EVPT">
+        {% endif %}
+          <span class="icon"><i class="far fa-envelope"></i></span>
+          <span class="link-text">Society Business</span>
+        </a>
+        {% if is_granted('ROLE_TECH') %}
+          <a href="{{ path('admin_user') }}"{% if area == 'user' %} class="is-active"{% endif %}>
+        {% else %}
+          <a class="disabled" title="access restricted to technical director">
+        {% endif %}
+          <span class="icon"><i class="fas fa-users"></i></span>
+          <span class="link-text">User Management</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <a href="{{ path('society_index') }}">Back to Main Site</a>
+        <a href="{{ path('security_logout') }}">Sign Out</a>
+      </div>
+    </header>
+    <nav class="sidebar">
+      {% block sidebar %}{% endblock %}
+    </nav>
+    <main class="page">
+      {% for message in app.flashes('notice') %}
+        <div class="box success">
+          {{ message }}
+        </div>
+      {% endfor %}
+      {% for message in app.flashes('error') %}
+        <div class="box error">
+          {{ message }}
+        </div>
+      {% endfor %}
+      {% block main %}{% endblock %}
+    </main>
+    {{ encore_entry_script_tags('admin') }}
+  </body>
+</html>
+{% endapply %}

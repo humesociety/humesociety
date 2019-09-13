@@ -1,0 +1,39 @@
+@import 'common/colors';
+@import 'common/base';
+@import 'common/heading';
+@import 'common/table';
+@import 'common/form';
+@import 'common/icon';
+@import 'common/content';
+@import 'common/columns';
+@import 'admin/grid';
+@import 'admin/tabs';
+
+.box {
+  margin: 1em auto;
+  padding: 1em;
+  max-width: 64rem;
+  background: #fff;
+  border: 1px solid $grey;
+}
+
+.success {
+  background: $green;
+  color: #fff;
+}
+
+.error {
+  background: $red;
+  color: #fff;
+}
+
+.thumbnail {
+  display: block;
+  max-width: 150px;
+}
+
+.preview {
+  display: block;
+  max-width: 300px;
+  margin: 1em auto;
+}

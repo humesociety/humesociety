@@ -1,0 +1,31 @@
+.sidebar {
+  grid-area: sidebar;
+  background: $blue;
+  color: #fff;
+  padding: .5em;
+  a {
+    display: block;
+    padding: .5em 1em;
+    text-align: center;
+    &:not(:last-child) {
+      margin-bottom: .5em;
+    }
+    &:hover, &.is-active {
+      background: $green;
+      color: $blue;
+    }
+  }
+  @media (min-width: $break1) {
+    padding: 1em;
+    background: transparent;
+    color: $black;
+    a {
+      text-align: left;
+      white-space: nowrap;
+      &:hover, &.is-active {
+        background: lighten($blue, 20%);
+        color: #fff;
+      }
+    }
+  }
+}

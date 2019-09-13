@@ -1,0 +1,12 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    globals:
+        sections: '%sections%'
+        countries: '%countries%'
+        categories: '%categories%'
+        uploads_directory: '%uploads_directory%'
+        paypal:
+            sandbox_client_id: '%env(PAYPAL_SANDBOX_CLIENT_ID)%'
+            client_id: '%env(PAYPAL_CLIENT_ID)%'

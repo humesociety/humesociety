@@ -1,0 +1,61 @@
+{% extends 'admin/society/_layout.twig' %}
+
+{% block title %}Create Candidate{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Create Candidate</h5>
+      <div class="heading-right">
+        <a href="{{ path('admin_society_candidate_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Committee Members List</a>
+      </div>
+    </div>
+    <p>A candidate is someone standing for election to the executive committee, in which case fields filled in here represent the office for which they are standing. A committee member, meanwhile, is a candidate who is marked as <em>elected</em> (in the checkbox below). In ordinary circumstances, you should not touch the <em>votes</em> field; this is updated automatically for candidates while an election is running, based on how members vote on this site. In case you need to for whatever reason, however, you can set it manually.</p>
+    {{ form_start(candidateForm) }}
+      {{ form_row(candidateForm.user) }}
+      <div class="columns">
+        <div class="column">
+          {{ form_row(candidateForm.start) }}
+        </div>
+        <div class="column">
+          {{ form_row(candidateForm.end) }}
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column">
+          {{ form_row(candidateForm.firstname) }}
+        </div>
+        <div class="column">
+          {{ form_row(candidateForm.lastname) }}
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column">
+          {{ form_row(candidateForm.institution) }}
+        </div>
+        <div class="column">
+          {{ form_row(candidateForm.votes) }}
+        </div>
+      </div>
+      <div class="columns has-checkboxes">
+        <div class="column has-checkbox">
+          {{ form_row(candidateForm.elected) }}
+        </div>
+        <div class="column has-checkbox">
+          {{ form_row(candidateForm.reelectable) }}
+        </div>
+        <div class="column has-checkbox">
+          {{ form_row(candidateForm.president) }}
+        </div>
+        <div class="column has-checkbox">
+          {{ form_row(candidateForm.evpt) }}
+        </div>
+      </div>
+      {{ form_row(candidateForm.description) }}
+      {{ form_row(candidateForm._token) }}
+      <div class="buttons">
+        <button type="submit" class="button is-success">Create</button>
+      </div>
+    {{ form_end(candidateForm) }}
+  </div>
+{% endblock %}

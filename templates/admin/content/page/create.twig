@@ -1,0 +1,36 @@
+{% extends 'admin/content/_layout.twig' %}
+
+{% block title %}New Page{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>New Page</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_content_page_view') }}" class="button" data-menu="page_section"><i class="fas fa-chevron-left"></i> Back to Page List</a>
+        </div>
+      </div>
+    </div>
+    <p>Every page must have a <em>title</em> and a <em>slug</em>. The slug is the last bit of the URL used to access the page; for example, a page in the <em>About</em> section with the slug 'hume' would be accessible at www.humesociety.org/about/hume. The title is what visitors will see and at the top of the page itself, and in the menu of links on the right. The <em>content</em> of the page should be entered as HTML. Several different page templates are provided; with some templates, the content is provided for you, and anything you enter into the <em>content</em> field will be ignored.</p>
+    {{ form_start(pageForm) }}
+      <div class="columns">
+        <div class="column">
+          {{ form_row(pageForm.section) }}
+        </div>
+        <div class="column">
+          {{ form_row(pageForm.slug) }}
+        </div>
+        <div class="column">
+          {{ form_row(pageForm.template) }}
+        </div>
+      </div>
+      {{ form_row(pageForm.title) }}
+      {{ form_row(pageForm.content) }}
+      {{ form_row(pageForm._token) }}
+      <div class="buttons">
+        <button class="button" type="submit">Create</button>
+      </div>
+    {{ form_end(pageForm) }}
+  </div>
+{% endblock %}

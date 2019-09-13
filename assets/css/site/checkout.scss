@@ -1,0 +1,12 @@
+.checkout {
+  border: 1px solid $grey;
+  padding: 1em;
+  table {
+    th {
+      background: $grey;
+    }
+    td {
+      background: $lightgrey;
+    }
+  }
+}

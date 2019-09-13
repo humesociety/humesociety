@@ -1,0 +1,104 @@
+form {
+  div:not(.column):not(.columns):not(.buttons) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    ul { // errors
+      order: 3;
+      margin: 0 0 1rem !important;
+      list-style: none !important;
+      padding: .25em .5em;
+      background: $red;
+      color: #fff;
+      font-size: .75em;
+    }
+    ul + input, ul + select, ul + textarea {
+      border-color: $red;
+      margin-bottom: 0;
+    }
+  }
+  .has-checkbox div:not(.column):not(.columns) {
+    flex-direction: row;
+    align-items: center;
+    input {
+      margin: .25em .75em;
+    }
+  }
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: .25rem;
+  &.checkbox-wrapper {
+    margin-bottom: 0;
+    text-align: center;
+    input[type="checkbox"] {
+      margin-bottom: 0;
+    }
+  }
+}
+
+input, select, textarea, .has-checkboxes {
+  width: 100%;
+  padding: .25em .5em;
+  border: 1px solid $grey;
+  margin-bottom: 1em;
+  &:disabled {
+    background: $lightgrey;
+    cursor: not-allowed;
+  }
+}
+
+.has-checkboxes label {
+  margin: 0;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  width: auto;
+}
+
+textarea {
+  min-height: 20em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  &:not(:last-child) {
+    margin-bottom: 1em;
+  }
+}
+
+button, .button {
+  padding: .5em 1em;
+  background: lighten($blue, 20%);
+  color: #fff !important;
+  cursor: pointer;
+  transition: background .3s;
+  &:hover {
+    background: lighten($blue, 10%);
+    text-decoration: none !important;
+  }
+}
+
+.inline-form {
+  form {
+    display: flex;
+    margin-bottom: 1em;
+    label {
+      display: none;
+    }
+    button {
+      padding: .25em 1em;
+    }
+    input, select, textarea, .has-checkboxes {
+      margin-bottom: 0;
+    }
+    div:not(:last-child) {
+      flex: 1;
+      margin-right: 1em;
+    }
+  }
+}

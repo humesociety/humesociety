@@ -1,0 +1,23 @@
+$break1: 50rem;
+$break2: 66rem;
+
+body {
+  background: $lightgrey;
+}
+
+.container {
+  max-width: $break2;
+  margin: 0 auto;
+}
+
+.main-sidebar {
+  background: #fff;
+  .container {
+    display: flex;
+    flex-direction: column;
+    @media (min-width: $break1) {
+      flex-direction: row;
+      padding: 0em 1em;
+    }
+  }
+}

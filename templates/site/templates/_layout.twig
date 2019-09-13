@@ -1,0 +1,9 @@
+{% extends 'site/base.twig' %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block sidebar %}
+  {% for sibling in siblings %}
+    <a href="{{ path('society_page', { section: page.section, slug: sibling.slug }) }}"{% if page.slug == sibling.slug %} class="is-active"{% endif %}>{{ sibling.title }}</a>
+  {% endfor %}
+{% endblock %}

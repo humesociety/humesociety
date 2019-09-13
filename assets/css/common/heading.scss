@@ -1,0 +1,56 @@
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1em;
+  .heading-right {
+    display: flex;
+    input, select {
+      margin: 0;
+    }
+    label, button, .button {
+      padding: .25em .75em;
+    }
+    button, .button {
+      background: $green;
+      &:hover {
+        background: darken($green, 10%);
+      }
+      .fas, .far {
+        padding-right: .5em;
+      }
+    }
+  }
+  form {
+    display: flex;
+    align-items: baseline;
+    label {
+      display: none;
+    }
+  }
+  .input {
+    display: flex;
+    align-items: baseline;
+    margin-left: 1em;
+  }
+}
+
+.heading-with-options {
+  display: flex;
+  justify-content: space-between;
+  input, select {
+    margin: 0;
+  }
+  .table-options {
+    display: flex;
+  }
+  .option {
+    display: flex;
+    align-items: baseline;
+    label {
+      margin: 0;
+      padding: .25em .5em;
+      white-space: nowrap;
+    }
+  }
+}

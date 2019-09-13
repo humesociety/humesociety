@@ -1,0 +1,14 @@
+{% extends 'admin/journal/_layout.twig' %}
+
+{% block title %}User Details{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <h5>Mailing Addresses for Members Receiving <i>Hume Studies</i></h5>
+    {% for user in users %}
+      {% if user.mailingAddress %}
+        <pre>{{ user.mailingAddress }}</pre>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

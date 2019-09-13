@@ -1,0 +1,54 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Edit Conferences{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Edit Conference Data</h5>
+      {% if conferences | length > 0 %}
+        <div class="heading-right">
+          <div class="input">
+            <label for="show-decade">Decade:</label>
+            <select data-filter="decade" data-table="conferences">
+              {% for d in decades %}
+            <option value="{{ d }}"{% if decade == d %} selected="selected"{% endif %}>{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input">
+            <a href="{{ path('admin_conference_conference_create') }}" class="button"><i class="fas fa-plus"></i>Create Conference</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <p>Details of conferences stored in the database can be edited here. Any page on the web site using the 'Forthcoming Conferences' or 'Past Conferences' templates will automatically be updated to reflect any changes made.</p>
+    {% if conferences %}
+      <table class="loading" id="conferences">
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>Year</th>
+            <th>Location</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for conference in conferences %}
+            <tr data-decade="{{ conference.decade }}">
+              <td>{{ conference.number }}</td>
+              <td>{{ conference.year }}</td>
+              <td>{{ conference.institution }}</td>
+              <td class="controls">
+                <a href="{{ path('admin_conference_conference_edit', { id: conference.id }) }}">Edit</a>
+                <a href="{{ path('admin_conference_conference_delete', { id: conference.id }) }}">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no conferences in the database.</p>
+    {% endif %}
+  </div>
+{% endblock %}

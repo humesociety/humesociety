@@ -1,0 +1,19 @@
+.hero {
+  box-shadow: 0 2px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+  padding: 1em;
+  text-align: center;
+  margin: 2em 0;
+  img {
+    display: block;
+    margin: 1em auto;
+    max-width: 60%;
+  }
+  .links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    a {
+      margin: 0 1em;
+    }
+  }
+}

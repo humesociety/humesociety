@@ -1,0 +1,23 @@
+{% extends 'admin/society/_layout.twig' %}
+
+{% block title %}Delete Report{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Delete Report: {{ filename }} ({{ year }})</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_society_report_view', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
+        </div>
+      </div>
+    </div>
+    <p>Are you sure you want to delete this report? This action cannot be undone.</p>
+    {{ form_start(reportForm) }}
+      {{ form_row(reportForm._token) }}
+      <div class="buttons">
+        <button type="submit">Delete</button>
+      </div>
+    {{ form_end(reportForm) }}
+  </div>
+{% endblock %}

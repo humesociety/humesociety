@@ -1,0 +1,14 @@
+{% extends 'admin/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('admin_journal_issue_index') }}"{% if subarea == 'issue' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-pdf"></i></span>
+      <span class="link-text">Issues</span>
+    </a>
+    <a href="{{ path('admin_journal_mailing_index') }}"{% if subarea == 'mailing' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-envelope"></i></span>
+      <span class="link-text">Mailing List</span>
+    </a>
+  </div>
+{% endblock %}

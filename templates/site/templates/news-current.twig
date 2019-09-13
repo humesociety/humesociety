@@ -1,0 +1,15 @@
+{% extends 'site/templates/_layout.twig' %}
+
+{% block main %}
+  <h1>{{ page.title }}</h1>
+  {% if newsItems %}
+    {% for item in newsItems %}
+      <div class="news">
+        <h3>{{ item.date | date('m/d/Y') }}: {{ item.title }}</h3>
+        {{ item.content | raw }}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>There is no news at the moment.</p>
+  {% endif %}
+{% endblock %}

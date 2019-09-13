@@ -1,0 +1,23 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Delete Conference{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Delete Conference {{ conference }}</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_conference_conference_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
+        </div>
+      </div>
+    </div>
+    <p>Are you sure you want to delete this conference? All files associated with this conference will be deleted as well. This action cannot be undone!</p>
+    {{ form_start(conferenceForm) }}
+      {{ form_row(conferenceForm._token) }}
+      <div class="buttons">
+        <button type="submit">Delete</button>
+      </div>
+    {{ form_end(conferenceForm, { render_rest: false }) }}
+  </div>
+{% endblock %}

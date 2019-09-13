@@ -1,0 +1,52 @@
+{% extends 'admin/content/_layout.twig' %}
+
+{% block title %}News Items{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>News Items</h5>
+      <div class="heading-right">
+        {% if newsItems | length > 0 %}
+          <div class="input">
+            <label for="show-category">Category:</label>
+            <select id="show-category" data-filter="category" data-table="newsItems">
+              {% for key, name in categories %}
+                <option value="{{ key }}"{% if category == key %} selected="selected"{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <div class="input">
+          <a href="{{ path('admin_content_news-item_create') }}" class="button" data-menu="show-category"><i class="fas fa-plus"></i> New News Item</a>
+        </div>
+      </div>
+    </div>
+    <p>Current news items are displayed either on the home page (for society news), or on pages using the relevant template (members news appears on the Members News template, etc.). One the end date for a news item has passed, it will appear instead on pages using the Archived News template.</p>
+    {% if newsItems %}
+      <table class="loading" id="newsItems">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in newsItems %}
+            <tr data-category="{{ item.category }}">
+              <td>{{ item.title }}</td>
+              <td>{{ item.date | date('m/d/Y') }}</td>
+              <td class="controls">
+                <a href="{{ path('admin_content_news-item_edit', { id: item.id }) }}">Edit</a>
+                <a href="{{ path('admin_content_news-item_delete', { id: item.id }) }}">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no news items in the database.</p>
+    {% endif %}
+  </div>
+{% endblock %}

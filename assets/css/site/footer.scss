@@ -1,0 +1,18 @@
+.footer {
+  .container {
+    text-align: center;
+    padding: 3em 2em 5em;
+    @media (min-width: $break1) {
+      text-align: left;
+    }
+  }
+  p {
+    margin-bottom: 1em;
+  }
+  a {
+    color: $green;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{% extends 'admin/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('admin_society_candidate_view') }}"{% if subarea == 'candidate' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user-friends"></i></span>
+      <span class="link-text">Committee</span>
+    </a>
+    <a href="{{ path('admin_society_election_index') }}"{% if subarea == 'election' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-vote-yea"></i></span>
+      <span class="link-text">Elections</span>
+    </a>
+    <a href="{{ path('admin_society_report_index') }}"{% if subarea == 'report' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-pdf"></i></span>
+      <span class="link-text">Reports</span>
+    </a>
+    <a href="{{ path('admin_society_email_index') }}"{% if subarea == 'email' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-envelope"></i></span>
+      <span class="link-text">Emails</span>
+    </a>
+    <a href="{{ path('admin_society_member_index') }}"{% if subarea == 'member' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-users"></i></span>
+      <span class="link-text">Members</span>
+    </a>
+  </div>
+{% endblock %}

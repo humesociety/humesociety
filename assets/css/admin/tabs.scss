@@ -1,0 +1,27 @@
+.tabs {
+  display: flex;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 1em;
+  a {
+    cursor: pointer;
+    padding: .25em .75em;
+    margin-bottom: -1px;
+    border-bottom: 1px solid transparent;
+    color: lighten($black, 25%);
+    &:hover {
+      color: $black;
+      text-decoration: none;
+    }
+    &.is-active {
+      border-color: $green;
+      color: $green;
+    }
+  }
+}
+
+.tab-pane {
+  display: none;
+  &.is-active {
+    display: block;
+  }
+}

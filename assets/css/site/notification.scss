@@ -1,0 +1,26 @@
+.notification {
+  &.form {
+    padding: .5em 1em;
+    margin-bottom: 1em;
+  }
+  .container {
+    padding: .5em 1em;
+  }
+  a {
+    color: #fff;
+    text-decoration: underline;
+  }
+  &.success {
+    background: $green;
+    color: #fff;
+  }
+  &.error {
+    background: $red;
+    color: #fff;
+  }
+  @media (min-width: $break1) {
+    .container {
+      padding: .5em 2em;
+    }
+  }
+}

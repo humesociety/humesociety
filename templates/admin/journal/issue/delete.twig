@@ -1,0 +1,23 @@
+{% extends 'admin/journal/_layout.twig' %}
+
+{% block title %}Delete Journal Issue{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Delete Journal Issue {{ issue }}</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_journal_issue_view', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
+        </div>
+      </div>
+    </div>
+    <p>Are you sure you want to delete this journal issue? All its articles and notes will be deleted as well, and this action cannot be undone!</p>
+    {{ form_start(issueForm) }}
+      {{ form_row(issueForm._token) }}
+      <div class="buttons">
+        <button type="submit">Delete</button>
+      </div>
+    {{ form_end(issueForm, { render_rest: false }) }}
+  </div>
+{% endblock %}

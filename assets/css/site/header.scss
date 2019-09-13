@@ -1,0 +1,50 @@
+.header {
+  background-image: url("manuscript.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  position: relative;
+  .header-image {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    opacity: 0;
+    transition: opacity .5s ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+  }
+  .header-text {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, .75);
+  }
+  h1 {
+    font-size: 2em;
+    font-weight: 500;
+    display: none;
+  }
+  h2 {
+    font-size: 1.25em;
+    padding: .5em 1em;
+    font-style: italic;
+  }
+  @media (min-width: $break1) {
+    .container {
+      padding: 1em 2em;
+    }
+    h1 {
+      display: block;
+    }
+    h2 {
+      font-size: 1.5em;
+      padding: 0;
+    }
+  }
+  @media (min-width: $break2) {
+    padding: 8em 0em 0em;
+  }
+}

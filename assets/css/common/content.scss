@@ -1,0 +1,116 @@
+.content {
+  a {
+    color: $green;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  li + li {
+    margin-top: 0.25em;
+  }
+  p, ol, ul, dl, address {
+    margin-bottom: 1em;
+  }
+  blockquote, figure, table {
+    margin-bottom: 2em;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    margin-bottom: 0.5em;
+  }
+  h1 {
+    font-size: 2em;
+  }
+  h2 {
+    font-size: 1.75em;
+  }
+  h3 {
+    font-size: 1.5em;
+  }
+  h4 {
+    font-size: 1.25em;
+  }
+  h5 {
+    font-size: 1.125em;
+  }
+  h6 {
+    font-size: 1em;
+  }
+  blockquote {
+    border-left: .25em solid $offwhite;
+    padding: .25em 1.5em;
+    cite {
+      display: block;
+      text-align: right;
+    }
+  }
+  ol {
+    list-style-position: outside;
+    margin-left: 2em;
+    margin-top: 1em;
+    &:not([type]) {
+      list-style-type: decimal;
+      &.is-lower-alpha {
+        list-style-type: lower-alpha;
+      }
+      &.is-lower-roman {
+        list-style-type: lower-roman;
+      }
+      &.is-upper-alpha {
+        list-style-type: upper-alpha;
+      }
+      &.is-upper-roman {
+        list-style-type: upper-roman;
+      }
+    }
+  }
+  ul {
+    list-style: disc outside;
+    margin-left: 2em;
+    margin-top: 1em;
+    ul {
+      list-style-type: circle;
+      margin-top: 0.5em;
+      ul {
+        list-style-type: square;
+      }
+    }
+  }
+  dt {
+    font-weight: bold;
+    margin-bottom: .25em;
+  }
+  dd + dt {
+    margin-top: .75em;
+  }
+  sup, sub {
+    font-size: 75%;
+  }
+  address {
+    font-style: inherit;
+  }
+  hr {
+    clear: both;
+    margin: 1em 0;
+    border-top: 1px solid $grey;
+  }
+  figure {
+    box-shadow: 0 2px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+    padding: .5em;
+    img {
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+    }
+    figcaption {
+      margin: 1em;
+      text-align: center;
+    }
+    &.float-right {
+      float: right;
+      width: 25%;
+      margin-left: 1em;
+      margin-bottom: 1em;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{% extends 'site/security/_layout.twig' %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block main %}
+  <h1>Sign In</h1>
+  <form method="post">
+    {% if error %}
+      <div class="notification form error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+    <div>
+      <label for="inputUsername">Username</label>
+      <input type="text" value="{{ last_username }}" name="username" id="inputUsername" required autofocus>
+    </div>
+    <div>
+      <label for="inputPassword">Password</label>
+      <input type="password" name="password" id="inputPassword" required>
+    </div>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <div class="buttons">
+      <button type="submit">Sign In</button>
+    </div>
+  </form>
+{% endblock %}

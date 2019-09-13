@@ -1,0 +1,49 @@
+{% extends 'admin/society/_layout.twig' %}
+
+{% block title %}View Reports{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Society Minutes and Reports</h5>
+      <div class="heading-right">
+        {% if reports|length > 0 %}
+          <div class="input">
+            <label for="show-year">Year:</label>
+            <select id="show-year" data-filter="year" data-table="reports">
+              {% for y in years|reverse %}
+            <option value="{{ y }}"{% if y == year %} selected="selected"{% endif %}>{{ y }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <div class="input">
+          <a href="{{ path('admin_society_report_upload') }}" class="button" data-menu="show-year"><i class="fas fa-plus"></i>Upload Report</a>
+        </div>
+      </div>
+    </div>
+    <p>Here you can upload society minutes and reports. These will be available for members to download from any page with the <em>Society Minutes and Reports</em> template.</p>
+    {% if reports|length > 0 %}
+      <table class="loading" id="reports">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for report in reports %}
+            <tr data-year="{{ report.year }}">
+              <td><a href="{{ report.url }}">{{ report.name }}</a></td>
+              <td class="controls">
+                <a href="{{ path('admin_society_report_delete', { year: report.year, filename: report.filename }) }}">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no reports in the database.</p>
+    {% endif %}
+  </div>
+{% endblock %}

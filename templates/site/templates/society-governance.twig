@@ -1,0 +1,51 @@
+{% extends 'site/templates/_layout.twig' %}
+
+{% block main %}
+  <div class="title-with-options">
+    <h1>{{ page.title }}</h1>
+    <div class="table-options">
+      <div class="option">
+        <select id="year-select" data-range="start-end" data-table="governance">
+          {% for year in years|reverse %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+  <p>The Executive Committee consists of ten members. Nine are elected by the membership of the Society to staggered three-year terms, so that in principle three are elected each year. The Executive Vice President-Treasurer is appointed by the Executive Committee to a five-year term and serves on the Committee <i>ex officio</i>.</p>
+  {% if evpts and execs %}
+    <table class="loading" id="governance">
+      <thead>
+        <tr>
+          <th colspan="3">Executive Vice President-Treasurer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for evpt in evpts %}
+          <tr data-start="{{ evpt.start }}" data-end="{{ evpt.end }}">
+            <td>{{ evpt.firstname }} {{ evpt.lastname }}</td>
+            <td>{{ evpt.institution }}</td>
+            <td>{{ evpt.start }} - {{ evpt.end }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <thead>
+        <tr>
+          <th colspan="3">Members of the Executive Committee</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for exec in execs %}
+          <tr data-start="{{ exec.start }}" data-end="{{ exec.end }}">
+            <td>{{ exec.firstname }} {{ exec.lastname }}{% if exec.president %} (President){% endif %}</td>
+            <td>{{ exec.institution }}</td>
+            <td>{{ exec.start }} - {{ exec.end }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No committee data available.</p>
+  {% endif %}
+{% endblock %}

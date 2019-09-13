@@ -1,0 +1,10 @@
+{% extends 'site/templates/_layout.twig' %}
+
+{% block main %}
+  <h1>{{ page.title }}</h1>
+  <p id="membership-summary">Analyzing data...</p>
+  <h2>Members by Region</h2>
+  <canvas id="membership-regions"></canvas>
+  <h2>Members by Country</h2>
+  <canvas id="membership-countries"></canvas>
+{% endblock %}
