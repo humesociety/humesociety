@@ -16,7 +16,7 @@
     <div class="column">
       <div class="hero" style="margin-top:0">
         <h3>{{ conference.ordinal }} International Hume Society Conference</h3>
-        <h4>{{ conference.town }}, {{ conference.country }}</h4>
+        <h4>{{ conference.town }}, {{ countries[conference.country] }}</h4>
         {% if conference.splash %}
           <img src="{{ conference.splash.url }}" alt="{{ conference.town }}">
         {% endif %}

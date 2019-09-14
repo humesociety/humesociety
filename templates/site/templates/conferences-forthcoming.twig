@@ -5,7 +5,7 @@
   {% for conference in conferences %}
     <div class="hero">
       <h2>{{ conference.ordinal }} International Hume Society Conference</h2>
-      <h3>{{ conference.town }}, {{ conference.country }}</h3>
+      <h3>{{ conference.town }}, {{ countries[conference.country] }}</h3>
       {% if conference.splash %}
         <img src="{{ conference.splash.url }}" alt="{{ conference.town }}">
       {% endif %}
