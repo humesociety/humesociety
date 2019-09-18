@@ -4,25 +4,7 @@
   <h1>{{ page.title }}</h1>
   {% for conference in conferences %}
     <div class="hero">
-      <h2>{{ conference.ordinal }} International Hume Society Conference</h2>
-      <h3>{{ conference.town }}, {{ countries[conference.country] }}</h3>
-      {% if conference.splash %}
-        <img src="{{ conference.splash.url }}" alt="{{ conference.town }}">
-      {% endif %}
-      <p>{{ conference.dates }}</p>
-      {% if conference.cfp or conference.website %}
-        <div class="links">
-          {% if conference.cfp %}
-            <a href="{{ conference.cfp.url }}">Call for Papers</a>
-          {% endif %}
-          {% if conference.website %}
-            <a href="{{ conference.website }}">Conference Website</a>
-          {% endif %}
-          {% if conference.site %}
-            <a href="{{ conference.site.url }}">Conference Website Backup</a>
-          {% endif %}
-        </div>
-      {% endif %}
+      {% include 'includes/conference-details.html.twig' %}
     </div>
   {% endfor %}
 {% endblock %}

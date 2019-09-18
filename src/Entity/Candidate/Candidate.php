@@ -42,7 +42,7 @@ class Candidate
     private $institution;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="offices")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
      */
     private $user;
 

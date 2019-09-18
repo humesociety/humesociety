@@ -60,7 +60,7 @@ class ConferenceController extends AbstractController
 
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
             $conferenceHandler->saveConference($conference);
-            $this->addFlash('notice', 'Conference '.$conference.' has been updated.');
+            $this->addFlash('notice', 'Details for the '.$conference.' have been updated.');
             return $this->redirectToRoute('admin_content_conference_view', [
                 'decade' => $conference->getDecade()
             ]);
@@ -99,7 +99,7 @@ class ConferenceController extends AbstractController
 
         if ($form->isSubmitted()) {
             $conferenceHandler->deleteConference($conference);
-            $this->addFlash('notice', 'Conference '.$conference.' has been deleted.');
+            $this->addFlash('notice', 'The record for the '.$conference.' has been deleted.');
             return $this->redirectToRoute('admin_content_conference_view');
         }
 
@@ -156,7 +156,7 @@ class ConferenceController extends AbstractController
 
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
             $conferenceHandler->saveConference($conference);
-            $this->addFlash('notice', 'Conference '.$conference.' has been created.');
+            $this->addFlash('notice', 'A record for the '.$conference.' has been created.');
             return $this->redirectToRoute('admin_content_conference_view', [
                 'decade' => $conference->getDecade()
             ]);

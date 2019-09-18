@@ -78,28 +78,17 @@ class UserHandler
 
     public function updateDues(User $user, DuesPayment $duesPayment)
     {
-        $currentMonth = (int) date('m');
-        $currentYear = (int) date('Y');
-        $nextYearString = (string) ($currentYear + 1);
-        if ($currentMonth <= 6) {
-            $endDate = new \DateTime($nextYearString.'-12-31');
-        } else {
-            $endDate = new \DateTime($nextYearString.'-06-30');
-        }
-
         switch ($duesPayment->getDescription()) {
             case 'Regular Membership (1 year)': // fallthrough
             case 'Student Membership (1 year)':
-                $user->setDues($endDate);
+                $user->setDues(1);
                 break;
             case 'Regular Membership (2 years)': // fallthrough
             case 'Student Membership (2 years)':
-                $endDate->add(new \DateInterval('P1Y'));
-                $user->setDues($endDate);
+                $user->setDues(2);
                 break;
             case 'Regular Membership (5 years)':
-                $endDate->add(new \DateInterval('P4Y'));
-                $user->setDues($endDate);
+                $user->setDues(5);
                 break;
         }
 

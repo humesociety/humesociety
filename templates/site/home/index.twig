@@ -15,28 +15,7 @@
     </div>
     <div class="column">
       <div class="hero" style="margin-top:0">
-        <h3>{{ conference.ordinal }} International Hume Society Conference</h3>
-        <h4>{{ conference.town }}, {{ countries[conference.country] }}</h4>
-        {% if conference.splash %}
-          <img src="{{ conference.splash.url }}" alt="{{ conference.town }}">
-        {% endif %}
-        <p>
-          {% if conference.startDate %}
-            {{ conference.startDate | date('M') }} {{ conference.startDate | date('d') }} - {{ conference.endDate | date('M') }} {{ conference.endDate | date('d') }}, {{ conference.year }}
-          {% else %}
-            {{ conference.year }}
-          {% endif %}
-        </p>
-        {% if conference.cfp or conference.website %}
-          <div class="links">
-            {% if conference.cfp %}
-              <a href="{{ conference.cfp.url }}">Call for Papers</a>
-            {% endif %}
-            {% if conference.website %}
-              <a href="{{ conference.website }}">Conference Website</a>
-            {% endif %}
-          </div>
-        {% endif %}
+        {% include 'includes/conference-details.html.twig' %}
       </div>
     </div>
   </div>

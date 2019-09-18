@@ -1,0 +1,22 @@
+<h3>{{ conference.ordinal }} Internation Hume Society Conference</h3>
+<h4>{{ conference.town }}, {{ countries[conference.country] }}</h4>
+{% if conference.splash %}
+  <img src="{{ conference.splash.url }}" alt="{{ conference.town }}">
+{% endif %}
+<p>{{ conference.dates }}</p>
+{% if conference.cfp or conference.website or conference.submissionsAreOpen %}
+  <div class="links">
+    {% if conference.cfp %}
+      <a href="{{ conference.cfp.url }}">Call for Papers</a>
+    {% endif %}
+    {% if conference.website %}
+      <a href="{{ conference.website }}">Conference Website</a>
+    {% endif %}
+    {% if conference.site %}
+      <a href="{{ conference.site.url }}">Conference Website Backup</a>
+    {% endif %}
+    {% if conference.submissionsAreOpen %}
+      <a href="{{ path('account_research', { tab: 'submissions' }) }}">Submit a Paper (login required)</a>
+    {% endif %}
+  </div>
+{% endif %}

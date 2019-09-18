@@ -3,6 +3,7 @@
 namespace App\Entity\User;
 
 use App\Entity\Candidate\Candidate;
+use App\Entity\Conference\Conference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,6 +13,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * User objects represent users of the site with login credentials.
+ *
+ * Every user has the 'ROLE_USER' role. Members of the society also have the 'ROLE_MEMBER' role. The
+ * `dues` field stores the date their next membership payment is due. Those for whom the dues date
+ * is less than today's date represent members in good standing. The members section of the web site
+ * is restricted to members in good standing.
+ *
  * @ORM\Entity(repositoryClass="App\Entity\User\UserRepository")
  * @UniqueEntity(
  *     fields={"username"},
@@ -21,16 +29,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     fields={"email"},
  *     message="There is already an account with this email address."
  * )
- *
- * User objects represent users of the site with login credentials. Every user has the 'ROLE_USER'
- * role. Members of the society also have the 'ROLE_MEMBER' role. The `dues` field stores the date
- * their next membership payment is due. Those for whom the dues date is less than today's date
- * represent members in good standing. The members section of the web site is restricted to members
- * in good standing.
  */
 class User implements UserInterface
 {
     /**
+     * The user's unique identifier in the database.
+     *
+     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -38,255 +43,40 @@ class User implements UserInterface
     private $id;
 
     /**
+     * Get the user's unique identifier in the database (null when the object is first created).
+     *
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * The user's (unique) username.
+     *
+     * @var string
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups("json")
      */
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups("json")
-     * @Assert\Email()
+     * Get the user's (unique) username (null when the object is first created).
+     *
+     * @return string|null
      */
-    private $email;
-
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $roles;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $password;
-
-    /**
-     * @ORM\Column(type="date")
-     * @Groups("json")
-     */
-    private $dateJoined;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $rejoined;
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $lastLogin;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $voted;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Candidate\Candidate", mappedBy="user")
-     */
-    private $offices;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $notes;
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups("json")
-     */
-    private $dues;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $lifetimeMember;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $passwordResetSecret;
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $passwordResetSecretExpires;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups("json")
-     */
-    private $firstname;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups("json")
-     */
-    private $lastname;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $department;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $institution;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $city;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $state;
-
-    /**
-     * @ORM\Column(type="string", length=3, nullable=true)
-     * @Groups("json")
-     */
-    private $country;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $officePhone;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $homePhone;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $fax;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $webpage;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $receiveEmail;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $receiveHumeStudies;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $mailingAddress;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="user")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $submissions;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="user")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $reviews;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $willingToReview;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $willingToComment;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups("json")
-     */
-    private $willingToChair;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $keywords;
-
-    /**
-     * derived property; getter defined below
-     * @Groups("json")
-     */
-    private $member;
-
-    /**
-     * derived property; getter defined below
-     * @Groups("json")
-     */
-    private $memberInGoodStanding;
-
-    /**
-     * derived property; getter defined below
-     * @Groups("json")
-     */
-    private $memberInArrears;
-
-    // Constructor function
-    public function __construct()
-    {
-        $this->roles = ['ROLE_USER']; // everyone is at least a user
-        $this->country = 'USA'; // this is most likely, so will save most people some time
-        $this->dateJoined = new \DateTime();
-        $this->rejoined = false; // TODO: let people indicate if they are rejoining
-        $this->voted = false;
-        $this->offices = new ArrayCollection();
-        $this->lifetimeMember = false;
-        $this->receiveEmail = true;
-        $this->receiveHumeStudies = true;
-        $this->willingToReview = false;
-        $this->willingToComment = false;
-        $this->willingToChair = false;
-        $this->submissions = new ArrayCollection();
-        $this->reviews = new ArrayCollection();
-    }
-
-    // ToString function, for displaying in dropdown menu in forms
-    public function __toString(): string
-    {
-        return $this->lastname.', '.$this->firstname.' ['.$this->username.']';
-    }
-
-    // Getters and setters for private properties
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function getUsername(): ?string
     {
-        return (string) $this->username;
+        return $this->username;
     }
 
+    /**
+     * Set the user's (unique) username.
+     *
+     * @param string The user's (unique) username.
+     * @return self
+     */
     public function setUsername(string $username): self
     {
         $this->username = $username;
@@ -294,20 +84,95 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's (unique) email address.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups("json")
+     * @Assert\Email()
+     */
+    private $email;
+
+    /**
+     * Get the user's (unique) email address (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set the user's (unique) email address.
+     *
+     * @param string The user's (unique) email address.
+     */
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * The user's security roles (used by Symfony's security component).
+     *
+     * @var string[]
+     * @ORM\Column(type="json")
+     */
+    private $roles;
+
+    /**
+     * Get the user's security roles.
+     *
+     * Possible security roles are:
+     *   - ROLE_USER: a regular user; everyone has at least this role
+     *   - ROLE_MEMBER: a member of the society (not necessarily in good standing)
+     *   - ROLE_TECH: the society's technical director
+     *   - ROLE_EVPT: the society's executive vice-president treasurer
+     *   - ROLE_ORGANISER: a conference organiser (for the current conference)
+     *   - ROLE_EDITOR: an editor of Hume Studies
+     *
+     * @return string[]
+     */
     public function getRoles(): array
     {
         return $this->roles;
     }
 
+    /**
+     * Add a security role for this user.
+     *
+     * @param string The security role to add.
+     * @return self
+     */
     public function addRole(string $role): self
     {
         if (!in_array($role, $this->roles)) {
-            $this->roles[] = $role;
+            $allowedRoles = [
+                'ROLE_USER',
+                'ROLE_MEMBER',
+                'ROLE_TECH',
+                'ROLE_EVPT',
+                'ROLE_ORGANISER',
+                'ROLE_EDITOR'
+            ];
+            if (in_array($role, $allowedRoles)) {
+                $this->roles[] = $role;
+            }
         }
 
         return $this;
     }
 
+    /**
+     * Remove a security role for this user.
+     *
+     * @param string The security role to remove.
+     * @return self
+     */
     public function removeRole(string $role): self
     {
         $key = array_search($role, $this->roles);
@@ -319,11 +184,30 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's encrypted password.
+     *
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    private $password;
+
+    /**
+     * Get the user's encrypted password (null when the object is first created).
+     *
+     * @return string|null
+     */
     public function getPassword(): ?string
     {
-        return (string) $this->password;
+        return $this->password;
     }
 
+    /**
+     * Set the user's encrypted password.
+     *
+     * @var string The user's encrypted password.
+     * @return self
+     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -331,35 +215,52 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
+    /**
+     * The date the user was created.
+     *
+     * @var \DateTimeInterface
+     * @ORM\Column(type="date")
+     * @Groups("json")
+     */
+    private $dateJoined;
 
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getDateJoined(): ?\DateTimeInterface
+    /**
+     * Get the date the user was created.
+     *
+     * @return \DateTimeInterface
+     */
+    public function getDateJoined(): \DateTimeInterface
     {
         return $this->dateJoined;
     }
 
-    public function setDateJoined(\DateTimeInterface $dateJoined): self
-    {
-        $this->dateJoined = $dateJoined;
+    /**
+     * Whether the user was rejoining when they created this account.
+     *
+     * There's no magic way of determining this; we simply have to ask users when they register.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     * @Groups("json")
+     */
+    private $rejoined;
 
-        return $this;
-    }
-
-    public function getRejoined(): ?bool
+    /**
+     * Get whether the user was rejoining when they created this account.
+     *
+     * @return bool
+     */
+    public function getRejoined(): bool
     {
         return $this->rejoined;
     }
 
+    /**
+     * Set whether the user was rejoining when they created this account.
+     *
+     * @param bool Whether the user was rejoining when they created this account.
+     * @return self
+     */
     public function setRejoined(bool $rejoined): self
     {
         $this->rejoined = $rejoined;
@@ -367,11 +268,30 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * When the user last logged in.
+     *
+     * @var \DateTimeInterface
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $lastLogin;
+
+    /**
+     * Get when the user last logged in (null until the first login).
+     *
+     * @return \DateTimeInterface|null
+     */
     public function getLastLogin(): ?\DateTimeInterface
     {
         return $this->lastLogin;
     }
 
+    /**
+     * Set when the user last logged in.
+     *
+     * @param \DateTimeInterface When the user last logged in.
+     * @return self
+     */
     public function setLastLogin(\DateTimeInterface $lastLogin): self
     {
         $this->lastLogin = $lastLogin;
@@ -379,11 +299,30 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getVoted(): ?bool
+    /**
+     * Whether the user has voted in the current election.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $voted;
+
+    /**
+     * Get whether the user has voted in the current election.
+     *
+     * @return bool
+     */
+    public function getVoted(): bool
     {
         return $this->voted;
     }
 
+    /**
+     * Set whether the user has voted in the current election.
+     *
+     * @param bool Whether the user has voted in the current election.
+     * @return self
+     */
     public function setVoted(bool $voted): self
     {
         $this->voted = $voted;
@@ -391,38 +330,30 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getOffices(): Collection
-    {
-        return $this->offices;
-    }
+    /**
+     * Notes about this user (added by the EVPT or Technical Director).
+     *
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $notes;
 
-    public function addOffice(Candidate $office): self
-    {
-        if (!$this->offices->contains($office)) {
-            $this->offices[] = $office;
-            $office->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOffice(Candidate $office): self
-    {
-        if ($this->offices->contains($office)) {
-            $this->offices->removeElement($office);
-            if ($office->getUser() === $this) {
-                $office->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
+    /**
+     * Get notes about this user.
+     *
+     * @return string|null
+     */
     public function getNotes(): ?string
     {
         return $this->notes;
     }
 
+    /**
+     * Set notes about this user.
+     *
+     * @param string|null Notes about this user.
+     * @return self
+     */
     public function setNotes(?string $notes): self
     {
         $this->notes = $notes;
@@ -430,23 +361,79 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The date this user's membership expires. Null for non-members.
+     *
+     * @var \DateTimeInterface|null
+     * @ORM\Column(type="date", nullable=true)
+     * @Groups("json")
+     */
+    private $dues;
+
+    /**
+     * Get the date this user's membership expires.
+     *
+     * @return \DateTimeInterface|null
+     */
     public function getDues(): ?\DateTimeInterface
     {
         return $this->dues;
     }
 
-    public function setDues(\DateTimeInterface $dues): self
+    /**
+     * Set the date this user's membership expires.
+     *
+     * Membership expires at the end of June or the end of December.
+     *
+     * @param int How many years to add to this user's membership, from today's date.
+     * @return self
+     */
+    public function setDues(int $yearsToAdd): self
     {
-        $this->dues = $dues;
+        $currentMonth = (int) date('m');
+        $currentYear = (int) date('Y');
+        $nextYearString = (string) ($currentYear + 1);
+        if ($currentMonth <= 6) {
+            $endDate = new \DateTime($nextYearString.'-12-31');
+        } else {
+            $endDate = new \DateTime($nextYearString.'-06-30');
+        }
+
+        if ($yearsToAdd > 0) {
+            if ($yearsToAdd > 1) {
+                $endDate->add(new \DateInterval('P'.$yearsToAdd.'Y'));
+            }
+            $this->dues = $dues;
+        }
 
         return $this;
     }
 
-    public function getLifetimeMember(): ?bool
+    /**
+     * Whether this user is a lifetime member of the society.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     * @Groups("json")
+     */
+    private $lifetimeMember;
+
+    /**
+     * Get whether this user is a lifetime member of the society.
+     *
+     * @return bool
+     */
+    public function getLifetimeMember(): bool
     {
         return $this->lifetimeMember;
     }
 
+    /**
+     * Set whether this user is a lifetime member of the society.
+     *
+     * @param bool Whether this user is a lifetime member of the society.
+     * @return self
+     */
     public function setLifetimeMember(bool $lifetimeMember): self
     {
         $this->lifetimeMember = $lifetimeMember;
@@ -454,19 +441,30 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * This user's password reset secret (used to generate a link to reset the password).
+     *
+     * @var string|null
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $passwordResetSecret;
+
+    /**
+     * Get this user's password reset secret.
+     *
+     * @return string|null
+     */
     public function getPasswordResetSecret(): ?string
     {
         return $this->passwordResetSecret;
     }
 
-    public function setPasswordResetSecret(string $passwordResetSecret): self
-    {
-        $this->passwordResetSecret = $passwordResetSecret;
-
-        return $this;
-    }
-
-    public function setRandomPasswordResetSecret(): self
+    /**
+     * Randomly set this user's password reset secret (and when it expires).
+     *
+     * @return self
+     */
+    public function setPasswordResetSecret(): self
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $this->passwordResetSecret = '';
@@ -478,17 +476,32 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * When this user's password reset secret expires.
+     *
+     * @var \DateTimeInterface|null
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $passwordResetSecretExpires;
+
+    /**
+     * Get when this user's password reset secret expires.
+     *
+     * @return string|null
+     */
     public function getPasswordResetSecretExpires(): ?\DateTimeInterface
     {
         return $this->passwordResetSecretExpires;
     }
 
-    public function setPasswordResetSecretExpires(\DateTimeInterface $passwordResetSecretExpires): self
-    {
-        $this->passwordResetSecretExpires = $passwordResetSecretExpires;
-
-        return $this;
-    }
+    /**
+     * The user's firstname.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     * @Groups("json")
+     */
+    private $firstname;
 
     public function getFirstname(): ?string
     {
@@ -502,6 +515,15 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's lastname.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     * @Groups("json")
+     */
+    private $lastname;
+
     public function getLastname(): ?string
     {
         return $this->lastname;
@@ -513,6 +535,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * The user's department.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $department;
 
     public function getDepartment(): ?string
     {
@@ -526,6 +557,15 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's institution.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $institution;
+
     public function getInstitution(): ?string
     {
         return $this->institution;
@@ -537,6 +577,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * The user's city.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $city;
 
     public function getCity() : ?string
     {
@@ -550,6 +599,15 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's state.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $state;
+
     public function getState(): ?string
     {
         return $this->state;
@@ -561,6 +619,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * The user's country.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=3, nullable=true)
+     * @Groups("json")
+     */
+    private $country;
 
     public function getCountry(): ?string
     {
@@ -574,6 +641,15 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's office phone number.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $officePhone;
+
     public function getOfficePhone(): ?string
     {
         return $this->officePhone;
@@ -585,6 +661,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * The user's home phone number.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $homePhone;
 
     public function getHomePhone(): ?string
     {
@@ -598,6 +683,15 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's fax number.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $fax;
+
     public function getFax(): ?string
     {
         return $this->fax;
@@ -609,6 +703,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * The user's web page.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $webpage;
 
     public function getWebpage(): ?string
     {
@@ -622,6 +725,15 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * Whether the user wishes to receive general emails.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": true})
+     * @Groups("json")
+     */
+    private $receiveEmail;
+
     public function getReceiveEmail(): ?bool
     {
         return $this->receiveEmail;
@@ -633,6 +745,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * Whether the user wishes to receive a copy of Hume Studies in the post.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": true})
+     * @Groups("json")
+     */
+    private $receiveHumeStudies;
 
     public function getReceiveHumeStudies(): ?bool
     {
@@ -646,6 +767,14 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * The user's mailing address (for receiving Hume Studies in the post).
+     *
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $mailingAddress;
+
     public function getMailingAddress(): ?string
     {
         return $this->mailingAddress;
@@ -658,53 +787,14 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getWillingToReview(): ?bool
-    {
-        return $this->willingToReview;
-    }
-
-    public function setWillingToReview(bool $willingToReview): self
-    {
-        $this->willingToReview = $willingToReview;
-
-        return $this;
-    }
-
-    public function getWillingToComment(): ?bool
-    {
-        return $this->willingToComment;
-    }
-
-    public function setWillingToComment(bool $willingToComment): self
-    {
-        $this->willingToComment = $willingToComment;
-
-        return $this;
-    }
-
-    public function getWillingToChair(): ?bool
-    {
-        return $this->willingToChair;
-    }
-
-    public function setWillingToChair(bool $willingToChair): self
-    {
-        $this->willingToChair = $willingToChair;
-
-        return $this;
-    }
-
-    public function getKeywords(): ?string
-    {
-        return $this->keywords;
-    }
-
-    public function setKeywords(?string $keywords): self
-    {
-        $this->keywords = $keywords;
-
-        return $this;
-    }
+    /**
+     * A collection of the user's submissions to the Hume Conference.
+     *
+     * @var Submission[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="user")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $submissions;
 
     public function getSubmissions(): Collection
     {
@@ -733,9 +823,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * A collection of the user's reviews for the Hume Conference.
+     *
+     * @var Review[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="user")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $reviews;
+
     public function getReviews(): Collection
     {
-        return $this->offices;
+        return $this->reviews;
     }
 
     public function addReview(Review $review): self
@@ -760,31 +859,204 @@ class User implements UserInterface
         return $this;
     }
 
-    // getters for derivative properties
+    /**
+     * Whether the user is willing to receive requests to review articles.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $willingToReview;
+
+    public function getWillingToReview(): ?bool
+    {
+        return $this->willingToReview;
+    }
+
+    public function setWillingToReview(bool $willingToReview): self
+    {
+        $this->willingToReview = $willingToReview;
+
+        return $this;
+    }
+
+    /**
+     * Whether the user is willing to comment on a paper for the next Hume Conference.
+     *
+     * Note that this should automatically be reset to false when the conference ends.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $willingToComment;
+
+    public function getWillingToComment(): ?bool
+    {
+        return $this->willingToComment;
+    }
+
+    public function setWillingToComment(bool $willingToComment): self
+    {
+        $this->willingToComment = $willingToComment;
+
+        return $this;
+    }
+
+    /**
+     * Whether the user is willing to chair a session at the next Hume Conference.
+     *
+     * Note that this should automatically be reset to false when the conference ends.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $willingToChair;
+
+    public function getWillingToChair(): ?bool
+    {
+        return $this->willingToChair;
+    }
+
+    public function setWillingToChair(bool $willingToChair): self
+    {
+        $this->willingToChair = $willingToChair;
+
+        return $this;
+    }
+
+    /**
+     * A comma separated list of keywords, representing the user's areas of expertise.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $keywords;
+
+    public function getKeywords(): ?string
+    {
+        return $this->keywords;
+    }
+
+    public function setKeywords(?string $keywords): self
+    {
+        $this->keywords = $keywords;
+
+        return $this;
+    }
+
+    /**
+     * Whether the user is a member of the society.
+     *
+     * @var bool
+     * @Groups("json")
+     */
+    private $member;
+
+    /**
+     * Get whether the user is a member of the society.
+     *
+     * @return bool
+     */
     public function isMember(): bool
     {
         return in_array('ROLE_MEMBER', $this->roles);
     }
 
+    /**
+     * Whether the user is a member in good standing.
+     *
+     * @var bool
+     * @Groups("json")
+     */
+    private $memberInGoodStanding;
+
+    /**
+     * Get whether the user is a member in good standing.
+     *
+     * @return bool
+     */
     public function isMemberInGoodStanding(): bool
     {
         return $this->isMember() && ($this->lifetimeMember || $this->dues > new \DateTime());
     }
 
+    /**
+     * Whether the user is a member in arrears.
+     *
+     * @var bool
+     * @Groups("json")
+     */
+    private $memberInArrears;
+
+    /**
+     * Get whether the user is a member in arrears.
+     *
+     * @return bool
+     */
     public function isMemberInArrears(): bool
     {
         return $this->isMember() && (!$this->lifetimeMember && $this->dues < new \DateTime());
     }
 
-    // needed for the security stuff
-    public function getSalt()
+    /**
+     * Get whether the user has submitted a paper for the given conference.
+     *
+     * @param Conference The conference to check.
+     * @return bool
+     */
+    public function hasSubmittedToConference(Conference $conference)
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        foreach ($this->submissions as $submission) {
+            if ($submission->getConference() == $conference) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->roles = ['ROLE_USER']; // everyone is at least a user
+        $this->country = 'USA'; // this is most likely, so will save most people some time
+        $this->dateJoined = new \DateTime();
+        $this->rejoined = false; // TODO: let people indicate if they are rejoining
+        $this->voted = false;
+        $this->lifetimeMember = false;
+        $this->receiveEmail = true;
+        $this->receiveHumeStudies = true;
+        $this->willingToReview = false;
+        $this->willingToComment = false;
+        $this->willingToChair = false;
+        $this->submissions = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->lastname.', '.$this->firstname.' ['.$this->username.']';
+    }
+
+    /**
+     * Get salt. This is needed by the Symfony security component.
+     */
+    public function getSalt()
+    {
+    }
+
+    /**
+     * Erase credentials. This is needed by the Symfony security component.
+     */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 }

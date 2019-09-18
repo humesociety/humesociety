@@ -93,7 +93,7 @@ class AccountController extends AbstractController
             'page' => ['id' => 'research', 'section' => 'account'],
             'tab' => $tab,
             'conference' => $conferenceHandler->getCurrentConference(),
-            'now' => new \DateTime(),
+            'today' => new \DateTime('today'),
             'userAvailabilityForm' => $availabiliytForm->createView()
         ]);
     }

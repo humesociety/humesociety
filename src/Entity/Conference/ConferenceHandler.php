@@ -5,23 +5,52 @@ namespace App\Entity\Conference;
 use App\Entity\Upload\UploadHandler;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * The conference handler contains the main business logic for reading and writing conference data.
+ */
 class ConferenceHandler
 {
+    /**
+     * The Doctrine entity manager (dependency injection).
+     *
+     * @var EntityManagerInterface
+     */
     private $manager;
+
+    /**
+     * The conference repository (dependency injection).
+     *
+     * @var ConferenceRepository
+     */
     private $repository;
+
+    /**
+     * The upload handler (dependency injection).
+     *
+     * @var UploadHandler
+     */
     private $uploadHandler;
 
-    // Constructor function
-    public function __construct(
-        EntityManagerInterface $manager,
-        UploadHandler $uploadHandler
-    ) {
+    /**
+     * Constructor function.
+     *
+     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param UploadHandler The upload handler.
+     * @return void
+     */
+    public function __construct(EntityManagerInterface $manager, UploadHandler $uploadHandler)
+    {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Conference::class);
         $this->uploadHandler = $uploadHandler;
     }
 
-    // Enrich a conference (i.e. link associated uploads)
+    /**
+     * Enrich a conference (i.e. link associated uploads).
+     *
+     * @param Conference|null
+     * @return Conference|null
+     */
     public function enrich(?Conference $conference): ?Conference
     {
         if ($conference) {
@@ -31,7 +60,11 @@ class ConferenceHandler
         return $conference;
     }
 
-    // Getters
+    /**
+     * Get an array of all conferences (enriched with associated uploads).
+     *
+     * @return Conference[]
+     */
     public function getConferences(): array
     {
         return array_map(function ($x) {
@@ -39,50 +72,94 @@ class ConferenceHandler
         }, $this->repository->findAll());
     }
 
+    /**
+     * Get an array of all forthcoming conferences (enriched with associated uploads).
+     *
+     * @return Conference[]
+     */
     public function getForthcomingConferences(): array
     {
-        // the repository returns conferences for the current year and later
+        // the repository function returns conferences for the current year and later ...
         // (that's the best we can do, since forthcoming conferences may not have a specific date)
-        $forthcoming = $this->repository->findForthcoming();
-        // remove this year's conference if it's past
-        if ($forthcoming[0] && $forthcoming[0]->getEndDate() && $forthcoming[0]->getEndDate() < new \DateTime()) {
+        $forthcoming = $this->repository->findConferencesForThisYearAndLater();
+
+        // ... so now we need to remove this year's conference if it's past
+        if ($forthcoming[0]
+            && $forthcoming[0]->getEndDate()
+            && $forthcoming[0]->getEndDate() < new \DateTime()
+        ) {
             array_shift($forthcoming);
         }
+
         return array_map(function ($x) {
             return $this->enrich($x);
         }, $forthcoming);
     }
 
+    /**
+     * Get the current conference (i.e. the earliest forthcoming conference).
+     *
+     * @return Conference|null
+     */
     public function getCurrentConference(): ?Conference
     {
         $forthcoming = $this->getForthcomingConferences();
         return array_shift($forthcoming);
     }
 
-    public function getNextNumber(): ?int
+    /**
+     * Get the number of the next conference not in the database.
+     *
+     * @return int
+     */
+    public function getNextNumber(): int
     {
         return $this->repository->findLatestNumber() + 1;
     }
 
-    public function getNextYear(): ?int
+    /**
+     * Get the year of the next conference not in the database.
+     *
+     * @return int
+     */
+    public function getNextYear(): int
     {
         return $this->repository->findLatestYear() + 1;
     }
 
+    /**
+     * Get an array of decades for which there are conferences in the database.
+     *
+     * @return int[]
+     */
     public function getDecades(): array
     {
         return $this->repository->findDecades();
     }
 
-    // Update database
+    /**
+     * Save a conference to the database.
+     *
+     * @param Conference The conference to be saved.
+     */
     public function saveConference(Conference $conference)
     {
         $this->manager->persist($conference);
         $this->manager->flush();
     }
 
+    /**
+     * Delete a conference from the database.
+     *
+     * @param Conference The conference to be deleted.
+     */
     public function deleteConference(Conference $conference)
     {
+        $conference = $this->enrich($conference);
+        foreach ($conference->getUploads() as $upload) {
+            $uploadHandler->deleteConferenceFile($upload);
+        }
+
         $this->manager->remove($conference);
         $this->manager->flush();
     }

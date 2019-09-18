@@ -103,7 +103,7 @@ class SecurityController extends AbstractController
             if (!$user) {
                 $form->get('email')->addError(new FormError('Email address not found'));
             } else {
-                $user->setRandomPasswordResetSecret();
+                $user->setPasswordResetSecret();
                 $userHandler->saveUser($user);
                 $emailHandler->sendResetPasswordEmail($user);
                 $this->addFlash('success', 'An email has been sent to '.$email.' with further instructions.');

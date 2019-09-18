@@ -5,7 +5,7 @@
 {% block main %}
   <div class="box content">
     <div class="heading">
-      <h5>Delete {{ filename }}</h5>
+      <h5>{{ conference.ordinal }} Hume Conference: Delete {{ filename }}</h5>
       <div class="heading-right">
         <div class="input">
           <a href="{{ path('admin_conference_details_edit', { tab: 'files' }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference Details</a>
