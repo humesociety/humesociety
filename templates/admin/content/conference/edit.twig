@@ -1,4 +1,4 @@
-{% extends 'admin/conference/_layout.twig' %}
+{% extends 'admin/content/_layout.twig' %}
 
 {% block title %}Edit Conference{% endblock %}
 
@@ -8,7 +8,7 @@
       <h5>Edit Conference {{ conference }}</h5>
       <div class="heading-right">
         <div class="input">
-          <a href="{{ path('admin_conference_conference_view', { decade: conference.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
+          <a href="{{ path('admin_content_conference_view', { decade: conference.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
         </div>
       </div>
     </div>
@@ -86,7 +86,7 @@
                 </td>
                 <td class="controls">
                   <a href="{{ upload.url }}">View</a>
-                  <a href="{{ path('admin_conference_conference_delete_upload', { id: conference.id, filename: upload.filename }) }}">Delete</a>
+                  <a href="{{ path('admin_content_conference_delete_upload', { id: conference.id, filename: upload.filename }) }}">Delete</a>
                 </td>
               </tr>
             {% endfor %}

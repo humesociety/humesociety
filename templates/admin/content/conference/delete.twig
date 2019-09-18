@@ -1,4 +1,4 @@
-{% extends 'admin/conference/_layout.twig' %}
+{% extends 'admin/content/_layout.twig' %}
 
 {% block title %}Delete Conference{% endblock %}
 
@@ -8,7 +8,7 @@
       <h5>Delete Conference {{ conference }}</h5>
       <div class="heading-right">
         <div class="input">
-          <a href="{{ path('admin_conference_conference_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
+          <a href="{{ path('admin_content_conference_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
         </div>
       </div>
     </div>

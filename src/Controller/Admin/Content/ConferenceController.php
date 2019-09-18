@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin\Conference;
+namespace App\Controller\Admin\Content;
 
 use App\Entity\Conference\Conference;
 use App\Entity\Conference\ConferenceHandler;
@@ -15,8 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/conference/conference", name="admin_conference_conference_")
- * @IsGranted("ROLE_ORGANISER")
+ * @Route("/admin/content/conference", name="admin_content_conference_")
+ * @IsGranted("ROLE_EVPT")
  *
  * Controller for editing basic conference data.
  */
@@ -27,7 +27,7 @@ class ConferenceController extends AbstractController
      */
     public function index() : Response
     {
-        return $this->redirectToRoute('admin_conference_conference_view');
+        return $this->redirectToRoute('admin_content_conference_view');
     }
 
     /**
@@ -35,8 +35,8 @@ class ConferenceController extends AbstractController
      */
     public function view(ConferenceHandler $conferenceHandler, $decade = null): Response
     {
-        return $this->render('admin/conference/conference/view.twig', [
-            'area' => 'conference',
+        return $this->render('admin/content/conference/view.twig', [
+            'area' => 'content',
             'subarea' => 'conference',
             'decade' => $decade,
             'decades' => $conferenceHandler->getDecades(),
@@ -61,7 +61,7 @@ class ConferenceController extends AbstractController
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
             $conferenceHandler->saveConference($conference);
             $this->addFlash('notice', 'Conference '.$conference.' has been updated.');
-            return $this->redirectToRoute('admin_conference_conference_view', [
+            return $this->redirectToRoute('admin_content_conference_view', [
                 'decade' => $conference->getDecade()
             ]);
         }
@@ -73,14 +73,14 @@ class ConferenceController extends AbstractController
         if ($uploadForm->isSubmitted() && $uploadForm->isValid()) {
             $uploadHandler->saveConferenceFile($upload, $conference);
             $this->addFlash('notice', 'File "'.$upload.'" has been uploaded.');
-            return $this->redirectToRoute('admin_conference_conference_edit', [
+            return $this->redirectToRoute('admin_content_conference_edit', [
                 'id' => $conference->getId(),
                 'tab' => 'files'
             ]);
         }
 
-        return $this->render('admin/conference/conference/edit.twig', [
-            'area' => 'conference',
+        return $this->render('admin/content/conference/edit.twig', [
+            'area' => 'content',
             'subarea' => 'conference',
             'tab' => $tab,
             'conference' => $conference,
@@ -100,11 +100,11 @@ class ConferenceController extends AbstractController
         if ($form->isSubmitted()) {
             $conferenceHandler->deleteConference($conference);
             $this->addFlash('notice', 'Conference '.$conference.' has been deleted.');
-            return $this->redirectToRoute('admin_conference_conference_view');
+            return $this->redirectToRoute('admin_content_conference_view');
         }
 
-        return $this->render('admin/conference/conference/delete.twig', [
-            'area' => 'conference',
+        return $this->render('admin/content/conference/delete.twig', [
+            'area' => 'content',
             'subarea' => 'conference',
             'conference' => $conference,
             'conferenceForm' => $form->createView()
@@ -127,14 +127,14 @@ class ConferenceController extends AbstractController
         if ($form->isSubmitted()) {
             $uploadHandler->deleteConferenceFile($filename, $conference);
             $this->addFlash('notice', 'File "'.$filename.'" has been deleted.');
-            return $this->redirectToRoute('admin_conference_conference_edit', [
+            return $this->redirectToRoute('admin_content_conference_edit', [
                 'id' => $conference->getId(),
                 'tab' => 'files'
             ]);
         }
 
-        return $this->render('admin/conference/conference/delete-upload.twig', [
-            'area' => 'conference',
+        return $this->render('admin/content/conference/delete-upload.twig', [
+            'area' => 'content',
             'subarea' => 'conference',
             'conference' => $conference,
             'filename' => $filename,
@@ -157,13 +157,13 @@ class ConferenceController extends AbstractController
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
             $conferenceHandler->saveConference($conference);
             $this->addFlash('notice', 'Conference '.$conference.' has been created.');
-            return $this->redirectToRoute('admin_conference_conference_view', [
+            return $this->redirectToRoute('admin_content_conference_view', [
                 'decade' => $conference->getDecade()
             ]);
         }
 
-        return $this->render('admin/conference/conference/create.twig', [
-            'area' => 'conference',
+        return $this->render('admin/content/conference/create.twig', [
+            'area' => 'content',
             'subarea' => 'conference',
             'conferenceForm' => $conferenceForm->createView()
         ]);

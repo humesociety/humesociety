@@ -24,11 +24,19 @@
           <span class="icon"><i class="far fa-file-alt"></i></span>
           <span class="link-text">Site Content</span>
         </a>
-        <a href="{{ path('admin_conference') }}"{% if area == 'conference' %} class="is-active"{% endif %}>
+        {% if is_granted('ROLE_ORGANISER') %}
+          <a href="{{ path('admin_conference') }}"{% if area == 'conference' %} class="is-active"{% endif %}>
+        {% else %}
+          <a class="disabled" title="access restricted to conference organisers">
+        {% endif %}
           <span class="icon"><i class="far fa-calendar-alt"></i></span>
           <span class="link-text">Hume Conference</span>
         </a>
-        <a href="{{ path('admin_journal') }}"{% if area == 'journal' %} class="is-active"{% endif %}>
+        {% if is_granted('ROLE_EDITOR') %}
+          <a href="{{ path('admin_journal') }}"{% if area == 'journal' %} class="is-active"{% endif %}>
+        {% else %}
+          <a class="disabled" title="access restricted to journal managers">
+        {% endif %}
           <span class="icon"><i class="far fa-file-pdf"></i></span>
           <span class="link-text">Hume Studies</span>
         </a>
@@ -37,7 +45,7 @@
         {% else %}
           <a class="disabled" title="access restricted to EVPT">
         {% endif %}
-          <span class="icon"><i class="far fa-envelope"></i></span>
+          <span class="icon"><i class="fas fa-briefcase"></i></span>
           <span class="link-text">Society Business</span>
         </a>
         {% if is_granted('ROLE_TECH') %}

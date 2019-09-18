@@ -198,6 +198,42 @@ class User implements UserInterface
     private $mailingAddress;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="user")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $submissions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="user")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $reviews;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups("json")
+     */
+    private $willingToReview;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups("json")
+     */
+    private $willingToComment;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups("json")
+     */
+    private $willingToChair;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $keywords;
+
+    /**
      * derived property; getter defined below
      * @Groups("json")
      */
@@ -227,6 +263,11 @@ class User implements UserInterface
         $this->lifetimeMember = false;
         $this->receiveEmail = true;
         $this->receiveHumeStudies = true;
+        $this->willingToReview = false;
+        $this->willingToComment = false;
+        $this->willingToChair = false;
+        $this->submissions = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
 
     // ToString function, for displaying in dropdown menu in forms
@@ -613,6 +654,108 @@ class User implements UserInterface
     public function setMailingAddress(?string $mailingAddress): self
     {
         $this->mailingAddress = $mailingAddress;
+
+        return $this;
+    }
+
+    public function getWillingToReview(): ?bool
+    {
+        return $this->willingToReview;
+    }
+
+    public function setWillingToReview(bool $willingToReview): self
+    {
+        $this->willingToReview = $willingToReview;
+
+        return $this;
+    }
+
+    public function getWillingToComment(): ?bool
+    {
+        return $this->willingToComment;
+    }
+
+    public function setWillingToComment(bool $willingToComment): self
+    {
+        $this->willingToComment = $willingToComment;
+
+        return $this;
+    }
+
+    public function getWillingToChair(): ?bool
+    {
+        return $this->willingToChair;
+    }
+
+    public function setWillingToChair(bool $willingToChair): self
+    {
+        $this->willingToChair = $willingToChair;
+
+        return $this;
+    }
+
+    public function getKeywords(): ?string
+    {
+        return $this->keywords;
+    }
+
+    public function setKeywords(?string $keywords): self
+    {
+        $this->keywords = $keywords;
+
+        return $this;
+    }
+
+    public function getSubmissions(): Collection
+    {
+        return $this->submissions;
+    }
+
+    public function addSubmission(Submission $submission): self
+    {
+        if (!$this->submissions->contains($submission)) {
+            $this->submissions[] = $submission;
+            $submission->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubmission(Submission $submission): self
+    {
+        if ($this->submissions->contains($submission)) {
+            $this->submissions->removeElement($submission);
+            if ($submission->getUser() === $this) {
+                $submission->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getReviews(): Collection
+    {
+        return $this->offices;
+    }
+
+    public function addReview(Review $review): self
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews[] = $review;
+            $review->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): self
+    {
+        if ($this->reviews->contains($review)) {
+            $this->reviews->removeElement($review);
+            if ($review->getUser() === $this) {
+                $review->setUser(null);
+            }
+        }
 
         return $this;
     }

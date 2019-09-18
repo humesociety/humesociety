@@ -1,4 +1,4 @@
-{% extends 'admin/conference/_layout.twig' %}
+{% extends 'admin/content/_layout.twig' %}
 
 {% block title %}Delete Conference File{% endblock %}
 
@@ -8,7 +8,7 @@
       <h5>Delete {{ filename }} associated with conference {{ conference }}</h5>
       <div class="heading-right">
         <div class="input">
-          <a href="{{ path('admin_conference_conference_edit', { id: conference.id, tab: 'files' }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference {{ conference.number }}</a>
+          <a href="{{ path('admin_content_conference_edit', { id: conference.id, tab: 'files' }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference {{ conference.number }}</a>
         </div>
       </div>
     </div>

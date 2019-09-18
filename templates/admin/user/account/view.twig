@@ -10,7 +10,8 @@
         <thead>
           <tr>
             <th>username</th>
-            <th style="width:75%">email</th>
+            <th>name</th>
+            <th>email</th>
             <th>ORGANISER</th>
             <th>EDITOR</th>
             <th>EVPT</th>
@@ -21,6 +22,7 @@
           {% for user in users %}
             <tr>
               <td>{{ user.username }}</td>
+              <td>{{ user.firstname }} {{ user.lastname }}</td>
               <td>{{ user.email }}</td>
               <td>
                 <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_ORGANISER' in user.roles %} checked="checked"{% endif %} data-role="ROLE_ORGANISER" data-user="{{ user.id }}"></label>

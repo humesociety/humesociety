@@ -1,58 +1,25 @@
 {% extends 'site/account/_layout.twig' %}
 
-{% block title %}Contact Details{% endblock %}
+{% block title %}Personal Information{% endblock %}
 
 {% block main %}
   <div class="section content">
-    <h1>Contact Details</h1>
-    <p>Please provide the Hume Society with an up to date record of your contact details. We will not share this information with anyone else.</p>
-    {{ form_start(userDetailsForm) }}
-      {{ form_row(userDetailsForm.email) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(userDetailsForm.firstname) }}
+    <h1>Personal Information</h1>
+    {% if app.user.member %}
+      <nav class="tabs">
+        <a data-tab="contact-details"{% if tab == 'details' %} class="is-active"{% endif %}>Contact Details</a>
+        <a data-tab="membership-settings"{% if tab == 'settings' %} class="is-active"{% endif %}>Membership Settings</a>
+      </nav>
+      <div class="tab-panes">
+        <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="contact-details">
+          {% include 'form/user/details.html.twig' with { 'form': userDetailsForm } %}
         </div>
-        <div class="column">
-          {{ form_row(userDetailsForm.lastname) }}
-        </div>
-      </div>
-      <div class="columns">
-        <div class="column">
-          {{ form_row(userDetailsForm.department) }}
-        </div>
-        <div class="column">
-          {{ form_row(userDetailsForm.institution) }}
+        <div class="tab-pane{% if tab == 'settings' %} is-active{% endif %}" id="membership-settings">
+          {% include 'form/user/settings.html.twig' with { 'form': userSettingsForm } %}
         </div>
       </div>
-      <div class="columns">
-        <div class="column">
-          {{ form_row(userDetailsForm.city) }}
-        </div>
-        <div class="column">
-          {{ form_row(userDetailsForm.state) }}
-        </div>
-      </div>
-      {{ form_row(userDetailsForm.country) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(userDetailsForm.officePhone) }}
-        </div>
-        <div class="column">
-          {{ form_row(userDetailsForm.homePhone) }}
-        </div>
-      </div>
-      <div class="columns">
-        <div class="column">
-          {{ form_row(userDetailsForm.fax) }}
-        </div>
-        <div class="column">
-          {{ form_row(userDetailsForm.webpage) }}
-        </div>
-      </div>
-      {{ form_row(userDetailsForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button is-success">Update Details</button>
-      </div>
-    {{ form_end(userDetailsForm) }}
+    {% else %}
+      {% include 'form/user/details.html.twig' with { 'form': userDetailsForm } %}
+    {% endif %}
   </div>
 {% endblock %}

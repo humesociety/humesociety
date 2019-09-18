@@ -1,0 +1,36 @@
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 1em;
+  a {
+    padding: .5em 1em;
+    cursor: pointer;
+    color: darken($grey, 25%);
+    border-bottom: 1px solid transparent;
+    margin-bottom: -1px;
+    &:hover, &.is-active {
+      text-decoration: none;
+      border-color: $green;
+      color: $green;
+    }
+  }
+}
+
+.title-with-options {
+  .tabs {
+    margin-bottom: 0;
+  }
+}
+
+.tab-panes {
+  .tab-pane {
+    display: none;
+    &.is-active {
+      display: block;
+    }
+    a {
+      cursor: pointer;
+    }
+  }
+}

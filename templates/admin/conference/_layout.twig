@@ -2,9 +2,17 @@
 
 {% block sidebar %}
   <div class="inner-header">
-    <a href="{{ path('admin_conference_conference_index') }}"{% if subarea == 'conference' %} class="is-active"{% endif %}>
-      <span class="icon"><i class="far fa-edit"></i></span>
-      <span class="link-text">Conferences</span>
+    <a href="{{ path('admin_conference_details_index') }}"{% if subarea == 'details' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-alt"></i></span>
+      <span class="link-text">Conference Details</span>
+    </a>
+    <a href="{{ path('admin_conference_email_index') }}"{% if subarea == 'email' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-envelope"></i></span>
+      <span class="link-text">Email Templates</span>
+    </a>
+    <a href="{{ path('admin_conference_submission_index') }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-word"></i></span>
+      <span class="link-text">Submissions</span>
     </a>
   </div>
 {% endblock %}

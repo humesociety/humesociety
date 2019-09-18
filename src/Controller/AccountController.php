@@ -2,14 +2,19 @@
 
 namespace App\Controller;
 
+use App\Entity\Conference\ConferenceHandler;
 use App\Entity\DuesPayment\DuesPayment;
 use App\Entity\DuesPayment\DuesPaymentHandler;
 use App\Entity\Email\EmailHandler;
+use App\Entity\Submission\Submission;
+use App\Entity\Submission\SubmissionHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserDetailsType;
 use App\Entity\User\UserChangePasswordType;
+use App\Entity\User\UserAvailabilityType;
 use App\Entity\User\UserSettingsType;
+use App\Entity\User\UserVolunteerType;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
@@ -29,46 +34,67 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class AccountController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/{tab}", name="index", requirements={"tab": "details|settings"})
      * @IsGranted("ROLE_USER")
      */
-    public function index(Request $request, UserHandler $userHandler): Response
+    public function index(Request $request, UserHandler $userHandler, $tab = 'details'): Response
     {
         if (!$this->getUser()->isMember()) {
             return $this->redirectToRoute('account_pay');
         }
 
-        $form = $this->createForm(UserDetailsType::class, $this->getUser());
-        $form->handleRequest($request);
+        // contact details form
+        $detailsForm = $this->createForm(UserDetailsType::class, $this->getUser());
+        $detailsForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($detailsForm->isSubmitted() && $detailsForm->isValid()) {
             $userHandler->saveUser($this->getUser());
-            $this->addFlash('success', 'Your account details have been updated.');
+            $this->addFlash('success', 'Your contact details have been updated.');
+        }
+
+        // membership settings form
+        $settingsForm = $this->createForm(UserSettingsType::class, $this->getUser());
+        $settingsForm->handleRequest($request);
+
+        if ($settingsForm->isSubmitted() && $settingsForm->isValid()) {
+            $userHandler->saveUser($this->getUser());
+            $this->addFlash('success', 'Your membership settings have been updated.');
+            $tab = 'settings';
         }
 
         return $this->render('site/account/index.twig', [
             'page' => ['id' => 'details', 'section' => 'account'],
-            'userDetailsForm' => $form->createView()
+            'tab' => $tab,
+            'userDetailsForm' => $detailsForm->createView(),
+            'userSettingsForm' => $settingsForm->createView()
         ]);
     }
 
     /**
-     * @Route("/settings", name="settings")
+     * @Route("/research/{tab}", name="research", requirements={"tab": "availability|submissions|reviews"})
      * @IsGranted("ROLE_USER")
      */
-    public function settings(Request $request, UserHandler $userHandler): Response
-    {
-        $form = $this->createForm(UserSettingsType::class, $this->getUser());
-        $form->handleRequest($request);
+    public function research(
+        Request $request,
+        ConferenceHandler $conferenceHandler,
+        UserHandler $userHandler,
+        $tab = 'availability'
+    ): Response {
+        // research availability form
+        $availabiliytForm = $this->createForm(UserAvailabilityType::class, $this->getUser());
+        $availabiliytForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($availabiliytForm->isSubmitted() && $availabiliytForm->isValid()) {
             $userHandler->saveUser($this->getUser());
-            $this->addFlash('success', 'Your membership settings have been updated.');
+            $this->addFlash('success', 'Your availability has been updated.');
         }
 
-        return $this->render('site/account/settings.twig', [
-            'page' => ['id' => 'settings', 'section' => 'account'],
-            'userSettingsForm' => $form->createView()
+        return $this->render('site/account/research.twig', [
+            'page' => ['id' => 'research', 'section' => 'account'],
+            'tab' => $tab,
+            'conference' => $conferenceHandler->getCurrentConference(),
+            'now' => new \DateTime(),
+            'userAvailabilityForm' => $availabiliytForm->createView()
         ]);
     }
 

@@ -48,7 +48,7 @@ class DefaultController extends AbstractController
      */
     public function conference(): Response
     {
-        return $this->redirectToRoute('admin_conference_conference_index');
+        return $this->redirectToRoute('admin_conference_details_index');
     }
 
     /**

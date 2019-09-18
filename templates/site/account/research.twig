@@ -1,0 +1,79 @@
+{% extends 'site/account/_layout.twig' %}
+
+{% block title %}Submissions &amp; Reviews{% endblock %}
+
+{% block main %}
+  <div class="section content">
+    <h1>Submissions &amp; Reviews</h1>
+    <nav class="tabs">
+      <a data-tab="availability"{% if tab == 'availability' %} class="is-active"{% endif %}>Availability</a>
+      <a data-tab="submissions"{% if tab == 'submissions' %} class="is-active"{% endif %}>Submissions</a>
+      <a data-tab="reviews"{% if tab == 'reviews' %} class="is-active"{% endif %}>Reviews</a>
+    </nav>
+    <div class="tab-panes">
+      <div class="tab-pane{% if tab == 'availability' %} is-active{% endif %}" id="availability">
+        {% include 'form/user/availability.html.twig' with { 'form': userAvailabilityForm } %}
+      </div>
+      <div class="tab-pane{% if tab == 'submissions' %} is-active{% endif %}" id="submissions">
+        <div class="submission-notice">
+          {% if conference.deadline is defined and conference.deadline >= now %}
+            {% if app.user.hasSubmittedToConference(conference) %}
+              <p>Thank you for submitting a paper to the {{ conference.ordinal }} Hume Conference. You can check the status of your submission here at any time, and we will email you when a decision has been made.</p>
+            {% else %}
+              <p>Submissions for the {{ conference.ordinal }} Hume Conference in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on November the 1st.</p>
+              <p><a class="button">Submit a Paper</a></p>
+            {% endif %}
+          {% else %}
+            <p>Submissions for the {{ conference.ordinal }} Hume Conference in {{ conference.town }} are not yet open. Please check back here later, or watch your email for announcements.</p>
+          {% endif %}
+        </div>
+        {% if app.user.submissions | length > 0 %}
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Title</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for submission in app.user.submissions %}
+                <tr>
+                  <td>{{ submission.conference.year }}</td>
+                  <td>{{ submittion.title }}</td>
+                  <td>{{ submission.status }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>You have not submitted any papers for the Hume Conference on this system.</p>
+        {% endif %}
+      </div>
+      <div class="tab-pane{% if tab == 'reviews' %} is-active{% endif %}" id="reviews">
+        {% if app.user.reviews | length > 0 %}
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Title</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for review in app.user.reviews %}
+                <tr>
+                  <td>{{ review.submission.conference.year }}</td>
+                  <td>{{ review.submittion.title }}</td>
+                  <td>{{ review.status }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>You have not reviewed any papers for the Hume Conference on this system.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

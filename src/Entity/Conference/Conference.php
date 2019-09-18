@@ -2,7 +2,9 @@
 
 namespace App\Entity\Conference;
 
+use App\Entity\Submission\Submission;
 use App\Entity\Upload\Upload;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -79,13 +81,27 @@ class Conference
     private $website;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $submissions;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $deadline;
+
+    /**
      * uploads are stored on disk rather than in the database; the conference handler should
      * populate this array when returning conferences (by reading from the disk)
      */
     private $uploads;
 
     // Constructor function
-    // not needed
+    public function __construct()
+    {
+        $this->submissions = new ArrayCollection();
+    }
 
     // ToString function
     public function __toString(): string
@@ -203,6 +219,34 @@ class Conference
     public function setUploads(array $uploads): self
     {
         $this->uploads = $uploads;
+
+        return $this;
+    }
+
+    public function getSubmissions(): Collection
+    {
+        return $this->submissions;
+    }
+
+    public function addSubmission(Submission $submission): self
+    {
+        if (!$this->submissions->contains($submission)) {
+            $this->submissions[] = $submission;
+            $submission->setConference($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubmission(Submission $submission): self
+    {
+        if ($this->submissions->contains($submission)) {
+            $this->submissions->removeElement($submission);
+            // set the owning side to null (unless already changed)
+            if ($submission->getConference() === $this) {
+                $submission->setConference(null);
+            }
+        }
 
         return $this;
     }

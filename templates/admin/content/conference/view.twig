@@ -1,4 +1,4 @@
-{% extends 'admin/conference/_layout.twig' %}
+{% extends 'admin/content/_layout.twig' %}
 
 {% block title %}Edit Conferences{% endblock %}
 
@@ -17,7 +17,7 @@
             </select>
           </div>
           <div class="input">
-            <a href="{{ path('admin_conference_conference_create') }}" class="button"><i class="fas fa-plus"></i>Create Conference</a>
+            <a href="{{ path('admin_content_conference_create') }}" class="button"><i class="fas fa-plus"></i>Create Conference</a>
           </div>
         </div>
       {% endif %}
@@ -40,8 +40,8 @@
               <td>{{ conference.year }}</td>
               <td>{{ conference.institution }}</td>
               <td class="controls">
-                <a href="{{ path('admin_conference_conference_edit', { id: conference.id }) }}">Edit</a>
-                <a href="{{ path('admin_conference_conference_delete', { id: conference.id }) }}">Delete</a>
+                <a href="{{ path('admin_content_conference_edit', { id: conference.id }) }}">Edit</a>
+                <a href="{{ path('admin_content_conference_delete', { id: conference.id }) }}">Delete</a>
               </td>
             </tr>
           {% endfor %}

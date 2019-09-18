@@ -1,0 +1,49 @@
+<p>Please provide the Hume Society with an up to date record of your contact details. We will not share this information with anyone else.</p>
+{{ form_start(form) }}
+  {{ form_row(form.email) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(form.firstname) }}
+    </div>
+    <div class="column">
+      {{ form_row(form.lastname) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(form.department) }}
+    </div>
+    <div class="column">
+      {{ form_row(form.institution) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(form.city) }}
+    </div>
+    <div class="column">
+      {{ form_row(form.state) }}
+    </div>
+  </div>
+  {{ form_row(form.country) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(form.officePhone) }}
+    </div>
+    <div class="column">
+      {{ form_row(form.homePhone) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(form.fax) }}
+    </div>
+    <div class="column">
+      {{ form_row(form.webpage) }}
+    </div>
+  </div>
+  {{ form_row(form._token) }}
+  <div class="buttons">
+    <button type="submit" class="button is-success">Update Details</button>
+  </div>
+{{ form_end(form) }}

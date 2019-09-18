@@ -14,5 +14,9 @@
       <span class="icon"><i class="far fa-newspaper"></i></span>
       <span class="link-text">News Items</span>
     </a>
+    <a href="{{ path('admin_content_conference_index') }}"{% if subarea == 'conference' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-calendar-alt"></i></span>
+      <span class="link-text">Conferences</span>
+    </a>
   </div>
 {% endblock %}
