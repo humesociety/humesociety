@@ -4,6 +4,8 @@ namespace App\Entity\User;
 
 use App\Entity\Candidate\Candidate;
 use App\Entity\Conference\Conference;
+use App\Entity\Review\Review;
+use App\Entity\Submission\Submission;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
