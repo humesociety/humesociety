@@ -1,0 +1,18 @@
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email address</th>
+      <th>Areas of expertise</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.fullname }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.keywords }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

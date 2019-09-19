@@ -13,7 +13,7 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function findAll() : Array
+    public function findAll(): array
     {
         return $this->createQueryBuilder('u')
             ->orderBy('u.lastname, u.firstname', 'ASC')
@@ -21,7 +21,7 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findMembers() : Array
+    public function findMembers(): array
     {
         return $this->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
@@ -30,7 +30,7 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findMembersInGoodStanding() : Array
+    public function findMembersInGoodStanding(): array
     {
         return $this->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
@@ -41,7 +41,7 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findMembersInArrears() : Array
+    public function findMembersInArrears(): array
     {
         return $this->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
@@ -52,7 +52,7 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findMembersExpiringByDate(\DateTime $date) : Array
+    public function findMembersExpiringByDate(\DateTime $date): array
     {
         return $this->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
@@ -63,7 +63,7 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findMembersReceivingHumeStudies() : Array
+    public function findMembersReceivingHumeStudies(): array
     {
         return $this->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
@@ -75,7 +75,7 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findElectableMembers() : QueryBuilder
+    public function findElectableMembers(): QueryBuilder
     {
         // used to generate options in the select dropdown for forms
         // hence returns the query builder, *not* the actual result
@@ -84,5 +84,32 @@ class UserRepository extends ServiceEntityRepository
             ->andWhere('u.dues > :now')
             ->setParameter('now', new \DateTime())
             ->orderBy('u.lastname, u.firstname', 'ASC');
+    }
+
+    public function findReviewVolunteers(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.willingToReview = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findCommentVolunteers(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.willingToComment = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findChairVolunteers(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.willingToChair = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

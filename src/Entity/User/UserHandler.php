@@ -57,6 +57,21 @@ class UserHandler
         return $this->repository->findOneByEmail($email);
     }
 
+    public function getReviewVolunteers(): array
+    {
+        return $this->repository->findReviewVolunteers();
+    }
+
+    public function getCommentVolunteers(): array
+    {
+        return $this->repository->findCommentVolunteers();
+    }
+
+    public function getChairVolunteers(): array
+    {
+        return $this->repository->findChairVolunteers();
+    }
+
     public function saveUser(User $user)
     {
         $this->manager->persist($user);
