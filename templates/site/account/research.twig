@@ -15,19 +15,21 @@
         {% include 'form/user/availability.html.twig' with { 'form': userAvailabilityForm } %}
       </div>
       <div class="tab-pane{% if tab == 'submissions' %} is-active{% endif %}" id="submissions">
-        <div class="submission-notice">
-          {% if conference.deadline is not null %}
-            {% if app.user.hasSubmittedToConference(conference) %}
-              <p>Thank you for submitting a paper to the {{ conference }}. You can check the status of your submission here at any time, and we will email you when a decision has been made.</p>
-            {% elseif today <= conference.deadline %}
-              <p>Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on {{ conference.deadline|date('F d') }}. (You cannot submit a paper yet, however, because the software is still being developed and tested.)</p>
+        {% if conference %}
+          <div class="submission-notice">
+            {% if conference.deadline is not null %}
+              {% if app.user.hasSubmittedToConference(conference) %}
+                <p>Thank you for submitting a paper to the {{ conference }}. You can check the status of your submission here at any time, and we will email you when a decision has been made.</p>
+              {% elseif today <= conference.deadline %}
+                <p>Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on {{ conference.deadline|date('F d') }}. (You cannot submit a paper yet, however, because the software is still being developed and tested.)</p>
+              {% else %}
+                <p>Submissions for the {{ conference }} in {{ conference.town }} are now closed.</p>
+              {% endif %}
             {% else %}
-              <p>Submissions for the {{ conference }} in {{ conference.town }} are now closed.</p>
+              <p>Submissions for the {{ conference }} in {{ conference.town }} are not yet open. Please check back here later, or watch your email for announcements.</p>
             {% endif %}
-          {% else %}
-            <p>Submissions for the {{ conference }} in {{ conference.town }} are not yet open. Please check back here later, or watch your email for announcements.</p>
-          {% endif %}
-        </div>
+          </div>
+        {% endif %}
         {% if app.user.submissions | length > 0 %}
           <table>
             <thead>

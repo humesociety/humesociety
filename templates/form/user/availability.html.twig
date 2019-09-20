@@ -5,20 +5,22 @@
       {{ form_row(form.willingToReview) }}
     </div>
   </div>
-  <br>
-  <p>Please indicate below if you would like to volunteer to comment on a paper or chair a session at the {{ conference.ordinal }} Hume Conference in {{ conference.town }}.</p>
-  <div class="columns has-checkboxes">
-    <div class="column has-checkbox">
-      {{ form_row(form.willingToComment) }}
+  {% if conference %}
+    <br>
+    <p>Please indicate below if you would like to volunteer to comment on a paper or chair a session at the {{ conference.ordinal }} Hume Conference in {{ conference.town }}.</p>
+    <div class="columns has-checkboxes">
+      <div class="column has-checkbox">
+        {{ form_row(form.willingToComment) }}
+      </div>
     </div>
-  </div>
-  <div class="columns has-checkboxes">
-    <div class="column has-checkbox">
-      {{ form_row(form.willingToChair) }}
+    <div class="columns has-checkboxes">
+      <div class="column has-checkbox">
+        {{ form_row(form.willingToChair) }}
+      </div>
     </div>
-  </div>
+  {% endif %}
   <br>
-  <p>If you have indicated a willingness to comment or review, please also provide a comma-separated list of keywords indicating your areas of expertise.</p>
+  <p>If you have indicated a willingness to help, please also provide a comma-separated list of keywords indicating your areas of expertise.</p>
   {{ form_row(form.keywords) }}
   {{ form_row(form._token) }}
   <div class="buttons">

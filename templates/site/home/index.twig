@@ -13,11 +13,13 @@
         <p>There is no news at the moment.</p>
       {% endif %}
     </div>
-    <div class="column">
-      <div class="hero" style="margin-top:0">
-        {% include 'includes/conference-details.html.twig' %}
+    {% if conference %}
+      <div class="column">
+        <div class="hero" style="margin-top:0">
+          {% include 'includes/conference-details.html.twig' %}
+        </div>
       </div>
-    </div>
+    {% endif %}
   </div>
   {% if not is_granted('ROLE_MEMBER') %}
     <div class="join-button">

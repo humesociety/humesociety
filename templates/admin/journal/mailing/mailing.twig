@@ -5,10 +5,16 @@
 {% block main %}
   <div class="box content">
     <h5>Mailing Addresses for Members Receiving <i>Hume Studies</i></h5>
-    {% for user in users %}
-      {% if user.mailingAddress %}
-        <pre>{{ user.mailingAddress }}</pre>
-      {% endif %}
-    {% endfor %}
+    {% if users|length > 0 %}
+      {% for user in users %}
+        {% if user.mailingAddress %}
+          <pre>{{ user.mailingAddress }}</pre>
+        {% else %}
+          <pre>{{ user }}</pre>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p>There are no members who have elected to recieve a copy of <i>Hume Studies</i> in the database.</p>
+    {% endif %}
   </div>
 {% endblock %}

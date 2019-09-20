@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Conference\ConferenceHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,9 +47,15 @@ class DefaultController extends AbstractController
      * @Route("/conference", name="conference")
      * @IsGranted("ROLE_ORGANISER")
      */
-    public function conference(): Response
+    public function conference(ConferenceHandler $conferenceHandler): Response
     {
-        return $this->redirectToRoute('admin_conference_details_index');
+        if ($conferenceHandler->getCurrentConference()) {
+            return $this->redirectToRoute('admin_conference_details_index');
+        } else {
+            return $this->render('admin/conference/no-current-conference.twig', [
+                'area' => 'conference'
+            ]);
+        }
     }
 
     /**

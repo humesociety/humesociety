@@ -2,9 +2,13 @@
 
 {% block main %}
   <h1>{{ page.title }}</h1>
-  {% for conference in conferences %}
-    <div class="hero">
-      {% include 'includes/conference-details.html.twig' %}
-    </div>
-  {% endfor %}
+  {% if conferences|length > 0 %}
+    {% for conference in conferences %}
+      <div class="hero">
+        {% include 'includes/conference-details.html.twig' %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>There are no forthcoming conferences in the database.</p>
+  {% endif %}
 {% endblock %}

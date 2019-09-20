@@ -109,7 +109,7 @@ class ConferenceRepository extends ServiceEntityRepository
     public function findLatestYear(): int
     {
         if ($this->countConferences() == 0) {
-            return 0;
+            return date('Y');
         }
 
         return $this->createQueryBuilder('c')

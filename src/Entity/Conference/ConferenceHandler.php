@@ -83,8 +83,8 @@ class ConferenceHandler
         // (that's the best we can do, since forthcoming conferences may not have a specific date)
         $forthcoming = $this->repository->findConferencesForThisYearAndLater();
 
-        // ... so now we need to remove this year's conference if it's past
-        if ($forthcoming[0]
+        // ... so now we may need to remove this year's conference if it's past
+        if (sizeof($forthcoming) > 0
             && $forthcoming[0]->getEndDate()
             && $forthcoming[0]->getEndDate() < new \DateTime()
         ) {

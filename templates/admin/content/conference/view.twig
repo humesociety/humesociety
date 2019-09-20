@@ -6,8 +6,8 @@
   <div class="box content">
     <div class="heading">
       <h5>Edit Conference Data</h5>
-      {% if conferences | length > 0 %}
-        <div class="heading-right">
+      <div class="heading-right">
+        {% if conferences | length > 0 %}
           <div class="input">
             <label for="show-decade">Decade:</label>
             <select data-filter="decade" data-table="conferences">
@@ -16,11 +16,11 @@
               {% endfor %}
             </select>
           </div>
-          <div class="input">
-            <a href="{{ path('admin_content_conference_create') }}" class="button"><i class="fas fa-plus"></i>Create Conference</a>
-          </div>
+        {% endif %}
+        <div class="input">
+          <a href="{{ path('admin_content_conference_create') }}" class="button"><i class="fas fa-plus"></i>Create Conference</a>
         </div>
-      {% endif %}
+      </div>
     </div>
     <p>Details of conferences stored in the database can be edited here. Any page on the web site using the 'Forthcoming Conferences' or 'Past Conferences' templates will automatically be updated to reflect any changes made.</p>
     {% if conferences %}

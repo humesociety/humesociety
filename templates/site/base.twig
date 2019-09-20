@@ -1,4 +1,5 @@
 {% apply spaceless %}
+{% if page is not defined %}{% set page = { id: 'null', section: 'null' } %}{% endif %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -60,7 +61,7 @@
         <main class="main content">
           {% block main %}{% endblock %}
         </main>
-        {% if page is not defined or page.id != 'home' %}
+        {% if page.id != 'home' and page.id != 'null' %}
           <nav class="sidebar">
             {% block sidebar %}{% endblock %}
           </nav>
