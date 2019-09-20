@@ -9,8 +9,18 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
+/**
+ * The email form type.
+ */
 class EmailType extends AbstractType
 {
+    /**
+     * Build the form.
+     *
+     * @param FormBuilderInterface Symfony's form builder interface.
+     * @param array An array of options.
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

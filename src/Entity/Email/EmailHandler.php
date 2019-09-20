@@ -7,73 +7,158 @@ use App\Entity\User\UserHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
+/**
+ * The email handler, for managing email templates and sending emails.
+ */
 class EmailHandler
 {
+    /**
+     * Swift Mailer (dependency injection).
+     *
+     * @var \Swift_Mailer
+     */
     private $mailer;
-    private $manager;
-    private $repository;
-    private $userHandler;
-    private $logo;
 
+    /**
+     * The Doctrine entity manager (dependency injection).
+     *
+     * @var EntityManagerInterface
+     */
+    private $manager;
+
+    /**
+     * The email template repository (dependency injection).
+     *
+     * @var EmailTemplateRepository
+     */
+    private $repository;
+
+    /**
+     * The user handler (dependency injection).
+     *
+     * @var UserHandler
+     */
+    private $userHandler;
+
+    /**
+     * The path to the project's root directory.
+     *
+     * @var string
+     */
+    private $projectDir;
+
+    /**
+     * Constructor function.
+     *
+     * @param \Swift_Mailer Swift Mailer.
+     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param UserHandler The user handler.
+     * @param ParameterBagInterface Symfony's parameter bag interface.
+     * @return void
+     */
     public function __construct(
-        EntityManagerInterface $manager,
         \Swift_Mailer $mailer,
-        ParameterBagInterface $params,
-        UserHandler $userHandler
+        EntityManagerInterface $manager,
+        UserHandler $userHandler,
+        ParameterBagInterface $params
     ) {
+        $this->mailer = $mailer;
         $this->manager = $manager;
         $this->repository = $manager->getRepository(EmailTemplate::class);
-        $this->mailer = $mailer;
         $this->userHandler = $userHandler;
         $this->projectDir = $params->get('kernel.project_dir');
     }
 
-    // gett email template(s) from database
+    /**
+     * Get email templates from the database.
+     *
+     * @return EmailTemplate[]
+     */
     public function getEmailTemplates(): array
     {
         return $this->repository->findAll();
     }
 
+    /**
+     * Get a specific email template.
+     *
+     * @param string The type of the template to get.
+     * @return EmailTemplate|null
+     */
     public function getEmailTemplateByType(string $type): ?EmailTemplate
     {
         return $this->repository->findOneByType($type);
     }
 
-    // save email template to database
+    /**
+     * Save/update an email template.
+     *
+     * @param EmailTemplate The email template to save/update.
+     * @return void
+     */
     public function saveEmailTemplate(EmailTemplate $emailTemplate)
     {
         $this->manager->persist($emailTemplate);
         $this->manager->flush();
     }
 
-    // create a swift message email
+    /**
+     * Create a swift message email.
+     *
+     * @param User The recipient of the email.
+     * @param string The sender of the email.
+     * @param string The subject of the email.
+     * @param string The body of the email.
+     * @param string|null Path to any attachment.
+     * @return \Swift_Message
+     */
     private function createEmail(
         User $user,
-        array $sender,
+        string $sender,
         string $subject,
         string $body,
         ?string $pathToAttachment = null
     ): \Swift_Message {
+        // create the email and an embedded logo image
         $email = new \Swift_Message($subject);
         $image = $email->embed(\Swift_Image::fromPath($this->projectDir.'/public/logo.jpg'));
 
+        // prepare the body of the email
         $body = preg_replace('/{{ ?username ?}}/', $user->getUsername(), $body);
         $body = preg_replace('/{{ ?email ?}}/', $user->getEmail(), $body);
         $body = preg_replace('/{{ ?firstname ?}}/', $user->getFirstname(), $body);
         $body = preg_replace('/{{ ?lastname ?}}/', $user->getLastname(), $body);
-        $body = '<div style="font-size:16px;font-family:-apple-system,system-ui,BlinkMacSystemFont,Roboto,Oxygen,Ubuntu,Cantarell,Helvetica,Arial,sans-serif;line-height:1.5;color:#282828;max-width:600px;margin:1em auto;"><div><img src="'.$image.'" style="height:auto;max-width:100%;" alt="The Hume Society"></div><div style="padding:1em;">'.$body.'</div></div>';
+        $body = '<div style="font-size:16px;font-family:-apple-system,system-ui,BlinkMacSystemFont,'
+              . 'Roboto,Oxygen,Ubuntu,Cantarell,Helvetica,Arial,sans-serif;line-height:1.5;'
+              . 'color:#282828;max-width:600px;margin:1em auto;"><div><img src="'. $image
+              . '" style="height:auto;max-width:100%;" alt="The Hume Society"></div><div style="padding:1em;">'
+              . $body
+              . '</div></div>';
 
-        $email->setFrom($sender);
+        // set the other email fields
+        $email->setFrom($this->userHandler->getOfficialEmail($sender));
         $email->setBody($body, 'text/html');
         $email->setTo([$user->getEmail() => $user->getFirstname().' '.$user->getLastname()]);
         if ($pathToAttachment) {
             $email->attach(\Swift_Attachment::fromPath($pathToAttachment));
         }
 
+        // return the email
         return $email;
     }
 
-    // emailing functions
+    /**
+     * Send an email to all members.
+     *
+     * @param bool Whether to include current members.
+     * @param bool Whether to include lapsed members.
+     * @param bool Whether to include members who have declined to recieve general emails.
+     * @param string The sender of the email.
+     * @param string The subject of the email.
+     * @param string The body of the email.
+     * @param string|null The path to any attachment.
+     * @return object
+     */
     public function sendMembershipEmail(
         bool $current,
         bool $lapsed,
@@ -82,9 +167,8 @@ class EmailHandler
         string $body,
         ?string $pathToAttachment = null
     ): array {
-        $sender = ['vicepresident@humesociety.org' => 'Emily Kelahan'];
+        // get the recipients of the email
         $recipientUsers = [];
-
         if ($current) {
             foreach ($this->userHandler->getMembersInGoodStanding() as $user) {
                 if ($declining || $user->getReceiveEmail()) {
@@ -92,7 +176,6 @@ class EmailHandler
                 }
             }
         }
-
         if ($lapsed) {
             foreach ($this->userHandler->getMembersInArrears() as $user) {
                 if ($declining || $user->getReceiveEmail()) {
@@ -101,6 +184,7 @@ class EmailHandler
             }
         }
 
+        // send the email to each recipient, keeping track of the results
         $emailsSent = 0;
         $goodRecipients = [];
         $badRecipients = [];
@@ -116,6 +200,7 @@ class EmailHandler
             }
         }
 
+        // return the results
         return [
             'emailsSent' => $emailsSent,
             'goodRecipients' => $goodRecipients,
@@ -123,26 +208,46 @@ class EmailHandler
         ];
     }
 
+    /**
+     * Send a password reset email.
+     *
+     * @param User The recipient of the email.
+     * @return void
+     */
     public function sendResetPasswordEmail(User $user)
     {
-        $sender = ['web@humesociety.org' => 'Amyas Merivale'];
+        $sender = 'web';
         $subject = 'Hume Society Password Reset';
-        $link = 'https://www.humesociety.org/reset/'.$user->getUsername().'/'.$user->getPasswordResetSecret();
-        $body = '<p>Dear {{ firstname }} {{ lastname }},</p>';
-        $body .= '<p>We have received a request to send you your login credentials for the Hume Society web site. Your username is &ldquo;{{ username }}&rdquo;. If you wish to reset your password, please click on the button below.</p>';
-        $body .= '<div style="text-align:center;margin:1em 0;"><a href="'.$link.'" style="background:#212f4b;color:#fff;text-decoration:none;padding:.5em 1em;display:inline-block;">Reset Password</a></div>';
-        $body .= '<p>If you did not request this information, you can safely ignore this email. No one else will see the link to reset your password, and it will only remain active for 24 hours.</p>';
-        $body .= '<p>Thank you,</p>';
-        $body .= '<p>Amyas Merivale<br>Technical Director, The Hume Society</p>';
+        $link = 'https://www.humesociety.org/reset/'
+              . $user->getUsername().'/'
+              . $user->getPasswordResetSecret();
+        $body = '<p>Dear {{ firstname }} {{ lastname }},</p>'
+              . '<p>We have received a request to send you your login credentials for the Hume '
+              . 'Society web site. Your username is &ldquo;{{ username }}&rdquo;. If you wish to '
+              . 'reset your password, please click on the button below.</p>'
+              . '<div style="text-align:center;margin:1em 0;"><a href="'.$link
+              . '" style="background:#212f4b;color:#fff;text-decoration:none;padding:.5em 1em;'
+              . 'display:inline-block;">Reset Password</a></div>'
+              . '<p>If you did not request this information, you can safely ignore this email. No '
+              . 'one else will see the link to reset your password, and it will only remain active '
+              . 'for 24 hours.</p>'
+              . '<p>Thank you,</p>'
+              . '<p>Amyas Merivale<br>Technical Director, The Hume Society</p>';
 
         $email = $this->createEmail($user, $sender, $subject, $body);
         $this->mailer->send($email);
     }
 
+    /**
+     * Send new member welcome email.
+     *
+     * @param User The recipient of the email.
+     * @return void
+     */
     public function sendNewMemberEmail(User $user)
     {
         $emailTemplate = $this->getEmailTemplateByType('welcome');
-        $sender = [$emailTemplate->getSenderEmailAddress() => $emailTemplate->getSenderName()];
+        $sender = $emailTemplate->getSender();
         $subject = $emailTemplate->getSubject();
         $body = $emailTemplate->getContent();
 
@@ -150,10 +255,16 @@ class EmailHandler
         $this->mailer->send($email);
     }
 
+    /**
+     * Send dues reminder email.
+     *
+     * @param User The recipient of the email.
+     * @return void
+     */
     public function sendDuesReminderEmail(User $user)
     {
         $emailTemplate = $this->getEmailTemplateByType('dues-reminder');
-        $sender = [$emailTemplate->getSenderEmailAddress() => $emailTemplate->getSenderName()];
+        $sender = $emailTemplate->getSender();
         $subject = $emailTemplate->getSubject();
         $body = $emailTemplate->getContent();
 

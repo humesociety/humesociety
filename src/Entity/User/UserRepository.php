@@ -118,6 +118,60 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find the current EVPT.
+     *
+     * @return User|null
+     */
+    public function findVicePresident(): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_EVPT%\'')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Find the current technical director.
+     *
+     * @return User|null
+     */
+    public function findTechnicalDirector(): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_TECH%\'')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Find the current conference organisers.
+     *
+     * @return User[]
+     */
+    public function findConferenceOrganisers(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_ORGANISER%\'')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find the current journal editors.
+     *
+     * @return User[]
+     */
+    public function findJournalEditors(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_EDITOR%\'')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Get QueryBuilder for all members in good standing.
      *
      * This is used to generate the options in the select dropdown for candidate forms. To this end,

@@ -20,7 +20,7 @@ class UserHandler
     /**
      * The user repository (dependency injection).
      *
-     * @var ConferenceRepository
+     * @var UserRepository
      */
     private $repository;
 
@@ -95,6 +95,76 @@ class UserHandler
     public function getMembersReceivingHumeStudies(): array
     {
         return $this->repository->findMembersReceivingHumeStudies();
+    }
+
+    /**
+     * Get current EVPT.
+     *
+     * @return User|null
+     */
+    public function getVicePresident(): ?User
+    {
+        return $this->repository->findVicePresident();
+    }
+
+    /**
+     * Get current technical director.
+     *
+     * @return User|null
+     */
+    public function getTechnicalDirector(): ?User
+    {
+        return $this->repository->findTechnicalDirector();
+    }
+
+    /**
+     * Get current conference organisers.
+     *
+     * @return User[]
+     */
+    public function getConferenceOrganisers(): array
+    {
+        return $this->repository->findConferenceOrganisers();
+    }
+
+    /**
+     * Get current journal editors.
+     *
+     * @return User[]
+     */
+    public function getJournalEditors(): array
+    {
+        return $this->repository->findJournalEditors();
+    }
+
+    /**
+     * Get official society email (address => name).
+     *
+     * @param string The type of email to get.
+     * @return object
+     */
+    public function getOfficialEmail(string $sender): array
+    {
+        switch ($sender) {
+            case 'vicepresident':
+                $evpt = $this->repository->findVicePresident();
+                $name = $evpt ? $evpt->getFullname() : 'Executive Vice-President Treasurer';
+                return ['vicepresident@humesociety.org' => $name];
+
+            case 'conference':
+                $organisers = $this->repository->findConferenceOrganisers();
+                $name = 'Conference Organisers';
+                if (sizeof($organisers) > 0) {
+                    $name = implode(', ', $organisers);
+                }
+                return ['conference@humesociety.org' => $name];
+
+            case 'web': // fallthrough
+            default: // also make this the default, to ensure this function always returns something
+                $tech = $this->repository->findTechnicalDirector();
+                $name = $tech ? $tech->getFullname() : 'Technical Director';
+                return ['web@humesociety.org' => $name];
+        }
     }
 
     /**

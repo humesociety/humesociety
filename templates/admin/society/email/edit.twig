@@ -18,20 +18,13 @@
     </div>
     <p>{% verbatim %}The content of your email should be written in HTML (with &lt;p&gt; tags around each paragraph). The email will be sent individually to each member, and will replace &ldquo;{{ firstname }}&rdquo;, &ldquo;{{ lastname }}&rdquo;, &ldquo;{{ username }}&rdquo;, and &ldquo;{{ email }}&rdquo; with the member&rsquo;s first name, last name, username, and email address respectively.{% endverbatim %}</p>
     {{ form_start(emailTemplateForm) }}
-    <div class="columns">
-      <div class="column">
-        {{ form_row(emailTemplateForm.senderName) }}
+      {{ form_row(emailTemplateForm.sender) }}
+      {{ form_row(emailTemplateForm.subject) }}
+      {{ form_row(emailTemplateForm.content) }}
+      {{ form_row(emailTemplateForm._token) }}
+      <div class="buttons">
+        <button type="submit" class="button is-success">Update</button>
       </div>
-      <div class="column">
-        {{ form_row(emailTemplateForm.senderEmailAddress) }}
-      </div>
-    </div>
-    {{ form_row(emailTemplateForm.subject) }}
-    {{ form_row(emailTemplateForm.content) }}
-    {{ form_row(emailTemplateForm._token) }}
-    <div class="buttons">
-      <button type="submit" class="button is-success">Update</button>
-    </div>
     {{ form_end(emailTemplateForm) }}
   </div>
   <div class="box content">

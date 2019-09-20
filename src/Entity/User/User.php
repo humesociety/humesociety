@@ -1204,16 +1204,6 @@ class User implements UserInterface
     }
 
     /**
-     * Get the user's full name.
-     *
-     * @return string
-     */
-    public function getFullname(): string
-    {
-        return $this->firstname.' '.$this->lastname;
-    }
-
-    /**
      * Constructor function.
      *
      * @return void
@@ -1243,7 +1233,7 @@ class User implements UserInterface
      */
     public function __toString(): string
     {
-        return $this->lastname.', '.$this->firstname.' ['.$this->username.']';
+        return $this->firstname.' '.$this->lastname;
     }
 
     /**
