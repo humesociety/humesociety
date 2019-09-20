@@ -6,8 +6,6 @@ use App\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Entity\Candidate\CandidateRepository")
- *
  * Candidate objects represent candidates for election to the executive committee (including the
  * Executive Vice President-Treasurer). If marked as 'elected', they also represent members of the
  * executive committee. They can optionally be linked to a User in the database.
@@ -16,10 +14,15 @@ use Doctrine\ORM\Mapping as ORM;
  * duplicate information in the Users table. That information may change or be deleted, however,
  * when the information here should stay the same (e.g. if the person moves institution, or leaves
  * the society, deleting their account altogether).
+ *
+ * @ORM\Entity(repositoryClass="App\Entity\Candidate\CandidateRepository")
  */
 class Candidate
 {
     /**
+     * The candidate's unique identifier in the database.
+     *
+     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -27,94 +30,39 @@ class Candidate
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * Get the candidate's unique identifier (null when the object is first created).
+     *
+     * @return int|null
      */
-    private $firstname;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $lastname;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $institution;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
-     */
-    private $user;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $start;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $end;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $description;
-
-    /**
-     * @ORM\Column(type="integer", options={"default": 0})
-     */
-    private $votes;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $elected;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default": true})
-     */
-    private $reelectable;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $president;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $evpt;
-
-    // Constructor function; set some default values
-    public function __construct()
-    {
-        $this->start = idate('Y') + 1; // default should be candidates for next year's term
-        $this->end = $this->start + 2; // terms last three years by default
-        $this->votes = 0;
-        $this->elected = false;
-        $this->reelectable = true;
-        $this->president = false;
-        $this->evpt = false;
-    }
-
-    // to string
-    public function __toString()
-    {
-        return $this->getLastname().', '.$this->getFirstname();
-    }
-
-    // Getters and setters for private properties
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * The candidate's firstname.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firstname;
+
+    /**
+     * Get the candidate's firstname (null when the object is first created).
+     *
+     * @return string|null
+     */
     public function getFirstname(): ?string
     {
         return $this->firstname;
     }
 
+    /**
+     * Set the candidate's firstname.
+     *
+     * @param string The candidate's firstname.
+     * @return self
+     */
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
@@ -122,11 +70,30 @@ class Candidate
         return $this;
     }
 
+    /**
+     * The candidate's lastname.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastname;
+
+    /**
+     * Get the candidate's lastname (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getLastname(): ?string
     {
         return $this->lastname;
     }
 
+    /**
+     * Set the candidate's lastname.
+     *
+     * @param string The candidate's lastname.
+     * @return self
+     */
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
@@ -134,6 +101,19 @@ class Candidate
         return $this;
     }
 
+    /**
+     * The candidate's institution.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $institution;
+
+    /**
+     * Get the candidate's institution.
+     *
+     * @return string|null
+     */
     public function getInstitution(): ?string
     {
         return $this->institution;
@@ -146,11 +126,33 @@ class Candidate
         return $this;
     }
 
+    /**
+     * The associated user.
+     *
+     * This field is nullable in case the person subsequently deletes their account, and because
+     * our records predate this web site.
+     *
+     * @var User|null
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="candidacies")
+     */
+    private $user;
+
+    /**
+     * Get the associated user.
+     *
+     * @return User|null
+     */
     public function getUser(): ?User
     {
         return $this->user;
     }
 
+    /**
+     * Set the associated user.
+     *
+     * @param User|null The associated user.
+     * @return self
+     */
     public function setUser(?User $user): self
     {
         $this->user = $user;
@@ -158,11 +160,29 @@ class Candidate
         return $this;
     }
 
+    /**
+     * The start year of this term of office.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $start;
+
+    /**
+     * Get the start year of this term of office (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getStart(): ?int
     {
         return $this->start;
     }
 
+    /**
+     * Set the start year of this term of office.
+     *
+     * @param int The start year of this term of office.
+     */
     public function setStart(int $start): self
     {
         $this->start = $start;
@@ -170,11 +190,29 @@ class Candidate
         return $this;
     }
 
+    /**
+     * The end year of this term of office (null when the object is first created).
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $end;
+
+    /**
+     * Get the end year of this term of office (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getEnd(): ?int
     {
         return $this->end;
     }
 
+    /**
+     * Set the end year of this term of office.
+     *
+     * @param int The end year of this term of office.
+     */
     public function setEnd(int $end): self
     {
         $this->end = $end;
@@ -182,11 +220,30 @@ class Candidate
         return $this;
     }
 
+    /**
+     * A description of the candidate (for voters to read).
+     *
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $description;
+
+    /**
+     * Get the description of this candidate.
+     *
+     * @return string|null
+     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
+    /**
+     * Set the description of this candidate.
+     *
+     * @param string|null The description of this candidate.
+     * @return self
+     */
     public function setDescription(string $description): self
     {
         $this->description = $description;
@@ -194,11 +251,30 @@ class Candidate
         return $this;
     }
 
+    /**
+     * How many votes the candidate has received.
+     *
+     * @var int
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $votes;
+
+    /**
+     * Get how many votes the candidate has received.
+     *
+     * @return int
+     */
     public function getVotes(): ?int
     {
         return $this->votes;
     }
 
+    /**
+     * Set how many votes the candidate has received.
+     *
+     * @param int How many votes the candidate has received.
+     * @return self
+     */
     public function setVotes(int $votes): self
     {
         $this->votes = $votes;
@@ -206,11 +282,30 @@ class Candidate
         return $this;
     }
 
-    public function getElected(): ?bool
+    /**
+     * Whether the candidate is elected.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $elected;
+
+    /**
+     * Get whether the candidate is elected.
+     *
+     * @return bool
+     */
+    public function getElected(): bool
     {
         return $this->elected;
     }
 
+    /**
+     * Set whether the candidate is elected.
+     *
+     * @param bool Whether the candidate is elected.
+     * @return self
+     */
     public function setElected(bool $elected): self
     {
         $this->elected = $elected;
@@ -218,11 +313,30 @@ class Candidate
         return $this;
     }
 
+    /**
+     * Whether the candidate is reelectable after this term of office.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private $reelectable;
+
+    /**
+     * Get whether the candidate is reelectable after this term of office.
+     *
+     * @return bool
+     */
     public function getReelectable(): ?bool
     {
         return $this->reelectable;
     }
 
+    /**
+     * Set whether the candidate is reelectable after this term of office.
+     *
+     * @param bool Whether the candidate is reelectable after this term of office.
+     * @return self
+     */
     public function setReelectable(bool $reelectable): self
     {
         $this->reelectable = $reelectable;
@@ -230,11 +344,30 @@ class Candidate
         return $this;
     }
 
+    /**
+     * Whether the candidate is standing for president.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $president;
+
+    /**
+     * Get whether the candidate is standing for president.
+     *
+     * @return bool
+     */
     public function getPresident(): ?bool
     {
         return $this->president;
     }
 
+    /**
+     * Set whether the candidate is standing for president.
+     *
+     * @param bool Whether the candidate is standing for president.
+     * @return self
+     */
     public function setPresident(bool $president): self
     {
         $this->president = $president;
@@ -242,15 +375,59 @@ class Candidate
         return $this;
     }
 
+    /**
+     * Whether the candidate is standing for EVPT.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $evpt;
+
+    /**
+     * Get whether the candidate is standing for EVPT.
+     *
+     * @return bool
+     */
     public function getEvpt(): ?bool
     {
         return $this->evpt;
     }
 
+    /**
+     * Set whether the candidate is standing for EVPT.
+     *
+     * @param bool Whether the candidate is standing for EVPT.
+     * @return self
+     */
     public function setEvpt(bool $evpt): self
     {
         $this->evpt = $evpt;
 
         return $this;
+    }
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->start = idate('Y') + 1; // default should be candidates for next year's term
+        $this->end = $this->start + 2; // terms last three years by default
+        $this->votes = 0;
+        $this->elected = false;
+        $this->reelectable = true;
+        $this->president = false;
+        $this->evpt = false;
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getLastname().', '.$this->getFirstname();
     }
 }

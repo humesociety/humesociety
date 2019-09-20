@@ -11,8 +11,18 @@ use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 
+/**
+ * The form type for changing a user's password.
+ */
 class UserChangePasswordType extends AbstractType
 {
+    /**
+     * Build the form.
+     *
+     * @param FormBuilderInterface Symfony's form builder interface.
+     * @param array An array of options.
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

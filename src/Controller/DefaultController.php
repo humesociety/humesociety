@@ -16,21 +16,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Society pages are stored in the database (and are editable by users with the appropriate
- * permissions). The main sections, however, are hardwired (otherwise the route matching would be
- * too general, and wouldn't work well). To edit the sections, change the requirements on the page
- * method in this controller, and edit the corresponding parameters in `/services.yaml`.
+ * The main controller for the site; returns the home page and any custom page from the database.
  *
- * `/services.yaml` also contains a list of templates. Anywhere else in the application where the
- * lists of sections or templates are needed (e.g. in forms, for generating appropriate select
- * menus), they should be grabbed as parameters from this file.
- *
- * N.B. Every section expects an `index` page in the database, to display by default. If one is not
+ * While pages are stored in the database (and are editable by users with the appropriate
+ * permissions), the main sections are hardwired (otherwise the route matching would be too
+ * general, and wouldn't work well). To edit the sections, change the requirements on the page
+ * method in this controller, and edit the corresponding parameters in `/services.yaml`. N.B. Every
+  * section expects an `index` page in the database, to display by default. If one is not
  * found, the base route for that section will return a 404 error.
  */
 class DefaultController extends AbstractController
 {
     /**
+     * The web site home page.
+     *
+     * @param ConferenceHandler The conference handler.
+     * @param NewsItemHandler The news item handler.
+     * @return Response
      * @Route("/", name="society_index")
      */
     public function index(
@@ -45,6 +47,19 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * Any other page from the database.
+     *
+     * @param CandidateHandler The candidate handler.
+     * @param ConferenceHandler The conference handler.
+     * @param ElectionHandler The election handler.
+     * @param NewsItemHandler The news item handler.
+     * @param PageHandler The page handler.
+     * @param UploadHandler The upload handler.
+     * @param UserHandler The user handler.
+     * @param Request The Symfony HTTP request object.
+     * @param string The section of the site.
+     * @param string The page within the section.
+     * @return Response
      * @Route(
      *     "/{section}/{slug}",
      *     name="society_page",

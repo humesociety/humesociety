@@ -2,6 +2,6 @@
 
 {% block sidebar %}
   <a href="{{ path('security_login') }}"{% if page.id == 'login' %} class="is-active"{% endif %}>Sign In</a>
-  <a href="{{ path('security_register') }}"{% if page.id == 'register' %} class="is-active"{% endif %}>Join the Society</a>
+  <a href="{{ path('security_register') }}"{% if page.id == 'register' %} class="is-active"{% endif %}>Sign Up</a>
   <a href="{{ path('security_forgot') }}"{% if page.id == 'forgot' %} class="is-active"{% endif %}>Forgot Details</a>
 {% endblock %}

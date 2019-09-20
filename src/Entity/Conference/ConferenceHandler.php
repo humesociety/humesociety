@@ -138,9 +138,9 @@ class ConferenceHandler
     }
 
     /**
-     * Save a conference to the database.
+     * Save/update a conference in the database.
      *
-     * @param Conference The conference to be saved.
+     * @param Conference The conference to be saved/updated.
      */
     public function saveConference(Conference $conference)
     {

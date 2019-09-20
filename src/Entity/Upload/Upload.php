@@ -16,48 +16,41 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class Upload
 {
     /**
-     * The path is the subdirectory of the uploads folder where the file is stored.
+     * The path to the file (i.e. the subdirectory of the uploads folder where the file is stored).
+     *
+     * @var string
      */
     private $path;
 
     /**
-     * The filename is the full filename (plus the extension).
-     */
-    private $filename;
-
-    /**
-     * @Assert\NotBlank()
+     * Get the path to the file (potentially null when the object is first created).
      *
-     * This property is used when uploading the file; once uploaded it is stored in the `uploads`
-     * directory, rather than in the database.
+     * @return string|null
      */
-    private $file;
-
-    // Constructor function
-    public function __construct(?string $path = null, ?string $filename = null)
-    {
-        $this->path = $path;
-        $this->filename = $filename;
-    }
-
-    // ToString function
-    public function __toString(): string
-    {
-        return $this->filename;
-    }
-
-    // Getters and setters for private properties
     public function getPath(): ?string
     {
         return $this->path;
     }
 
+    /**
+     * Set the path to the file.
+     *
+     * @param string The path to the file.
+     * @return self
+     */
     public function setPath(string $path): self
     {
         $this->path = $path;
 
         return $this;
     }
+
+    /**
+     * The full filename (including the extension).
+     *
+     * @var string
+     */
+    private $filename;
 
     public function getFilename(): ?string
     {
@@ -71,6 +64,17 @@ class Upload
         return $this;
     }
 
+    /**
+     * The file itself.
+     *
+     * This property is used when uploading the file; once uploaded it is stored in the `uploads`
+     * directory, rather than in the database.
+     *
+     * @var UploadedFile
+     * @Assert\NotBlank()
+     */
+    private $file;
+
     public function getFile(): ?UploadedFile
     {
         return $this->file;
@@ -82,6 +86,29 @@ class Upload
         $this->filename = $file->getClientOriginalName();
 
         return $this;
+    }
+
+    /**
+     * Constructor function,
+     *
+     * @param string|null The subdirectory of the uploads folder where the file is stored.
+     * @param string|null The full filename (including the extension).
+     * @return void
+     */
+    public function __construct(?string $path = null, ?string $filename = null)
+    {
+        $this->path = $path;
+        $this->filename = $filename;
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->filename;
     }
 
     // Getters for derivative properties

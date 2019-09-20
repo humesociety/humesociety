@@ -9,18 +9,42 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserAvailabilityType extends AbstractType
+/**
+ * The form type for setting a user's availability to review/comment/chair.
+ *
+ * This form type should only be used if there is a current conference in the database. Otherwise
+ * the UserPartialAvailabilityType should be used instead.
+ */
+class UserFullAvailabilityType extends AbstractType
 {
+    /**
+     * A string describing the current conference (null if there isn't one).
+     *
+     * @var string|null
+     */
     private $conferenceInfo;
 
+    /**
+     * Constructor function.
+     *
+     * @param ConfereneHandler The conference handler (dependency injection).
+     */
     public function __construct(ConferenceHandler $conferenceHandler)
     {
-        $nextConference = $conferenceHandler->getCurrentConference();
-        $this->conferenceInfo = $nextConference->getOrdinal();
+        $currentConference = $conferenceHandler->getCurrentConference();
+        // getCurrentConference may return null; in which case we shouldn't be here at all
+        $this->conferenceInfo = $currentConference->getOrdinal();
         $this->conferenceInfo .= ' Hume Conference in ';
-        $this->conferenceInfo .= $nextConference->getTown();
+        $this->conferenceInfo .= $currentConference->getTown();
     }
 
+    /**
+     * Build the form.
+     *
+     * @param FormBuilderInterface Symfony's form builder interface.
+     * @param array An array of options.
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -41,6 +65,12 @@ class UserAvailabilityType extends AbstractType
             ]);
     }
 
+    /**
+     * Configure the form options.
+     *
+     * @param OptionsResolver Symfony's options resolver.
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['data_class' => User::class]);

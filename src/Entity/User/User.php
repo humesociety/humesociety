@@ -19,8 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * Every user has the 'ROLE_USER' role. Members of the society also have the 'ROLE_MEMBER' role. The
  * `dues` field stores the date their next membership payment is due. Those for whom the dues date
- * is less than today's date represent members in good standing. The members section of the web site
- * is restricted to members in good standing.
+ * is greater than today's date represent members in good standing. The members section of the web
+ * site is restricted to members in good standing.
  *
  * @ORM\Entity(repositoryClass="App\Entity\User\UserRepository")
  * @UniqueEntity(
@@ -239,7 +239,8 @@ class User implements UserInterface
     /**
      * Whether the user was rejoining when they created this account.
      *
-     * There's no magic way of determining this; we simply have to ask users when they register.
+     * Note there's no magic way of determining this; we simply have to ask users when they
+     * register.
      *
      * @var bool
      * @ORM\Column(type="boolean", options={"default": false})
@@ -302,7 +303,29 @@ class User implements UserInterface
     }
 
     /**
+     * A collection of the user's candidacies, i.e. times they have stood for election to the
+     * committee.
+     *
+     * @var Candidate[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Candidate\Candidate", mappedBy="user")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $candidacies;
+
+    /**
+     * Get the collection of the user's candidacies.
+     *
+     * @return Candidate[]
+     */
+    public function getCandidacies(): Collection
+    {
+        return $this->candidacies;
+    }
+
+    /**
      * Whether the user has voted in the current election.
+     *
+     * This should be reset to false at the start of each election.
      *
      * @var bool
      * @ORM\Column(type="boolean", options={"default": false})
@@ -387,7 +410,7 @@ class User implements UserInterface
      *
      * Membership expires at the end of June or the end of December.
      *
-     * @param int How many years to add to this user's membership, from today's date.
+     * @param int How many years to add to this user's membership, starting from today's date.
      * @return self
      */
     public function setDues(int $yearsToAdd): self
@@ -505,11 +528,22 @@ class User implements UserInterface
      */
     private $firstname;
 
+    /**
+     * Get the user's firstname (null when the object is first created).
+     *
+     * @return string|null
+     */
     public function getFirstname(): ?string
     {
         return $this->firstname;
     }
 
+    /**
+     * Set the user's firstname.
+     *
+     * @param string The user's firstname.
+     * @return self
+     */
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
@@ -526,11 +560,22 @@ class User implements UserInterface
      */
     private $lastname;
 
+    /**
+     * Get the user's lastname (null when the object is first created).
+     *
+     * @return string|null
+     */
     public function getLastname(): ?string
     {
         return $this->lastname;
     }
 
+    /**
+     * Set the user's lastname.
+     *
+     * @param string The user's lastname.
+     * @return self
+     */
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
@@ -547,11 +592,22 @@ class User implements UserInterface
      */
     private $department;
 
+    /**
+     * Get the user's department.
+     *
+     * @return string|null
+     */
     public function getDepartment(): ?string
     {
         return $this->department;
     }
 
+    /**
+     * Set the user's department.
+     *
+     * @param string|null The user's department.
+     * @return self
+     */
     public function setDepartment(?string $department): self
     {
         $this->department = $department;
@@ -568,11 +624,22 @@ class User implements UserInterface
      */
     private $institution;
 
+    /**
+     * Get the user's institution.
+     *
+     * @return string|null
+     */
     public function getInstitution(): ?string
     {
         return $this->institution;
     }
 
+    /**
+     * Set the user's institution.
+     *
+     * @param string|null The user's institution.
+     * @return self
+     */
     public function setInstitution(?string $institution): self
     {
         $this->institution = $institution;
@@ -589,11 +656,22 @@ class User implements UserInterface
      */
     private $city;
 
+    /**
+     * Get the user's city.
+     *
+     * @return string|null
+     */
     public function getCity() : ?string
     {
         return $this->city;
     }
 
+    /**
+     * Set the user's city.
+     *
+     * @param string|null The user's city.
+     * @return self
+     */
     public function setCity(?string $city): self
     {
         $this->city = $city;
@@ -610,11 +688,22 @@ class User implements UserInterface
      */
     private $state;
 
+    /**
+     * Get the user's state.
+     *
+     * @return string|null
+     */
     public function getState(): ?string
     {
         return $this->state;
     }
 
+    /**
+     * Set the user's state.
+     *
+     * @param string|null The user's state.
+     * @return self
+     */
     public function setState(?string $state): self
     {
         $this->state = $state;
@@ -623,7 +712,7 @@ class User implements UserInterface
     }
 
     /**
-     * The user's country.
+     * The three-letter country code of the user's country.
      *
      * @var string|null
      * @ORM\Column(type="string", length=3, nullable=true)
@@ -631,11 +720,22 @@ class User implements UserInterface
      */
     private $country;
 
+    /**
+     * Get the three-letter country code of the user's country.
+     *
+     * @return string|null
+     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
+    /**
+     * Set the three-letter country code of the user's country.
+     *
+     * @param string|null The three-letter country code of the user's country.
+     * @return self
+     */
     public function setCountry(?string $country): self
     {
         $this->country = $country;
@@ -652,11 +752,22 @@ class User implements UserInterface
      */
     private $officePhone;
 
+    /**
+     * Get the user's office phone number.
+     *
+     * @return string|null
+     */
     public function getOfficePhone(): ?string
     {
         return $this->officePhone;
     }
 
+    /**
+     * Set the user's office phone number.
+     *
+     * @param string|null The user's office phone number.
+     * @return self
+     */
     public function setOfficePhone(?string $officePhone): self
     {
         $this->officePhone = $officePhone;
@@ -673,11 +784,22 @@ class User implements UserInterface
      */
     private $homePhone;
 
+    /**
+     * Get the user's home phone number.
+     *
+     * @return string|null
+     */
     public function getHomePhone(): ?string
     {
         return $this->homePhone;
     }
 
+    /**
+     * Set the user's home phone number.
+     *
+     * @param string|null The user's home phone number.
+     * @return self
+     */
     public function setHomePhone(?string $homePhone): self
     {
         $this->homePhone = $homePhone;
@@ -694,11 +816,22 @@ class User implements UserInterface
      */
     private $fax;
 
+    /**
+     * Get the user's fax number.
+     *
+     * @return string|null
+     */
     public function getFax(): ?string
     {
         return $this->fax;
     }
 
+    /**
+     * Set the user's fax number.
+     *
+     * @param string|null The user's fax number.
+     * @return self
+     */
     public function setFax(?string $fax): self
     {
         $this->fax = $fax;
@@ -715,11 +848,22 @@ class User implements UserInterface
      */
     private $webpage;
 
+    /**
+     * Get the user's web page.
+     *
+     * @return string|null
+     */
     public function getWebpage(): ?string
     {
         return $this->webpage;
     }
 
+    /**
+     * Set the user's web page.
+     *
+     * @param string|null The user's web page.
+     * @return self
+     */
     public function setWebpage(?string $webpage): self
     {
         $this->webpage = $webpage;
@@ -736,11 +880,22 @@ class User implements UserInterface
      */
     private $receiveEmail;
 
+    /**
+     * Get whether the user wishes to receive general emails.
+     *
+     * @return bool
+     */
     public function getReceiveEmail(): ?bool
     {
         return $this->receiveEmail;
     }
 
+    /**
+     * Set whether the user wishes to receive general emails.
+     *
+     * @param bool Whether the user wishes to receive general emails.
+     * @return self
+     */
     public function setReceiveEmail(bool $receiveEmail): self
     {
         $this->receiveEmail = $receiveEmail;
@@ -757,11 +912,22 @@ class User implements UserInterface
      */
     private $receiveHumeStudies;
 
+    /**
+     * Get whether the user wishes to receive a copy of Hume Studies in the post.
+     *
+     * @return bool
+     */
     public function getReceiveHumeStudies(): ?bool
     {
         return $this->receiveHumeStudies;
     }
 
+    /**
+     * Set whether the user wishes to receive a copy of Hume Studies in the post.
+     *
+     * @param bool Whether the user wishes to receive a copy of Hume Studies in the post.
+     * @return self
+     */
     public function setReceiveHumeStudies(bool $receiveHumeStudies): self
     {
         $this->receiveHumeStudies = $receiveHumeStudies;
@@ -777,11 +943,22 @@ class User implements UserInterface
      */
     private $mailingAddress;
 
+    /**
+     * Get the user's mailing address.
+     *
+     * @return string|null
+     */
     public function getMailingAddress(): ?string
     {
         return $this->mailingAddress;
     }
 
+    /**
+     * Set the user's mailing address.
+     *
+     * @param string|null The user's mailing address.
+     * @return self
+     */
     public function setMailingAddress(?string $mailingAddress): self
     {
         $this->mailingAddress = $mailingAddress;
@@ -798,31 +975,14 @@ class User implements UserInterface
      */
     private $submissions;
 
+    /**
+     * Get the collection of the user's submissions to the Hume Conference.
+     *
+     * @return Submission[]
+     */
     public function getSubmissions(): Collection
     {
         return $this->submissions;
-    }
-
-    public function addSubmission(Submission $submission): self
-    {
-        if (!$this->submissions->contains($submission)) {
-            $this->submissions[] = $submission;
-            $submission->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubmission(Submission $submission): self
-    {
-        if ($this->submissions->contains($submission)) {
-            $this->submissions->removeElement($submission);
-            if ($submission->getUser() === $this) {
-                $submission->setUser(null);
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -834,31 +994,14 @@ class User implements UserInterface
      */
     private $reviews;
 
+    /**
+     * Get the collection of the user's reviews for the Hume Conference.
+     *
+     * @return Review[]
+     */
     public function getReviews(): Collection
     {
         return $this->reviews;
-    }
-
-    public function addReview(Review $review): self
-    {
-        if (!$this->reviews->contains($review)) {
-            $this->reviews[] = $review;
-            $review->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReview(Review $review): self
-    {
-        if ($this->reviews->contains($review)) {
-            $this->reviews->removeElement($review);
-            if ($review->getUser() === $this) {
-                $review->setUser(null);
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -869,11 +1012,22 @@ class User implements UserInterface
      */
     private $willingToReview;
 
+    /**
+     * Get whether the user is willing to receive requests to review articles.
+     *
+     * @return bool
+     */
     public function getWillingToReview(): ?bool
     {
         return $this->willingToReview;
     }
 
+    /**
+     * Set whether the user is willing to receive requests to review articles.
+     *
+     * @param bool Whether the user is willing to receive requests to review articles.
+     * @return self
+     */
     public function setWillingToReview(bool $willingToReview): self
     {
         $this->willingToReview = $willingToReview;
@@ -891,11 +1045,22 @@ class User implements UserInterface
      */
     private $willingToComment;
 
+    /**
+     * Get whether the user is willing to comment on a paper for the next Hume Conference.
+     *
+     * @return bool
+     */
     public function getWillingToComment(): ?bool
     {
         return $this->willingToComment;
     }
 
+    /**
+     * Set whether the user is willing to comment on a paper for the next Hume Conference.
+     *
+     * @param bool Whether the user is willing to comment on a paper for the next Hume Conference.
+     * @return self
+     */
     public function setWillingToComment(bool $willingToComment): self
     {
         $this->willingToComment = $willingToComment;
@@ -913,11 +1078,22 @@ class User implements UserInterface
      */
     private $willingToChair;
 
+    /**
+     * Get whether the user is willing to chair a session at the next Hume Conference.
+     *
+     * @return bool
+     */
     public function getWillingToChair(): ?bool
     {
         return $this->willingToChair;
     }
 
+    /**
+     * Set whether the user is willing to chair a session at the next Hume Conference.
+     *
+     * @param bool Whether the user is willing to chair a session at the next Hume Conference.
+     * @return self
+     */
     public function setWillingToChair(bool $willingToChair): self
     {
         $this->willingToChair = $willingToChair;
@@ -926,7 +1102,7 @@ class User implements UserInterface
     }
 
     /**
-     * A comma separated list of keywords, representing the user's areas of expertise.
+     * A comma-separated list of keywords representing the user's areas of expertise.
      *
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -934,11 +1110,22 @@ class User implements UserInterface
      */
     private $keywords;
 
+    /**
+     * Get the comma-separated list of keywords representing the user's areas of expertise.
+     *
+     * @return string|null
+     */
     public function getKeywords(): ?string
     {
         return $this->keywords;
     }
 
+    /**
+     * Set the comma-separated list of keywords representing the user's areas of expertise.
+     *
+     * @param string|null The comma-separated list of keywords representing the user's areas of expertise.
+     * @return self
+     */
     public function setKeywords(?string $keywords): self
     {
         $this->keywords = $keywords;
@@ -1037,6 +1224,7 @@ class User implements UserInterface
         $this->country = 'USA'; // this is most likely, so will save most people some time
         $this->dateJoined = new \DateTime();
         $this->rejoined = false; // TODO: let people indicate if they are rejoining
+        $this->candidacies = new ArrayCollection();
         $this->voted = false;
         $this->lifetimeMember = false;
         $this->receiveEmail = true;

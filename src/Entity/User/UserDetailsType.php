@@ -10,10 +10,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 
+/**
+ * The form type for editing a user's details.
+ */
 class UserDetailsType extends AbstractType
 {
+    /**
+     * An associative array of countries and their country codes (from the app's parameters).
+     *
+     * @var array
+     */
     private $countries;
 
+    /**
+     * Constructor function.
+     *
+     * @param ParameterBagInterface
+     * @return void
+     */
     public function __construct(ParameterBagInterface $params)
     {
         $this->countries = [];
@@ -22,6 +36,13 @@ class UserDetailsType extends AbstractType
         }
     }
 
+    /**
+     * Build the form.
+     *
+     * @param FormBuilderInterface Symfony's form builder interface.
+     * @param array An array of options.
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -39,6 +60,12 @@ class UserDetailsType extends AbstractType
             ->add('webpage');
     }
 
+    /**
+     * Configure the form options.
+     *
+     * @param OptionsResolver Symfony's options resolver.
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['data_class' => User::class]);

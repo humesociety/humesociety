@@ -5,13 +5,43 @@ namespace App\Entity\Candidate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
+/**
+ * The candidate repository.
+ *
+ * Controllers should not interact with the candidate repository directly, but instead use the
+ * candidate handler. The latter injects this class as a dependency, and exposes all the
+ * necessary functionality.
+ */
 class CandidateRepository extends ServiceEntityRepository
 {
+   /**
+    * Constructor function.
+    *
+    * @return void
+    */
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Candidate::class);
     }
 
+    /**
+     * Find how many candidates there are in the database.
+     *
+     * @return int
+     */
+    private function countCandidates(): int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('count(c.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Find all EVPTs.
+     *
+     * @return Candidate[]
+     */
     public function findEVPTs(): array
     {
         return $this->createQueryBuilder('c')
@@ -23,6 +53,11 @@ class CandidateRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Find all committee members.
+     *
+     * @return Candidate[]
+     */
     public function findExecs(): array
     {
         return $this->createQueryBuilder('c')
@@ -34,14 +69,31 @@ class CandidateRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findFirstYear(): ?int
+    /**
+     * Find all start years.
+     *
+     * @return int[]
+     */
+    public function findYears(): array
     {
-        return $this->createQueryBuilder('c')
-            ->select('MIN(c.start) as minStart')
+        if ($this->countCandidates() == 0) {
+            return [];
+        }
+
+        $years = $this->createQueryBuilder('c')
+            ->select('DISTINCT c.start')
+            ->orderBy('c.start')
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getScalarResult();
+        return array_map('current', $years);
     }
 
+    /**
+     * Find all candidates for a given start year.
+     *
+     * @param int The start year.
+     * @return Candidate[]
+     */
     public function findCandidatesByYear(int $year): array
     {
         return $this->createQueryBuilder('c')
