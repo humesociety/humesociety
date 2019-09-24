@@ -5,12 +5,6 @@
 {% block main %}
   <div class="section content">
     <h1>Reset Password for {{ user.username }}</h1>
-    {{ form_start(userResetPasswordForm) }}
-      {{ form_row(userResetPasswordForm.password) }}
-      {{ form_row(userResetPasswordForm._token) }}
-      <div class="buttons">
-        <button type="submit">Reset Password</button>
-      </div>
-    {{ form_end(userResetPasswordForm) }}
+    {% include 'site/_form/reset-password.twig' %}
   </div>
 {% endblock %}

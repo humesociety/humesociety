@@ -1,0 +1,35 @@
+<p>The Hume Society does not collect or store any credit or debit card information. Dues payments are collected online through <a href="https://www.paypal.com">PayPal</a>, a safe and secure method of payment accepting most major credit and debit cards. It is not necessary to have an account with PayPal in order to pay.</p>
+<form>
+<div>
+  <select id="duration">
+    <option value="1">1 year</option>
+    <option value="2">2 years</option>
+    <option value="5">5 years</option>
+  </select>
+</div>
+<div class="columns has-checkboxes">
+  <div class="column has-checkbox">
+    <div>
+      <input type="radio" name="membership" checked="checked" id="regular">
+      <label for="regular">Regular Membership</label>
+    </div>
+  </div>
+  <div class="column has-checkbox">
+    <div>
+      <input type="radio" name="membership" id="student">
+      <label for="student">Student Membership</label>
+    </div>
+  </div>
+</div>
+</form>
+<div class="columns checkout">
+  <div class="column">
+    <table>
+      <thead><tr><th>Total</th></tr></thead>
+      <tbody><tr><td id="total">$35</td></tr></tbody>
+    </table>
+  </div>
+  <div class="column">
+    <div id="paypal-buttons"></div>
+  </div>
+</div>

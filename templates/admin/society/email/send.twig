@@ -12,30 +12,10 @@
         </div>
       </div>
     </div>
-    <p>{% verbatim %}The content of your email should be written in HTML (with &lt;p&gt; tags around each paragraph). The email will be sent individually to each member, and will replace &ldquo;{{ firstname }}&rdquo;, &ldquo;{{ lastname }}&rdquo;, &ldquo;{{ username }}&rdquo;, and &ldquo;{{ email }}&rdquo; with the member&rsquo;s first name, last name, username, and email address respectively.{% endverbatim %}</p>
-    {{ form_start(emailForm) }}
-      <div class="columns has-checkboxes">
-        <div class="column has-checkbox">
-          {{ form_row(emailForm.current) }}
-        </div>
-        <div class="column has-checkbox">
-          {{ form_row(emailForm.lapsed) }}
-        </div>
-        <div class="column has-checkbox">
-          {{ form_row(emailForm.declining) }}
-        </div>
-      </div>
-      {{ form_row(emailForm.subject) }}
-      {{ form_row(emailForm.attachment) }}
-      {{ form_row(emailForm.content) }}
-      {{ form_row(emailForm._token) }}
-      <div class="buttons">
-        <button type="submit">Send Email</button>
-      </div>
-    {{ form_end(emailForm) }}
+    {% include 'admin/_include/email/help.twig' %}
+    {% include 'admin/_include/email/send.twig' with { 'form': emailForm } %}
   </div>
   <div class="box content">
-    <p>Below is a preview of what the rendered HTML of the email content will look like (though note that the precise details will depend on the email client at the other end). This preview is updated automatically as you edit the content field in the form above.</p>
-    <div class="box" data-preview="email_content"></div>
+    {% include 'admin/_include/email/preview.twig' %}
   </div>
 {% endblock %}

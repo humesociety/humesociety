@@ -2,8 +2,10 @@
 
 namespace App\Entity\Email;
 
+use App\Entity\User\UserHandler;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,6 +17,24 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 class EmailType extends AbstractType
 {
     /**
+     * An associative array of senders.
+     *
+     * @var array
+     */
+    private $senders;
+
+    /**
+     * Constructor function.
+     *
+     * @param UserHandler
+     * @return void
+     */
+    public function __construct(UserHandler $userHandler)
+    {
+        $this->senders = $userHandler->getOfficialEmails();
+    }
+
+    /**
      * Build the form.
      *
      * @param FormBuilderInterface Symfony's form builder interface.
@@ -25,16 +45,20 @@ class EmailType extends AbstractType
     {
         $builder
             ->add('current', CheckboxType::class, [
-                'label' => 'Send to Members in Good Standing',
+                'label' => 'Members in Good Standing',
                 'required' => false
             ])
             ->add('lapsed', CheckboxType::class, [
-                'label' => 'Send to Members in Arrears',
+                'label' => 'Members in Arrears',
                 'required' => false
             ])
             ->add('declining', CheckboxType::class, [
                 'label' => 'Include Members Declining General Emails',
                 'required' => false
+            ])
+            ->add('sender', ChoiceType::class, [
+                'choices' => $this->senders,
+                'label' => 'From'
             ])
             ->add('subject', TextType::class)
             ->add('attachment', FileType::class, [

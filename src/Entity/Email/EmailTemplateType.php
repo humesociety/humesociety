@@ -28,23 +28,7 @@ class EmailTemplateType extends AbstractType
      */
     public function __construct(UserHandler $userHandler)
     {
-        $evpt = $userHandler->getVicePresident();
-        $evptDisplay = $evpt
-            ? $evpt.' <vicepresident@humesociety.org>'
-            : 'Executive Vice-President Treasrer <vicepresident@humesociety.org>';
-        $tech = $userHandler->getTechnicalDirector();
-        $techDisplay = $tech
-            ? $tech.' <web@humesociety.org>'
-            : 'Technical Director <vicepresident@humesociety.org>';
-        $organisers = $userHandler->getConferenceOrganisers();
-        $organisersDisplay = (sizeof($organisers) > 0)
-            ? implode(', ', $organisers).' <conference@humesociety.org>'
-            : 'Conference Organisers <vicepresident@humesociety.org>';
-        $this->senders = [
-            $evptDisplay => 'vicepresident',
-            $techDisplay => 'web',
-            $organisersDisplay => 'conference'
-        ];
+        $this->senders = $userHandler->getOfficialEmails();
     }
 
     /**

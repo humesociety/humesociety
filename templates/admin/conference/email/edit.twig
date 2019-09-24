@@ -1,0 +1,21 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Edit Email Template{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>Edit {{ emails[emailTemplate.type] }} Email</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_conference_email_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
+        </div>
+      </div>
+    </div>
+    {% include 'admin/_include/email/help.twig' %}
+    {% include 'admin/_include/email/edit.twig' with { 'form': emailTemplateForm } %}
+  </div>
+  <div class="box content">
+    {% include 'admin/_include/email/preview.twig' %}
+  </div>
+{% endblock %}

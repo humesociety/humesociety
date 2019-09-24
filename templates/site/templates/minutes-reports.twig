@@ -1,21 +1,16 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  <div class="title-with-options">
-    <h1>{{ page.title }}</h1>
-    {% if reports %}
-      <div class="table-options">
-        <div class="option">
-          <select data-filter="year" data-table="reports">
-            {% for year in years|reverse %}
-              <option value="{{ year }}">{{ year }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-    {% endif %}
-  </div>
   {% if reports %}
+    {% embed 'site/_embed/title-with-options.twig' %}
+      {% block option %}
+        <select data-filter="year" data-table="reports">
+          {% for year in years|reverse %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      {% endblock %}
+    {% endembed %}
     <table class="loading" id="reports">
       <tbody>
         {% for report in reports %}
@@ -24,6 +19,7 @@
       </tbody>
     </table>
   {% else %}
+    <h1>{{ page.title }}</h1>
     <p>There are no reports in the database.</p>
   {% endif %}
 {% endblock %}

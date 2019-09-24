@@ -138,7 +138,7 @@ class UserHandler
     }
 
     /**
-     * Get official society email (address => name).
+     * Get an official society email address (address => name).
      *
      * @param string The type of email to get.
      * @return object
@@ -148,7 +148,7 @@ class UserHandler
         switch ($sender) {
             case 'vicepresident':
                 $evpt = $this->repository->findVicePresident();
-                $name = $evpt ? $evpt->getFullname() : 'Executive Vice-President Treasurer';
+                $name = $evpt ? $evpt : 'Executive Vice-President Treasurer';
                 return ['vicepresident@humesociety.org' => $name];
 
             case 'conference':
@@ -162,9 +162,36 @@ class UserHandler
             case 'web': // fallthrough
             default: // also make this the default, to ensure this function always returns something
                 $tech = $this->repository->findTechnicalDirector();
-                $name = $tech ? $tech->getFullname() : 'Technical Director';
+                $name = $tech ? $tech : 'Technical Director';
                 return ['web@humesociety.org' => $name];
         }
+    }
+
+    /**
+     * Get official society email addresses.
+     *
+     * @param string The type of email to get.
+     * @return object[]
+     */
+    public function getOfficialEmails(): array
+    {
+        $evpt = $this->getVicePresident();
+        $evptDisplay = $evpt
+            ? $evpt.' <vicepresident@humesociety.org>'
+            : 'Executive Vice-President Treasrer <vicepresident@humesociety.org>';
+        $tech = $this->getTechnicalDirector();
+        $techDisplay = $tech
+            ? $tech.' <web@humesociety.org>'
+            : 'Technical Director <vicepresident@humesociety.org>';
+        $organisers = $this->getConferenceOrganisers();
+        $organisersDisplay = (sizeof($organisers) > 0)
+            ? implode(', ', $organisers).' <conference@humesociety.org>'
+            : 'Conference Organisers <vicepresident@humesociety.org>';
+        return [
+            $evptDisplay => 'vicepresident',
+            $techDisplay => 'web',
+            $organisersDisplay => 'conference'
+        ];
     }
 
     /**

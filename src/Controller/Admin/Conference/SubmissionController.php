@@ -5,6 +5,8 @@ namespace App\Controller\Admin\Conference;
 use App\Entity\Conference\Conference;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Conference\ConferenceType;
+use App\Entity\Submission\Submission;
+use App\Entity\Submission\SubmissionHandler;
 use App\Entity\Upload\Upload;
 use App\Entity\Upload\UploadHandler;
 use App\Entity\Upload\UploadType;
@@ -39,6 +41,21 @@ class SubmissionController extends AbstractController
             'area' => 'conference',
             'subarea' => 'submission',
             'conference' => $conferenceHandler->getCurrentConference()
+        ]);
+    }
+
+    /**
+     * @Route("/details/{submission}", name="details")
+     */
+    public function details(
+        ConferenceHandler $conferenceHandler,
+        SubmissionHandler $submissionHandler,
+        Submission $submission
+    ): Response {
+        return $this->render('admin/conference/submission/details.twig', [
+            'area' => 'conference',
+            'subarea' => 'submission',
+            'submission' => $submission
         ]);
     }
 }

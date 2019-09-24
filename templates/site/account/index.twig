@@ -12,14 +12,14 @@
       </nav>
       <div class="tab-panes">
         <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="contact-details">
-          {% include 'form/user/details.html.twig' with { 'form': userDetailsForm } %}
+          {% include 'site/_form/user-details.twig' %}
         </div>
         <div class="tab-pane{% if tab == 'settings' %} is-active{% endif %}" id="membership-settings">
-          {% include 'form/user/settings.html.twig' with { 'form': userSettingsForm } %}
+          {% include 'site/_form/user-settings.twig' %}
         </div>
       </div>
     {% else %}
-      {% include 'form/user/details.html.twig' with { 'form': userDetailsForm } %}
+      {% include 'site/_form/user-details.twig' %}
     {% endif %}
   </div>
 {% endblock %}

@@ -5,33 +5,6 @@
 {% block main %}
   <div class="section content">
     <h1>Sign Up</h1>
-    <p>To join the Hume Society, or to submit a paper for the Hume Conference, you first need to create an account on this site. Once you have done so using the short form below, you will have access to additional forms for paying your membership fees and for submitting papers.</p>
-    <p>Membership costs $35 a year ($25 for students), or $150 for five years. There is a 25% discount for two-year membership (i.e. $52.50 for two years, $37.50 for students). Membership grants you access to restricted parts of this site, showing special offers for members, society information, forms for taking part in committee elections, etc. It also comes with a subscription to the journal <i>Hume Studies</i>, and access to the full online archive.</p>
-    <p>Note that you do not need to be a member to submit a paper for the Hume Conference, but membership is a prerequisite for taking part in the conference itself.</p>
-    {{ form_start(registrationForm) }}
-      {{ form_row(registrationForm.username) }}
-      {{ form_row(registrationForm.email) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(registrationForm.firstname) }}
-        </div>
-        <div class="column">
-          {{ form_row(registrationForm.lastname) }}
-        </div>
-      </div>
-      {{ form_row(registrationForm.country) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(registrationForm.password.first) }}
-        </div>
-        <div class="column">
-          {{ form_row(registrationForm.password.second) }}
-        </div>
-      </div>
-      {{ form_row(registrationForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button is-success">Sign Up</button>
-      </div>
-    {{ form_end(registrationForm) }}
+    {% include 'site/_form/register.twig' %}
   </div>
 {% endblock %}

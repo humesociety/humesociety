@@ -5,7 +5,7 @@
   {% if conferences|length > 0 %}
     {% for conference in conferences %}
       <div class="hero">
-        {% include 'includes/conference-details.html.twig' %}
+        {% include 'site/_include/conference-details.twig' %}
       </div>
     {% endfor %}
   {% else %}

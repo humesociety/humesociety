@@ -7,6 +7,27 @@
     <div class="heading">
       <h5>Submissions</h5>
     </div>
-    <p>Coming soon...</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Paper</th>
+          <th>Keywords</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for submission in conference.submissions %}
+          <tr>
+            <td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.title }}</a></td>
+            <td>{{ submission.keywords }}</td>
+            <td>{{ submission.status }}</td>
+            <td class="controls">
+              <a href="{{ path('admin_conference_submission_details', { submission: submission.id }) }}">More</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}

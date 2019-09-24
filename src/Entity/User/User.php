@@ -416,19 +416,13 @@ class User implements UserInterface
     public function setDues(int $yearsToAdd): self
     {
         $currentMonth = (int) date('m');
-        $currentYear = (int) date('Y');
-        $nextYearString = (string) ($currentYear + 1);
-        if ($currentMonth <= 6) {
-            $endDate = new \DateTime($nextYearString.'-12-31');
-        } else {
-            $endDate = new \DateTime($nextYearString.'-06-30');
-        }
+        $currentYear = date('Y');
+        $this->dues = ($currentMonth <= 6)
+            ? new \DateTime($currentYear.'-06-30')
+            : new \DateTime($currentYear.'-12-31');
 
         if ($yearsToAdd > 0) {
-            if ($yearsToAdd > 1) {
-                $endDate->add(new \DateInterval('P'.$yearsToAdd.'Y'));
-            }
-            $this->dues = $dues;
+            $this->dues->add(new \DateInterval('P'.$yearsToAdd.'Y'));
         }
 
         return $this;
@@ -978,11 +972,41 @@ class User implements UserInterface
     /**
      * Get the collection of the user's submissions to the Hume Conference.
      *
+     * @param Conference|null Optional conference to restrict to.
      * @return Submission[]
      */
-    public function getSubmissions(): Collection
+    public function getSubmissions(?Conference $conference = null): Collection
     {
-        return $this->submissions;
+        if ($conference == null) {
+            return $this->submissions;
+        }
+        $submissions = new ArrayCollection();
+        foreach ($this->submissions as $submission) {
+            if ($submission->getConference() == $conference) {
+                $submissions->add($submission);
+            }
+        }
+        return $submissions;
+    }
+
+    /**
+     * Get a collection of the user's submissions excluding those to the given conference.
+     *
+     * @param Conference|null Optional conference to exclude.
+     * @return Submission[]
+     */
+    public function getSubmissionsWithoutConference(?Conference $conference = null): Collection
+    {
+        if ($conference == null) {
+            return $this->submissions;
+        }
+        $submissions = new ArrayCollection();
+        foreach ($this->submissions as $submission) {
+            if ($submission->getConference() != $conference) {
+                $submissions->add($submission);
+            }
+        }
+        return $submissions;
     }
 
     /**

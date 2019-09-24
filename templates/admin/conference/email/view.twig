@@ -1,12 +1,11 @@
 {% extends 'admin/conference/_layout.twig' %}
 
-{% block title %}Email Templates{% endblock %}
+{% block title %}Emails{% endblock %}
 
 {% block main %}
   <div class="box content">
-    <div class="heading">
-      <h5>Email Templates</h5>
-    </div>
-    <p>Coming soon...</p>
+    <h5>Emails</h5>
+    <h6><a href="{{ path('admin_conference_email_edit', { type: 'submission' }) }}">Edit Submission Acknowledgement Email</a></h6>
+    <p>The submission acknowledgement email is sent out to anyone who submits a paper for the Hume Conference on this site.</p>
   </div>
 {% endblock %}

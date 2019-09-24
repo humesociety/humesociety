@@ -163,6 +163,11 @@ class Review
         return $this;
     }
 
+    public function getPath(): string
+    {
+        return 'reviews/user'.$this->user->getId().'/'.$this->conference->getYear().'/';
+    }
+
     // Getters for derivative properties
     public function getSubmitted(): bool
     {

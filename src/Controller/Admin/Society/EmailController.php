@@ -3,6 +3,7 @@
 namespace App\Controller\Admin\Society;
 
 use App\Entity\Email\EmailHandler;
+use App\Entity\Email\EmailTemplate;
 use App\Entity\Email\EmailTemplateType;
 use App\Entity\Email\EmailType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -55,6 +56,7 @@ class EmailController extends AbstractController
 
             if ($current || $lapsed) {
                 $declining = $form->get('declining')->getData();
+                $sender = $form->get('sender')->getData();
                 $subject = $form->get('subject')->getData();
                 $body = $form->get('content')->getData();
 
@@ -67,13 +69,8 @@ class EmailController extends AbstractController
                     $pathToAttachment = $path.$filename;
                 }
 
-                $results = $emailHandler->sendMembershipEmail($current, $lapsed, $declining, $subject, $body, $pathToAttachment);
-                $notice = 'Your email will be sent to '.$results['emailsSent'].' recipients';
-                if (sizeof($results['goodRecipients']) > 0) {
-                    $notice .= ': '.join(', ', $results['goodRecipients']);
-                } else {
-                    $notice .= '.';
-                }
+                $results = $emailHandler->sendMembershipEmail($current, $lapsed, $declining, $sender, $subject, $body, $pathToAttachment);
+                $notice = 'Your email will be sent to '.$results['emailsSent'].' recipients.';
                 $this->addFlash('notice', $notice);
                 if (sizeof($results['badRecipients']) > 0) {
                     $error = 'Your email could not be sent to the following addresses: ';
@@ -93,7 +90,7 @@ class EmailController extends AbstractController
     }
 
     /**
-     * @Route("/edit/{type}", name="edit")
+     * @Route("/edit/{type}", name="edit", requirements={"type": "welcome|reminder"})
      */
     public function edit(
         string $type,
@@ -103,7 +100,8 @@ class EmailController extends AbstractController
         $emailTemplate = $emailHandler->getEmailTemplateByType($type);
 
         if (!$emailTemplate) {
-            throw $this->createNotFoundException('Email template not found.');
+            $emailTemplate = new EmailTemplate();
+            $emailTemplate->setType($type);
         }
 
         $form = $this->createForm(EmailTemplateType::class, $emailTemplate);
@@ -111,6 +109,7 @@ class EmailController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $emailHandler->saveEmailTemplate($emailTemplate);
+            $templateName = $this->getParameter('emails')[$emailTemplate->__toString()];
             $this->addFlash('notice', '"'.$emailTemplate.'" email template has been modified.');
             return $this->redirectToRoute('admin_society_email_view');
         }

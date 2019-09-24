@@ -1,0 +1,9 @@
+{{ form_start(emailTemplateForm) }}
+  {{ form_row(emailTemplateForm.sender) }}
+  {{ form_row(emailTemplateForm.subject) }}
+  {{ form_row(emailTemplateForm.content) }}
+  {{ form_row(emailTemplateForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button is-success">Update</button>
+  </div>
+{{ form_end(emailTemplateForm) }}

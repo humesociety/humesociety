@@ -4,6 +4,7 @@ namespace App\Entity\Submission;
 
 use App\Entity\Conference\Conference;
 use App\Entity\Review\Review;
+use App\Entity\Upload\Upload;
 use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     message="You have already submitted a paper for this conference."
  * )
  */
-class Submission
+class Submission extends Upload
 {
     /**
      * The submission's unique identifier in the database.
@@ -178,6 +179,37 @@ class Submission
     }
 
     /**
+     * The authors of the paper.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $authors;
+
+    /**
+     * Get the authors of the paper (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getAuthors(): ?string
+    {
+        return $this->authors;
+    }
+
+    /**
+     * Set the authors of the paper.
+     *
+     * @param string The authors of the paper.
+     * @return self
+     */
+    public function setAuthors(string $authors)
+    {
+        $this->authors = $authors;
+
+        return $this;
+    }
+
+    /**
      * The abstract of the paper.
      *
      * @var string
@@ -209,7 +241,7 @@ class Submission
     }
 
     /**
-     * The keywords for the paper (as entered by the author/submitter).
+     * The keywords for the paper.
      *
      * @var string
      * @ORM\Column(type="string", length=255)
@@ -242,8 +274,11 @@ class Submission
     /**
      * The name of the submission file.
      *
+     * This property (and its getter, below) are defined in the Upload class, but need to
+     * be redeclared here, to link them to the database.
+     *
      * @var string
-     * @ORM\Column(type="string", length=5)
+     * @ORM\Column(type="string", length=255)
      */
     private $filename;
 
@@ -262,7 +297,6 @@ class Submission
      *
      * @var string
      * @ORM\Column(type="string", length=16)
-     * submitted|accepted|rejected
      */
     private $status;
 
@@ -292,47 +326,33 @@ class Submission
     }
 
     /**
-     * The file submitted.
+     * Get path to this file in the uploads subdirectory (overwrite the Upload default).
      *
-     * This property is used when uploading the file; once uploaded it is stored in the `uploads`
-     * directory, rather than in the database. A file must be included when a new Submission is
-     * created; subsequent editing need not alter that file.
-     *
-     * @var UploadedFile|null
-     * @Assert\NotBlank(groups={"create"}, message="Please attach a PDF file.")
-     * @Assert\File(
-     *     mimeTypes = {
-     *          "application/msword",
-     *          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-     *          "application/rtf"
-     *     },
-     *     mimeTypesMessage = "Please upload your paper in Word or RTF format."
-     * )
+     * @return string
      */
-    private $file;
-
-    /**
-     * Get the file submitted.
-     *
-     * @return UploadedFile|null
-     */
-    public function getFile(): ?UploadedFile
+    public function getPath(): string
     {
-        return $this->file;
+        return 'submissions/user'.$this->getUser()->getId().'/'.$this->getConference()->getYear().'/';
     }
 
     /**
-     * Set the file submitted (and the submission's filename at the same time).
+     * Get whether the given user has permission to view this submission.
      *
-     * @param UpladedFile The file submitted.
-     * @return self
+     * @return bool
      */
-    public function setFile(?UploadedFile $file): self
+    public function userCanView(User $user): bool
     {
-        $this->file = $file;
-        $this->filename = $file->getClientOriginalName();
-
-        return $this;
+        if ($this->user == $user) {
+            return true;
+        }
+        if (in_array('ROLE_ORGANISER', $user->getRoles())) {
+            return true;
+        }
+        if (in_array('ROLE_TECH', $user->getRoles())) {
+            return true;
+        }
+        // TODO: allow access to reviewers
+        return false;
     }
 
     /**

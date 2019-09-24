@@ -2,18 +2,15 @@
 
 {% block main %}
   {% if conferences %}
-    <div class="title-with-options">
-      <h1>{{ page.title }}</h1>
-      <div class="table-options">
-        <div class="option">
-          <select data-filter="decade" data-table="conferences">
-            {% for decade in decades %}
-              <option value="{{ decade }}">{{ decade }}s</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-    </div>
+    {% embed 'site/_embed/title-with-options.twig' %}
+      {% block option %}
+        <select data-filter="decade" data-table="conferences">
+          {% for decade in decades %}
+            <option value="{{ decade }}">{{ decade }}s</option>
+          {% endfor %}
+        </select>
+      {% endblock %}
+    {% endembed %}
     <table class="loading" id="conferences">
       <thead>
         <tr>

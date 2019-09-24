@@ -1,0 +1,6 @@
+{% for item in newsItems %}
+  <div class="news">
+    <h3>{{ item.date | date('m/d/Y') }}: {{ item.title }}</h3>
+    {{ item.content | raw }}
+  </div>
+{% endfor %}

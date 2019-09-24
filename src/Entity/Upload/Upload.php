@@ -48,7 +48,7 @@ class Upload
     /**
      * The full filename (including the extension).
      *
-     * @var string
+     * @var string|null
      */
     private $filename;
 
@@ -70,16 +70,41 @@ class Upload
      * This property is used when uploading the file; once uploaded it is stored in the `uploads`
      * directory, rather than in the database.
      *
-     * @var UploadedFile
-     * @Assert\NotBlank()
+     * @var UploadedFile|null
+     * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
+     * @Assert\File(
+     *     groups={"report"},
+     *     mimeTypes = {"application/pdf"},
+     *     mimeTypesMessage = "Please upload the report in PDF format."
+     * )
+     * @Assert\File(
+     *     groups={"submission"},
+     *     mimeTypes = {
+     *          "application/msword",
+     *          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     *          "application/rtf"
+     *     },
+     *     mimeTypesMessage = "Please upload your paper in Word or RTF format."
+     * )
      */
     private $file;
 
+    /**
+     * Get the uploaded file.
+     *
+     * @return UploadedFile|null
+     */
     public function getFile(): ?UploadedFile
     {
         return $this->file;
     }
 
+    /**
+     * Set the uploaded file.
+     *
+     * @param UploadedFile The uploaded file.
+     * @return self
+     */
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
@@ -89,7 +114,42 @@ class Upload
     }
 
     /**
-     * Constructor function,
+     * Get the URL for downloading the file.
+     *
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return '/uploads/'.$this->getPath().$this->getFilename();
+    }
+
+    /**
+     * Get the year of the file (conference files and reports).
+     *
+     * @return int|null
+     */
+    public function getYear(): ?int
+    {
+        $bits = explode('/', $this->path);
+        if ($bits[1] && intval($bits[1])) {
+          return intval($bits[1]);
+        }
+    }
+
+    /**
+     * Get the name of the file (minus the extension).
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        $bits = explode('.', $this->filename);
+        array_pop($bits); // pop the file extension
+        return implode('.', $bits);
+    }
+
+    /**
+     * Constructor function.
      *
      * @param string|null The subdirectory of the uploads folder where the file is stored.
      * @param string|null The full filename (including the extension).
@@ -97,8 +157,8 @@ class Upload
      */
     public function __construct(?string $path = null, ?string $filename = null)
     {
-        $this->path = $path;
-        $this->filename = $filename;
+        $this->path = $this->path || $path;
+        $this->filename = $this->filename || $filename;
     }
 
     /**
@@ -109,24 +169,5 @@ class Upload
     public function __toString(): string
     {
         return $this->filename;
-    }
-
-    // Getters for derivative properties
-    public function getUrl(): ?string
-    {
-        return '/uploads/'.$this->path.$this->filename;
-    }
-
-    public function getYear(): ?int
-    {
-        $bits = explode('/', $this->path);
-        return $bits[1] ? intval($bits[1]) : null;
-    }
-
-    public function getName(): ?string
-    {
-        $bits = explode('.', $this->filename);
-        array_pop($bits); // pop the file extension
-        return implode('.', $bits);
     }
 }

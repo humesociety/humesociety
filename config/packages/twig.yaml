@@ -6,6 +6,7 @@ twig:
         sections: '%sections%'
         countries: '%countries%'
         categories: '%categories%'
+        emails: '%emails%'
         uploads_directory: '%uploads_directory%'
         paypal:
             sandbox_client_id: '%env(PAYPAL_SANDBOX_CLIENT_ID)%'

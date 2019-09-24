@@ -2,6 +2,7 @@
 
 namespace App\Entity\Submission;
 
+use App\Entity\Upload\UploadHandler;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

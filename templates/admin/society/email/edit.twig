@@ -5,30 +5,17 @@
 {% block main %}
   <div class="box content">
     <div class="heading">
-      {% if emailTemplate.type == 'welcome' %}
-        <h5>Edit Welcome Email</h5>
-      {% else %}
-        <h5>Edit Dues Reminer Email</h5>
-      {% endif %}
+      <h5>Edit {{ emails[emailTemplate.type] }} Email</h5>
       <div class="heading-right">
         <div class="input">
           <a href="{{ path('admin_society_email_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
         </div>
       </div>
     </div>
-    <p>{% verbatim %}The content of your email should be written in HTML (with &lt;p&gt; tags around each paragraph). The email will be sent individually to each member, and will replace &ldquo;{{ firstname }}&rdquo;, &ldquo;{{ lastname }}&rdquo;, &ldquo;{{ username }}&rdquo;, and &ldquo;{{ email }}&rdquo; with the member&rsquo;s first name, last name, username, and email address respectively.{% endverbatim %}</p>
-    {{ form_start(emailTemplateForm) }}
-      {{ form_row(emailTemplateForm.sender) }}
-      {{ form_row(emailTemplateForm.subject) }}
-      {{ form_row(emailTemplateForm.content) }}
-      {{ form_row(emailTemplateForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button is-success">Update</button>
-      </div>
-    {{ form_end(emailTemplateForm) }}
+    {% include 'admin/_include/email/help.twig' %}
+    {% include 'admin/_include/email/edit.twig' with { 'form': emailTemplateForm } %}
   </div>
   <div class="box content">
-    <p>Below is a preview of what the rendered HTML of the email content will look like (though note that the precise appearance will depend on the email client at the other end). This preview is updated automatically as you edit the content field in the form above.</p>
-    <div class="box" data-preview="email_template_content"></div>
+    {% include 'admin/_include/email/preview.twig' %}
   </div>
 {% endblock %}

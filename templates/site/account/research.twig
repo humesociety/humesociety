@@ -12,69 +12,20 @@
     </nav>
     <div class="tab-panes">
       <div class="tab-pane{% if tab == 'availability' %} is-active{% endif %}" id="availability">
-        {% include 'form/user/availability.html.twig' with { 'form': userAvailabilityForm } %}
+        {% include 'site/_form/user-availability.twig' %}
       </div>
       <div class="tab-pane{% if tab == 'submissions' %} is-active{% endif %}" id="submissions">
         {% if conference %}
-          <div class="submission-notice">
-            {% if conference.deadline is not null %}
-              {% if app.user.hasSubmittedToConference(conference) %}
-                <p>Thank you for submitting a paper to the {{ conference }}. You can check the status of your submission here at any time, and we will email you when a decision has been made.</p>
-              {% elseif today <= conference.deadline %}
-                <p>Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on {{ conference.deadline|date('F d') }}. (You cannot submit a paper yet, however, because the software is still being developed and tested.)</p>
-              {% else %}
-                <p>Submissions for the {{ conference }} in {{ conference.town }} are now closed.</p>
-              {% endif %}
-            {% else %}
-              <p>Submissions for the {{ conference }} in {{ conference.town }} are not yet open. Please check back here later, or watch your email for announcements.</p>
-            {% endif %}
-          </div>
-        {% endif %}
-        {% if app.user.submissions | length > 0 %}
-          <table>
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Title</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for submission in app.user.submissions %}
-                <tr>
-                  <td>{{ submission.conference.year }}</td>
-                  <td>{{ submittion.title }}</td>
-                  <td>{{ submission.status }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {% include 'site/_include/conference-submissions.twig' %}
         {% else %}
-          <p>You have not submitted any papers for the Hume Conference on this system.</p>
+          <p>There is no forthcoming Hume Conference.</p>
         {% endif %}
       </div>
       <div class="tab-pane{% if tab == 'reviews' %} is-active{% endif %}" id="reviews">
-        {% if app.user.reviews | length > 0 %}
-          <table>
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Title</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for review in app.user.reviews %}
-                <tr>
-                  <td>{{ review.submission.conference.year }}</td>
-                  <td>{{ review.submittion.title }}</td>
-                  <td>{{ review.status }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+        {% if conference %}
+          {% include 'site/_include/conference-reviews.twig' %}
         {% else %}
-          <p>You have not reviewed any papers for the Hume Conference on this system.</p>
+          <p>There is no forthcoming Hume Conference.</p>
         {% endif %}
       </div>
     </div>

@@ -2,6 +2,8 @@
 
 namespace App\Entity\Email;
 
+use App\Entity\Conference\Conference;
+use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,6 +50,13 @@ class EmailHandler
     private $projectDir;
 
     /**
+     * Associative array of country codes and names.
+     *
+     * @var object
+     */
+    private $countries;
+
+    /**
      * Constructor function.
      *
      * @param \Swift_Mailer Swift Mailer.
@@ -67,6 +76,7 @@ class EmailHandler
         $this->repository = $manager->getRepository(EmailTemplate::class);
         $this->userHandler = $userHandler;
         $this->projectDir = $params->get('kernel.project_dir');
+        $this->countries = $params->get('countries');
     }
 
     /**
@@ -103,12 +113,58 @@ class EmailHandler
     }
 
     /**
+     * Replace user-related variables in email text.
+     *
+     * @param string The email text.
+     * @param User The user.
+     * @return string
+     */
+    private function prepareUserContent(string $text, User $user): string
+    {
+        $text = preg_replace('/{{ ?username ?}}/', $user->getUsername(), $text);
+        $text = preg_replace('/{{ ?email ?}}/', $user->getEmail(), $text);
+        $text = preg_replace('/{{ ?firstname ?}}/', $user->getFirstname(), $text);
+        $text = preg_replace('/{{ ?lastname ?}}/', $user->getLastname(), $text);
+        return $text;
+    }
+
+    /**
+     * Replace conference-related variables in email text.
+     *
+     * @param string The email text.
+     * @param Conference The conference.
+     * @return string
+     */
+    private function prepareConferenceContent(string $text, Conference $conference): string
+    {
+        $text = preg_replace('/{{ ?ordinal ?}}/', $conference->getOrdinal(), $text);
+        $text = preg_replace('/{{ ?town ?}}/', $conference->getTown(), $text);
+        $text = preg_replace('/{{ ?country ?}}/', $this->countries[$conference->getCountry()], $text);
+        return $text;
+    }
+
+    /**
+     * Replace submission-related variables in email text.
+     *
+     * @param string The email text.
+     * @param Submission The submission.
+     * @return string
+     */
+    private function prepareSubmissionContent(string $text, Submission $submission): string
+    {
+        $text = $this->prepareUserContent($text, $submission->getUser());
+        $text = $this->prepareConferenceContent($text, $submission->getConference());
+        $text = preg_replace('/{{ ?title ?}}/', $submission->getTitle(), $text);
+        return $text;
+    }
+
+    /**
      * Create a swift message email.
      *
      * @param User The recipient of the email.
      * @param string The sender of the email.
      * @param string The subject of the email.
-     * @param string The body of the email.
+     * @param string The content of the email.
      * @param string|null Path to any attachment.
      * @return \Swift_Message
      */
@@ -116,23 +172,19 @@ class EmailHandler
         User $user,
         string $sender,
         string $subject,
-        string $body,
+        string $content,
         ?string $pathToAttachment = null
     ): \Swift_Message {
         // create the email and an embedded logo image
         $email = new \Swift_Message($subject);
         $image = $email->embed(\Swift_Image::fromPath($this->projectDir.'/public/logo.jpg'));
 
-        // prepare the body of the email
-        $body = preg_replace('/{{ ?username ?}}/', $user->getUsername(), $body);
-        $body = preg_replace('/{{ ?email ?}}/', $user->getEmail(), $body);
-        $body = preg_replace('/{{ ?firstname ?}}/', $user->getFirstname(), $body);
-        $body = preg_replace('/{{ ?lastname ?}}/', $user->getLastname(), $body);
+        // create the body of the email
         $body = '<div style="font-size:16px;font-family:-apple-system,system-ui,BlinkMacSystemFont,'
               . 'Roboto,Oxygen,Ubuntu,Cantarell,Helvetica,Arial,sans-serif;line-height:1.5;'
               . 'color:#282828;max-width:600px;margin:1em auto;"><div><img src="'. $image
               . '" style="height:auto;max-width:100%;" alt="The Hume Society"></div><div style="padding:1em;">'
-              . $body
+              . $content
               . '</div></div>';
 
         // set the other email fields
@@ -155,7 +207,7 @@ class EmailHandler
      * @param bool Whether to include members who have declined to recieve general emails.
      * @param string The sender of the email.
      * @param string The subject of the email.
-     * @param string The body of the email.
+     * @param string The content of the email.
      * @param string|null The path to any attachment.
      * @return object
      */
@@ -163,8 +215,9 @@ class EmailHandler
         bool $current,
         bool $lapsed,
         bool $declining,
+        string $sender,
         string $subject,
-        string $body,
+        string $content,
         ?string $pathToAttachment = null
     ): array {
         // get the recipients of the email
@@ -189,7 +242,8 @@ class EmailHandler
         $goodRecipients = [];
         $badRecipients = [];
         foreach ($recipientUsers as $user) {
-            $email = $this->createEmail($user, $sender, $subject, $body, $pathToAttachment);
+            $content = $this->prepareUserContent($content, $user);
+            $email = $this->createEmail($user, $sender, $subject, $content, $pathToAttachment);
             $sent = $this->mailer->send($email);
             // $sent = $this->sendWithPhpMail($email, $user);
             if ($sent) {
@@ -221,7 +275,7 @@ class EmailHandler
         $link = 'https://www.humesociety.org/reset/'
               . $user->getUsername().'/'
               . $user->getPasswordResetSecret();
-        $body = '<p>Dear {{ firstname }} {{ lastname }},</p>'
+        $content = '<p>Dear {{ firstname }} {{ lastname }},</p>'
               . '<p>We have received a request to send you your login credentials for the Hume '
               . 'Society web site. Your username is &ldquo;{{ username }}&rdquo;. If you wish to '
               . 'reset your password, please click on the button below.</p>'
@@ -233,8 +287,9 @@ class EmailHandler
               . 'for 24 hours.</p>'
               . '<p>Thank you,</p>'
               . '<p>Amyas Merivale<br>Technical Director, The Hume Society</p>';
+        $content = $this->prepareUserContent($content, $user);
 
-        $email = $this->createEmail($user, $sender, $subject, $body);
+        $email = $this->createEmail($user, $sender, $subject, $content);
         $this->mailer->send($email);
     }
 
@@ -247,12 +302,13 @@ class EmailHandler
     public function sendNewMemberEmail(User $user)
     {
         $emailTemplate = $this->getEmailTemplateByType('welcome');
-        $sender = $emailTemplate->getSender();
-        $subject = $emailTemplate->getSubject();
-        $body = $emailTemplate->getContent();
-
-        $email = $this->createEmail($user, $sender, $subject, $body);
-        $this->mailer->send($email);
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $emailTemplate->getSubject();
+            $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
     }
 
     /**
@@ -263,12 +319,31 @@ class EmailHandler
      */
     public function sendDuesReminderEmail(User $user)
     {
-        $emailTemplate = $this->getEmailTemplateByType('dues-reminder');
-        $sender = $emailTemplate->getSender();
-        $subject = $emailTemplate->getSubject();
-        $body = $emailTemplate->getContent();
+        $emailTemplate = $this->getEmailTemplateByType('reminder');
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $emailTemplate->getSubject();
+            $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
 
-        $email = $this->createEmail($user, $sender, $subject, $body);
-        $this->mailer->send($email);
+    /**
+     * Send submission acknowledgement email.
+     *
+     * @param Submission The submission to acknowledge.
+     * @return void
+     */
+    public function sendSubmissionAcknowledgementEmail(Submission $submission)
+    {
+        $emailTemplate = $this->getEmailTemplateByType('submission');
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $emailTemplate->getSubject();
+            $content = $this->prepareSubmissionContent($emailTemplate->getContent(), $submission);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
     }
 }

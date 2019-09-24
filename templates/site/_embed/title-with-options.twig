@@ -1,0 +1,10 @@
+<div class="title-with-options">
+  <h1>{{ page.title }}</h1>
+  {% block right %}
+    <div class="table-options">
+      <div class="option">
+        {% block option %}{% endblock %}
+      </div>
+    </div>
+  {% endblock %}
+</div>

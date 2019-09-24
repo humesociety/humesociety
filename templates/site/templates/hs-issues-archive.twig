@@ -1,13 +1,14 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  <div class="title-with-options">
-    <h1>{{ page.title }}</h1>
-    <nav class="tabs">
-      <a data-tab="browse-archive" class="is-active">Browse</a>
-      <a data-tab="search-archive">Search</a>
-    </nav>
-  </div>
+  {% embed 'site/_embed/title-with-options.twig' %}
+    {% block right %}
+      <nav class="tabs">
+        <a data-tab="browse-archive" class="is-active">Browse</a>
+        <a data-tab="search-archive">Search</a>
+      </nav>
+    {% endblock %}
+  {% endembed %}
   {{ page.content | raw }}
   <div class="tab-panes">
     <div class="tab-pane is-active" id="browse-archive">Loading archive data...</div>

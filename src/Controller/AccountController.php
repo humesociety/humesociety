@@ -8,6 +8,7 @@ use App\Entity\DuesPayment\DuesPaymentHandler;
 use App\Entity\Email\EmailHandler;
 use App\Entity\Submission\Submission;
 use App\Entity\Submission\SubmissionHandler;
+use App\Entity\Submission\SubmissionType;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserDetailsType;
@@ -122,18 +123,46 @@ class AccountController extends AbstractController
     public function research(
         Request $request,
         ConferenceHandler $conferenceHandler,
+        EmailHandler $emailHandler,
+        SubmissionHandler $submissionHandler,
         UserHandler $userHandler,
         $tab = 'availability'
     ): Response {
+        // look for current conference
+        $conference = $conferenceHandler->getCurrentConference();
+
         // research availability form
-        $availabiliytForm = ($conferenceHandler->getCurrentConference() !== null)
+        $availabilityForm = $conference
             ? $this->createForm(UserFullAvailabilityType::class, $this->getUser())
             : $this->createForm(UserPartialAvailabilityType::class, $this->getUser());
-        $availabiliytForm->handleRequest($request);
+        $availabilityForm->handleRequest($request);
 
-        if ($availabiliytForm->isSubmitted() && $availabiliytForm->isValid()) {
+        if ($availabilityForm->isSubmitted() && $availabilityForm->isValid()) {
             $userHandler->saveUser($this->getUser());
             $this->addFlash('success', 'Your availability has been updated.');
+        }
+
+        // conference submission form
+        $submissionForm = null;
+        $userCanSubmitToConference = false;
+        if ($conference && $conference->isOpen()) {
+            if (sizeof($this->getUser()->getSubmissions($conference)) == 0) {
+                $userCanSubmitToConference = true;
+                $submission = new Submission();
+                $submission->setUser($this->getUser());
+                $submission->setConference($conference);
+                $submissionForm = $this->createForm(SubmissionType::class, $submission);
+                $submissionForm->handleRequest($request);
+
+                if ($submissionForm->isSubmitted()) {
+                    $tab = 'submissions';
+                    if ($submissionForm->isValid()) {
+                        $submissionHandler->saveSubmission($submission);
+                        $emailHandler->sendSubmissionAcknowledgementEmail($submission);
+                        $this->addFlash('success', 'Your paper has been submitted. A confirmation email has been sent to '.$user->getEmail());
+                    }
+                }
+            }
         }
 
         // TODO: submission and review forms ...
@@ -142,9 +171,11 @@ class AccountController extends AbstractController
         return $this->render('site/account/research.twig', [
             'page' => ['id' => 'research', 'section' => 'account'],
             'tab' => $tab,
-            'conference' => $conferenceHandler->getCurrentConference(),
-            'today' => new \DateTime('today'),
-            'userAvailabilityForm' => $availabiliytForm->createView()
+            'conference' => $conference,
+            'userCanSubmitToConference' => $userCanSubmitToConference,
+            'userAvailabilityForm' => $availabilityForm->createView(),
+            'submissionForm' => $submissionForm ? $submissionForm->createView() : null,
+            'submissions' => $this->getUser()->getSubmissions($conference)
         ]);
     }
 

@@ -2,50 +2,27 @@
 
 {% block main %}
   {% if societyNewsItems or membersNewsItems or conferencesNewsItems or fellowshipsNewsItems %}
-    <div class="title-with-options">
-      <h1>{{ page.title }}</h1>
-      <div class="table-options">
-        <div class="option">
-          <select data-filter="year" data-table="newsItems">
-            {% for year in years %}
-              <option value="{{ year }}">{{ year }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-    </div>
+    {% embed 'site/_embed/title-with-options.twig' %}
+      {% block option %}
+        <select data-filter="year" data-table="newsItems">
+          {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      {% endblock %}
+    {% endembed %}
     <div class="loading" id="newsItems">
       {% if societyNewsItems %}
-        {% for item in societyNewsItems %}
-          <div class="news" data-year="{{ item.date | date('Y') }}">
-            <h3>{{ item.date | date('m/d/Y') }}: {{ item.title }}</h3>
-            {{ item.content | raw }}
-          </div>
-        {% endfor %}
+        {% include 'site/_include/news-items.twig' with { 'newsItems': societyNewsItems } %}
       {% endif %}
       {% if membersNewsItems %}
-        {% for item in membersNewsItems %}
-          <div class="news" data-year="{{ item.date | date('Y') }}">
-            <h3>{{ item.date | date('m/d/Y') }}: {{ item.title }}</h3>
-            {{ item.content | raw }}
-          </div>
-        {% endfor %}
+        {% include 'site/_include/news-items.twig' with { 'newsItems': membersNewsItems } %}
       {% endif %}
       {% if conferencesNewsItems %}
-        {% for item in conferencesNewsItems %}
-          <div class="news" data-year="{{ item.date | date('Y') }}">
-            <h3>{{ item.date | date('m/d/Y') }}: {{ item.title }}</h3>
-            {{ item.content | raw }}
-          </div>
-        {% endfor %}
+        {% include 'site/_include/news-items.twig' with { 'newsItems': conferencesNewsItems } %}
       {% endif %}
       {% if fellowshipsNewsItems %}
-        {% for item in fellowshipsNewsItems %}
-          <div class="news" data-year="{{ item.date | date('Y') }}">
-            <h3>{{ item.date | date('m/d/Y') }}: {{ item.title }}</h3>
-            {{ item.content | raw }}
-          </div>
-        {% endfor %}
+        {% include 'site/_include/news-items.twig' with { 'newsItems': fellowshipsNewsItems } %}
       {% endif %}
     </div>
   {% else %}

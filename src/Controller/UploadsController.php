@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Issue\IssueHandler;
+use App\Entity\Submission\Submission;
 use App\Entity\Upload\UploadHandler;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -126,12 +127,39 @@ class UploadsController extends AbstractController
                 throw new AccessDeniedException('Please join the society to view this article.');
             }
             if (!$this->getUser()->isMemberInGoodStanding()) {
-                throw new AccessDeniedException('Your membership has expires. Please renew to view this article.');
+                throw new AccessDeniedException('Your membership has expired. Please renew to view this article.');
             }
         }
 
         // return the response
         $response = new BinaryFileResponse($path);
+        return $response;
+    }
+
+    /**
+     * Show conference submission file.
+     *
+     * @param Submission The submission to download.
+     * @return Response
+     * @Route("/submissions/{submission}", name="submission")
+     */
+    public function submission(Submission $submission): Response
+    {
+        // permissions check
+        if (!$submission->userCanView($this->getUser())) {
+            throw new AccessDeniedException('You do not have permission to download this file.');
+        }
+
+        // look for the file
+        $path = $this->container->get('parameter_bag')->get('uploads_directory');
+        $path .= $submission->getPath().$submission->getFilename();
+        if (!file_exists($path)) {
+            throw new NotFoundHttpException('File not found.');
+        }
+
+        // return the response
+        $response = new BinaryFileResponse($path);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $submission->getFilename());
         return $response;
     }
 }

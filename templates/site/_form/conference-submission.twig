@@ -1,0 +1,11 @@
+{{ form_start(submissionForm) }}
+  {{ form_row(submissionForm.title) }}
+  {{ form_row(submissionForm.authors) }}
+  {{ form_row(submissionForm.abstract) }}
+  {{ form_row(submissionForm.keywords) }}
+  {{ form_row(submissionForm.file) }}
+  {{ form_row(submissionForm._token) }}
+  <div class="buttons">
+    <button type="submit">Submit Paper</button>
+  </div>
+{{ form_end(submissionForm) }}

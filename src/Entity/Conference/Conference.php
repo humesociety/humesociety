@@ -488,9 +488,19 @@ class Conference
      *
      * @return bool
      */
-    public function submissionsAreOpen(): bool
+    public function isOpen(): bool
     {
         return $this->deadline && $this->deadline >= new \DateTime('today');
+    }
+
+    /**
+     * Get whether submissions are closed.
+     *
+     * @return bool
+     */
+    public function isClosed(): bool
+    {
+        return $this->deadline && $this->deadline < new \DateTime('today');
     }
 
     /**

@@ -1,49 +1,49 @@
 <p>Please provide the Hume Society with an up to date record of your contact details. We will not share this information with anyone else.</p>
-{{ form_start(form) }}
-  {{ form_row(form.email) }}
+{{ form_start(userDetailsForm) }}
+  {{ form_row(userDetailsForm.email) }}
   <div class="columns">
     <div class="column">
-      {{ form_row(form.firstname) }}
+      {{ form_row(userDetailsForm.firstname) }}
     </div>
     <div class="column">
-      {{ form_row(form.lastname) }}
+      {{ form_row(userDetailsForm.lastname) }}
     </div>
   </div>
   <div class="columns">
     <div class="column">
-      {{ form_row(form.department) }}
+      {{ form_row(userDetailsForm.department) }}
     </div>
     <div class="column">
-      {{ form_row(form.institution) }}
+      {{ form_row(userDetailsForm.institution) }}
     </div>
   </div>
   <div class="columns">
     <div class="column">
-      {{ form_row(form.city) }}
+      {{ form_row(userDetailsForm.city) }}
     </div>
     <div class="column">
-      {{ form_row(form.state) }}
+      {{ form_row(userDetailsForm.state) }}
     </div>
   </div>
-  {{ form_row(form.country) }}
+  {{ form_row(userDetailsForm.country) }}
   <div class="columns">
     <div class="column">
-      {{ form_row(form.officePhone) }}
+      {{ form_row(userDetailsForm.officePhone) }}
     </div>
     <div class="column">
-      {{ form_row(form.homePhone) }}
+      {{ form_row(userDetailsForm.homePhone) }}
     </div>
   </div>
   <div class="columns">
     <div class="column">
-      {{ form_row(form.fax) }}
+      {{ form_row(userDetailsForm.fax) }}
     </div>
     <div class="column">
-      {{ form_row(form.webpage) }}
+      {{ form_row(userDetailsForm.webpage) }}
     </div>
   </div>
-  {{ form_row(form._token) }}
+  {{ form_row(userDetailsForm._token) }}
   <div class="buttons">
     <button type="submit" class="button is-success">Update Details</button>
   </div>
-{{ form_end(form) }}
+{{ form_end(userDetailsForm) }}

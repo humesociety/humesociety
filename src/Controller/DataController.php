@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Issue\IssueHandler;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -71,9 +72,23 @@ class DataController extends AbstractController
      * @return Response
      * @Route("/issues", name="issues")
      */
-    public function issue(SerializerInterface $serializer, IssueHandler $issueHandler): Response
+    public function issues(SerializerInterface $serializer, IssueHandler $issueHandler): Response
     {
         $issues = $issueHandler->getIssues();
+        return new Response($serializer->serialize($issues, 'json', ['groups' => 'json']));
+    }
+
+    /**
+     * Details of the current Hume Conference.
+     *
+     * @param SerializerInterface Symfony's serializer.
+     * @param ConferenceHandler The conference handler.
+     * @return Response
+     * @Route("/conference", name="conference")
+     */
+    public function conference(SerializerInterface $serializer, ConferenceHandler $conferenceHandler): Response
+    {
+        $conference = $conferenceHandler->getCurrentConference();
         return new Response($serializer->serialize($issues, 'json', ['groups' => 'json']));
     }
 }

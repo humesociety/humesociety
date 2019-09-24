@@ -2,6 +2,9 @@
 
 namespace App\Controller\Admin\Conference;
 
+use App\Entity\Email\EmailHandler;
+use App\Entity\Email\EmailTemplate;
+use App\Entity\Email\EmailTemplateType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +35,38 @@ class EmailController extends AbstractController
         return $this->render('admin/conference/email/view.twig', [
             'area' => 'conference',
             'subarea' => 'email'
+        ]);
+    }
+
+    /**
+     * @Route("/edit/{type}", name="edit", requirements={"type": "submission|accept|reject|review|thanks"})
+     */
+    public function edit(
+        string $type,
+        Request $request,
+        EmailHandler $emailHandler
+    ): Response {
+        $emailTemplate = $emailHandler->getEmailTemplateByType($type);
+
+        if (!$emailTemplate) {
+            $emailTemplate = new EmailTemplate();
+            $emailTemplate->setType($type)->setSender('conference');
+        }
+
+        $form = $this->createForm(EmailTemplateType::class, $emailTemplate);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $emailHandler->saveEmailTemplate($emailTemplate);
+            $this->addFlash('notice', '"'.$emailTemplate.'" email template has been modified.');
+            return $this->redirectToRoute('admin_conference_email_view');
+        }
+
+        return $this->render('admin/conference/email/edit.twig', [
+            'area' => 'conference',
+            'subarea' => 'email',
+            'emailTemplate' => $emailTemplate,
+            'emailTemplateForm' => $form->createView()
         ]);
     }
 }
