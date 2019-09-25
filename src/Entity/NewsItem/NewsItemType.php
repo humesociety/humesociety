@@ -19,7 +19,7 @@ class NewsItemType extends AbstractType
     public function __construct(ParameterBagInterface $params)
     {
         $this->categories = [];
-        foreach ($params->get('categories') as $id => $category) {
+        foreach ($params->get('news_categories') as $id => $category) {
             $this->categories[$category] = $id;
         }
     }

@@ -5,14 +5,19 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+
     uploads_directory: '%kernel.project_dir%/uploads/'
+
+    section_ids: about|conferences|hs|scholarship|members
     sections:
         about: About
         conferences: Conferences
         hs: Hume Studies
         scholarship: Scholarship
         members: Members
-    templates:
+
+    page_template_ids: default|society-governance|conferences-forthcoming|conferences-all|hs-issues-archive|parallel-references|news-members|news-conferences|news-fellowships|news-archived|membership-stats|membership-list|minutes-reports|committee-voting
+    page_templates:
         default: Default
         society-governance: Society Governance
         conferences-forthcoming: Forthcoming Conferences
@@ -27,19 +32,41 @@ parameters:
         membership-list: List of Current Members
         minutes-reports: Society Minutes and Reports
         committee-voting: Commitee Voting Form
-    emails:
-        welcome: Welcome
-        reminder: Dues Reminder
-        submission: Submission Acknowledgement
-        accept: Submission Acceptance
-        reject: Submission Rejection
-        review: Review Invitation
-        thanks: Review Acknowledgement
-    categories:
+
+    society_email_template_ids: welcome|reminder
+    society_email_templates:
+        welcome:
+            title: Welcome
+            description: The welcome email is sent out to each individual as soon as they complete their registration on the site (and pay their dues through PayPal).
+        reminder:
+            title: Dues Reminder
+            description: The dues reminder email is sent out to every member at the start of the month when their subscription is due (i.e. 1st June or 1st December).
+
+    conference_email_template_ids: submission|accept|reject|review|thanks
+    conference_email_templates:
+        submission:
+            title: Submission Acknowledgement
+            description: The submission acknowledgement email is sent out to a user when they submit a paper for the Hume Conference.
+        review:
+            title: Review Invitation
+            description: The review invitation email is sent out to someone you invite to review a paper.
+        thanks:
+            title: Review Acknowledgement
+            description: The review acknowledgement email is sent out to a reviewer when they have submitted their review.
+        accept:
+            title: Submission Acceptance
+            description: The acceptance email is sent out to a user when you accept their paper.
+        reject:
+            title: Submission Rejection
+            description: The rejection email is sent out to a user when you reject their paper.
+
+    news_category_ids: society|members|conferences|fellowships
+    news_categories:
         society: Society News
         members: Members News
         conferences: Other Conferences
         fellowships: Fellowships and Awards
+
     countries:
         AFG: Afghanistan
         ALA: Åland Islands

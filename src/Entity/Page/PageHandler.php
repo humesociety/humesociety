@@ -3,7 +3,6 @@
 namespace App\Entity\Page;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class PageHandler
 {
@@ -11,11 +10,10 @@ class PageHandler
     private $repository;
     private $sections;
 
-    public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
+    public function __construct(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Page::class);
-        $this->sections = $params->get('sections');
     }
 
     public function getPage(string $section, string $slug): ?Page

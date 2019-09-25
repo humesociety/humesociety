@@ -69,9 +69,6 @@ class Page
      */
     private $content;
 
-    // Constructor function
-    // not needed
-
     // ToString function
     public function __toString(): string
     {

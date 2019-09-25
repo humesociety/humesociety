@@ -7,9 +7,9 @@
     <h5>Emails</h5>
     <h6><a href="{{ path('admin_society_email_send') }}">Send Membership Email</a></h6>
     <p>Create and send one-off emails to all members in good standing and/or in arrears.</p>
-    <h6><a href="{{ path('admin_society_email_edit', { type: 'welcome' }) }}">Edit Welcome Email</a></h6>
-    <p>The welcome email is sent out to each individual as soon as they complete their registration on the site (and pay their dues through PayPal).</p>
-    <h6><a href="{{ path('admin_society_email_edit', { type: 'reminder' }) }}">Edit Dues Reminder Email</a></h6>
-    <p>The dues reminder email is sent out to every member at the start of the month when their subscription is due (i.e. 1st June or 1st December).</p>
+    {% for id, template in society_email_templates %}
+      <h6><a href="{{ path('admin_society_email_edit', { type: id }) }}">Edit {{ template.title }} Email</a></h6>
+      <p>{{ template.description }}</p>
+    {% endfor %}
   </div>
 {% endblock %}

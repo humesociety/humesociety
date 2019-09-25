@@ -58,11 +58,7 @@ class DefaultController extends AbstractController
      * @param string The section of the site.
      * @param string The page within the section.
      * @return Response
-     * @Route(
-     *     "/{section}/{slug}",
-     *     name="society_page",
-     *     requirements={"section": "about|conferences|hs|scholarship|members"}
-     * )
+     * @Route("/{section}/{slug}", name="society_page", requirements={"section": "%section_ids%"})
      */
     public function page(
         CandidateHandler $candidateHandler,
@@ -131,6 +127,7 @@ class DefaultController extends AbstractController
      * @Route(
      *     "/template/{template}",
      *     name="society_template",
+     *     requirements={"template": "%page_template_ids%"},
      *     condition="'%kernel.environment%' !== 'prod'"
      * )
      */

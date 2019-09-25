@@ -40,7 +40,7 @@ class EmailController extends AbstractController
     }
 
     /**
-     * @Route("/edit/{type}", name="edit", requirements={"type": "submission|accept|reject|review|thanks"})
+     * @Route("/edit/{type}", name="edit", requirements={"type": "%conference_email_template_ids%"})
      */
     public function edit(
         string $type,

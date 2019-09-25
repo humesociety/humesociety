@@ -90,7 +90,7 @@ class EmailController extends AbstractController
     }
 
     /**
-     * @Route("/edit/{type}", name="edit", requirements={"type": "welcome|reminder"})
+     * @Route("/edit/{type}", name="edit", requirements={"type": "%society_email_template_ids%"})
      */
     public function edit(
         string $type,

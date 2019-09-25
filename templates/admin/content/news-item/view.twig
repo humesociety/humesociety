@@ -7,7 +7,7 @@
     <div class="heading">
       <h5>News Items</h5>
       <div class="heading-right">
-        {% if newsItems | length > 0 %}
+        {% if newsItems|length > 0 %}
           <div class="input">
             <label for="show-category">Category:</label>
             <select id="show-category" data-filter="category" data-table="newsItems">
@@ -18,12 +18,12 @@
           </div>
         {% endif %}
         <div class="input">
-          <a href="{{ path('admin_content_news-item_create') }}" class="button" data-menu="show-category"><i class="fas fa-plus"></i> New News Item</a>
+          <a href="{{ path('admin_content_news-item_create') }}" class="button"><i class="fas fa-plus"></i> Create News Item</a>
         </div>
       </div>
     </div>
     <p>Current news items are displayed either on the home page (for society news), or on pages using the relevant template (members news appears on the Members News template, etc.). One the end date for a news item has passed, it will appear instead on pages using the Archived News template.</p>
-    {% if newsItems %}
+    {% if newsItems|length > 0 %}
       <table class="loading" id="newsItems">
         <thead>
           <tr>

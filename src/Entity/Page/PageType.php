@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class PageType extends AbstractType
 {
     private $sections;
-    private $templates;
+    private $pageTemplates;
 
     public function __construct(ParameterBagInterface $params)
     {
@@ -19,9 +19,9 @@ class PageType extends AbstractType
         foreach ($params->get('sections') as $id => $section) {
             $this->sections[$section] = $id;
         }
-        $this->templates = [];
-        foreach ($params->get('templates') as $id => $template) {
-            $this->templates[$template] = $id;
+        $this->pageTemplates = [];
+        foreach ($params->get('page_templates') as $id => $template) {
+            $this->pageTemplates[$template] = $id;
         }
     }
 
@@ -31,7 +31,7 @@ class PageType extends AbstractType
             ->add('section', ChoiceType::class, ['choices' => $this->sections])
             ->add('slug')
             ->add('title')
-            ->add('template', ChoiceType::class, ['choices' => $this->templates])
+            ->add('template', ChoiceType::class, ['choices' => $this->pageTemplates])
             ->add('content');
     }
 
