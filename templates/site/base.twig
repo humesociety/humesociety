@@ -74,7 +74,7 @@
         <p>The Hume Society receives institutional support from <a href="https://www.iwu.edu/">Illinois Wesleyan University</a> and from <a href="https://wp.stolaf.edu/">St. Olaf College</a>.</p>
       </div>
     </footer>
-    <script src="https://www.paypal.com/sdk/js?client-id={% if app.environment == 'dev' %}{{ paypal.sandbox_client_id }}{% else %}{{ paypal.client_id }}{% endif %}"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}"></script>
     {{ encore_entry_script_tags('site') }}
   </body>
 </html>

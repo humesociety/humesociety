@@ -4,7 +4,6 @@ namespace App\Entity\Submission;
 
 use App\Entity\Conference\Conference;
 use App\Entity\Review\Review;
-use App\Entity\Upload\Upload;
 use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     message="You have already submitted a paper for this conference."
  * )
  */
-class Submission extends Upload
+class Submission
 {
     /**
      * The submission's unique identifier in the database.
@@ -37,6 +36,127 @@ class Submission extends Upload
     private $id;
 
     /**
+     * The user who submitted the paper.
+     *
+     * @var User
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * The conference the paper is submitted to.
+     *
+     * @var Conference
+     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $conference;
+
+    /**
+     * The date the submission is created/submitted.
+     *
+     * @var \DateTimeInterface
+     * @ORM\Column(type="date")
+     */
+    private $dateSubmitted;
+
+    /**
+     * The reviews of this submission.
+     *
+     * @var Review[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="submission")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $reviews;
+
+    /**
+     * The title of the paper.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $title;
+
+    /**
+     * The authors of the paper.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $authors;
+
+    /**
+     * The abstract of the paper.
+     *
+     * @var string
+     * @ORM\Column(type="text")
+     */
+    private $abstract;
+
+    /**
+     * The keywords for the paper.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $keywords;
+
+    /**
+     * The name of the submission file.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $filename;
+
+    /**
+     * The status of the submission (submitted|accepted|rejected).
+     *
+     * @var string
+     * @ORM\Column(type="string", length=16)
+     */
+    private $status;
+
+    /**
+     * The uploaded submission file (used temporarily when uploading the file).
+     *
+     * @var UploadedFile
+     * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
+     * @Assert\File(
+     *     mimeTypes = {
+     *          "application/msword",
+     *          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     *          "application/rtf"
+     *     },
+     *     mimeTypesMessage = "Please upload your paper in Word or RTF format."
+     * )
+     */
+    private $file;
+
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->dateSubmitted = new \DateTime();
+        $this->reviews = new ArrayCollection();
+        $this->status = 'submitted';
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->title;
+    }
+
+    /**
      * Get the submission's unique identifier (null when the object is first created).
      *
      * @return int|null
@@ -45,15 +165,6 @@ class Submission extends Upload
     {
         return $this->id;
     }
-
-    /**
-     * The user who submitted the paper.
-     *
-     * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
 
     /**
      * Get the user who submitted the paper (null when the object is first created).
@@ -79,15 +190,6 @@ class Submission extends Upload
     }
 
     /**
-     * The conference the paper is submitted to.
-     *
-     * @var Conference
-     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $conference;
-
-    /**
      * Get the conference this paper is submitted to (null when the object is first created).
      *
      * @return Conference
@@ -111,14 +213,6 @@ class Submission extends Upload
     }
 
     /**
-     * The date the submission is created/submitted.
-     *
-     * @var \DateTimeInterface
-     * @ORM\Column(type="date")
-     */
-    private $dateSubmitted;
-
-    /**
      * Get the date the submission is created/submitted.
      *
      * @return \DateTimeInterface
@@ -129,15 +223,6 @@ class Submission extends Upload
     }
 
     /**
-     * The reviews of this submission.
-     *
-     * @var Review[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="submission")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $reviews;
-
-    /**
      * Get the reviews of this submission.
      *
      * @return Review[]
@@ -146,14 +231,6 @@ class Submission extends Upload
     {
         return $this->reviews;
     }
-
-    /**
-     * The title of the paper.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
 
     /**
      * Get the title of the paper (null when the object is first created).
@@ -171,20 +248,12 @@ class Submission extends Upload
      * @param string The title of the paper.
      * @return self
      */
-    public function setTitle(string $title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
-
-    /**
-     * The authors of the paper.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $authors;
 
     /**
      * Get the authors of the paper (null when the object is first created).
@@ -202,20 +271,12 @@ class Submission extends Upload
      * @param string The authors of the paper.
      * @return self
      */
-    public function setAuthors(string $authors)
+    public function setAuthors(string $authors): self
     {
         $this->authors = $authors;
 
         return $this;
     }
-
-    /**
-     * The abstract of the paper.
-     *
-     * @var string
-     * @ORM\Column(type="text")
-     */
-    private $abstract;
 
     /**
      * Get the abstract of the paper (null when the object is first created).
@@ -233,20 +294,12 @@ class Submission extends Upload
      * @param string The abstract of the paper.
      * @return self
      */
-    public function setAbstract(string $abstract)
+    public function setAbstract(string $abstract): self
     {
         $this->abstract = $abstract;
 
         return $this;
     }
-
-    /**
-     * The keywords for the paper.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $keywords;
 
     /**
      * Get the keywords for the paper (null when the object is first created).
@@ -264,23 +317,13 @@ class Submission extends Upload
      * @param string The keywords for the paper.
      * @return self
      */
-    public function setKeywords(string $keywords)
+    public function setKeywords(string $keywords): self
     {
-        $this->keywords = $keywords;
+        // enforce regular comma-separated format
+        $this->keywords = implode(', ', array_map('trim', explode(',', $keywords)));
 
         return $this;
     }
-
-    /**
-     * The name of the submission file.
-     *
-     * This property (and its getter, below) are defined in the Upload class, but need to
-     * be redeclared here, to link them to the database.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $filename;
 
     /**
      * Get the name of the submission file (null when the object is first created).
@@ -291,14 +334,6 @@ class Submission extends Upload
     {
         return $this->filename;
     }
-
-    /**
-     * The status of the submission (submitted|accepted|rejected).
-     *
-     * @var string
-     * @ORM\Column(type="string", length=16)
-     */
-    private $status;
 
     /**
      * Get the status of the submission (null when the object is first created).
@@ -316,11 +351,35 @@ class Submission extends Upload
      * @param string The status of the submission.
      * @return self
      */
-    public function setStatus(string $status)
+    public function setStatus(string $status): self
     {
         if (in_array($status, ['submitted', 'accepted', 'rejected'])) {
             $this->status = $status;
         }
+
+        return $this;
+    }
+
+    /**
+     * Get the submission file.
+     *
+     * @return UploadedFile|null
+     */
+    public function getFile(): ?UploadedFile
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set the submission file.
+     *
+     * @param UploadedFile The submission file.
+     * @return self
+     */
+    public function setFile(UploadedFile $file): self
+    {
+        $this->file = $file;
+        $this->filename = $file->getClientOriginalName();
 
         return $this;
     }
@@ -332,7 +391,7 @@ class Submission extends Upload
      */
     public function getPath(): string
     {
-        return 'submissions/user'.$this->getUser()->getId().'/'.$this->getConference()->getYear().'/';
+        return 'submissions/user'.$this->getUser()->getId().'/'.$this->getConference()->getNumber().'/';
     }
 
     /**
@@ -353,27 +412,5 @@ class Submission extends Upload
         }
         // TODO: allow access to reviewers
         return false;
-    }
-
-    /**
-     * Constructor function.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->dateSubmitted = new \DateTime();
-        $this->reviews = new ArrayCollection();
-        $this->status = 'submitted';
-    }
-
-    /**
-     * ToString function.
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->title;
     }
 }

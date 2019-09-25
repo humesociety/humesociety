@@ -6,14 +6,13 @@ use App\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Candidate objects represent candidates for election to the executive committee (including the
- * Executive Vice President-Treasurer). If marked as 'elected', they also represent members of the
- * executive committee. They can optionally be linked to a User in the database.
+ * A candidate for election to the executive committee. If marked as `elected`, a member of the
+ * executive committee.
  *
- * If linked to a User, the `firstname`, `lastname`, and `institution` fields here potentially
- * duplicate information in the Users table. That information may change or be deleted, however,
- * when the information here should stay the same (e.g. if the person moves institution, or leaves
- * the society, deleting their account altogether).
+ * Candidates can optionally be linked to a user in the database. If so, the `firstname`,
+ * `lastname`, and `institution` fields here potentially duplicate information in the Users table.
+ * That information may change or be deleted, however, when the information here should stay the
+ * same (e.g. if the person moves institution, or deletes their account.
  *
  * @ORM\Entity(repositoryClass="App\Entity\Candidate\CandidateRepository")
  */
@@ -30,6 +29,131 @@ class Candidate
     private $id;
 
     /**
+     * The candidate's firstname.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firstname;
+
+    /**
+     * The candidate's lastname.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastname;
+
+    /**
+     * The candidate's institution.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $institution;
+
+    /**
+     * The associated user.
+     *
+     * This field is nullable in case the person subsequently deletes their account, and because
+     * our records predate this web site.
+     *
+     * @var User|null
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="candidacies")
+     */
+    private $user;
+
+    /**
+     * The start year of this term of office.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $start;
+
+    /**
+     * The end year of this term of office (null when the object is first created).
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $end;
+
+    /**
+     * A description of the candidate (for voters to read).
+     *
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $description;
+
+    /**
+     * How many votes the candidate has received.
+     *
+     * @var int
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $votes;
+
+    /**
+     * Whether the candidate is elected.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $elected;
+
+    /**
+     * Whether the candidate is reelectable after this term of office.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private $reelectable;
+
+    /**
+     * Whether the candidate is standing for president.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $president;
+
+    /**
+     * Whether the candidate is standing for EVPT.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $evpt;
+
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->start = idate('Y') + 1; // default should be candidates for next year's term
+        $this->end = $this->start + 2; // terms last three years by default
+        $this->votes = 0;
+        $this->elected = false;
+        $this->reelectable = true;
+        $this->president = false;
+        $this->evpt = false;
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getLastname().', '.$this->getFirstname();
+    }
+
+    /**
      * Get the candidate's unique identifier (null when the object is first created).
      *
      * @return int|null
@@ -38,14 +162,6 @@ class Candidate
     {
         return $this->id;
     }
-
-    /**
-     * The candidate's firstname.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $firstname;
 
     /**
      * Get the candidate's firstname (null when the object is first created).
@@ -71,14 +187,6 @@ class Candidate
     }
 
     /**
-     * The candidate's lastname.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $lastname;
-
-    /**
      * Get the candidate's lastname (null when the object is first created).
      *
      * @return int|null
@@ -102,14 +210,6 @@ class Candidate
     }
 
     /**
-     * The candidate's institution.
-     *
-     * @var string|null
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $institution;
-
-    /**
      * Get the candidate's institution.
      *
      * @return string|null
@@ -125,17 +225,6 @@ class Candidate
 
         return $this;
     }
-
-    /**
-     * The associated user.
-     *
-     * This field is nullable in case the person subsequently deletes their account, and because
-     * our records predate this web site.
-     *
-     * @var User|null
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="candidacies")
-     */
-    private $user;
 
     /**
      * Get the associated user.
@@ -161,14 +250,6 @@ class Candidate
     }
 
     /**
-     * The start year of this term of office.
-     *
-     * @var int
-     * @ORM\Column(type="integer")
-     */
-    private $start;
-
-    /**
      * Get the start year of this term of office (null when the object is first created).
      *
      * @return int|null
@@ -191,14 +272,6 @@ class Candidate
     }
 
     /**
-     * The end year of this term of office (null when the object is first created).
-     *
-     * @var int
-     * @ORM\Column(type="integer")
-     */
-    private $end;
-
-    /**
      * Get the end year of this term of office (null when the object is first created).
      *
      * @return int|null
@@ -219,14 +292,6 @@ class Candidate
 
         return $this;
     }
-
-    /**
-     * A description of the candidate (for voters to read).
-     *
-     * @var string|null
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $description;
 
     /**
      * Get the description of this candidate.
@@ -252,14 +317,6 @@ class Candidate
     }
 
     /**
-     * How many votes the candidate has received.
-     *
-     * @var int
-     * @ORM\Column(type="integer", options={"default": 0})
-     */
-    private $votes;
-
-    /**
      * Get how many votes the candidate has received.
      *
      * @return int
@@ -281,14 +338,6 @@ class Candidate
 
         return $this;
     }
-
-    /**
-     * Whether the candidate is elected.
-     *
-     * @var bool
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $elected;
 
     /**
      * Get whether the candidate is elected.
@@ -314,14 +363,6 @@ class Candidate
     }
 
     /**
-     * Whether the candidate is reelectable after this term of office.
-     *
-     * @var bool
-     * @ORM\Column(type="boolean", options={"default": true})
-     */
-    private $reelectable;
-
-    /**
      * Get whether the candidate is reelectable after this term of office.
      *
      * @return bool
@@ -343,14 +384,6 @@ class Candidate
 
         return $this;
     }
-
-    /**
-     * Whether the candidate is standing for president.
-     *
-     * @var bool
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $president;
 
     /**
      * Get whether the candidate is standing for president.
@@ -376,14 +409,6 @@ class Candidate
     }
 
     /**
-     * Whether the candidate is standing for EVPT.
-     *
-     * @var bool
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $evpt;
-
-    /**
      * Get whether the candidate is standing for EVPT.
      *
      * @return bool
@@ -404,30 +429,5 @@ class Candidate
         $this->evpt = $evpt;
 
         return $this;
-    }
-    /**
-     * Constructor function.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->start = idate('Y') + 1; // default should be candidates for next year's term
-        $this->end = $this->start + 2; // terms last three years by default
-        $this->votes = 0;
-        $this->elected = false;
-        $this->reelectable = true;
-        $this->president = false;
-        $this->evpt = false;
-    }
-
-    /**
-     * ToString function.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getLastname().', '.$this->getFirstname();
     }
 }

@@ -1,7 +1,7 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  {% embed 'site/_embed/title-with-options.tiwg' %}
+  {% embed 'site/_embed/title-with-options.twig' %}
     {% block option %}
       <select id="year-select" data-range="start-end" data-table="governance">
         {% for year in years|reverse %}

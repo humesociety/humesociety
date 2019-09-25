@@ -15,7 +15,7 @@
     <div class="tab-pane{% if tab == 'review' %} is-active{% endif %}" id="review">
       {% if reviewers|length > 0 %}
         <p>The following users have indicated a willingness to recieve invitations to review papers for the Hume Conference or Hume Studies.</p>
-        {% include 'table/volunteers.html.twig' with { users: reviewers } %}
+        {% include 'admin/_include/conference/volunteers.twig' with { users: reviewers } %}
       {% else %}
         <p>No one in the database has indicated a willingness to review papers for the Hume Conference or Hume Studies.</p>
       {% endif %}
@@ -23,7 +23,7 @@
     <div class="tab-pane{% if tab == 'comment' %} is-active{% endif %}" id="comment">
       {% if commentators|length > 0 %}
         <p>The following users have indicated a willingness to comment on a paper at the {{ conference }}.</p>
-        {% include 'table/volunteers.html.twig' with { users: commentators } %}
+        {% include 'admin/_include/conference/volunteers.twig' with { users: commentators } %}
       {% else %}
         <p>No one in the database has indicated a willingness to comment on a paper at the {{ conference }}.</p>
       {% endif %}
@@ -31,7 +31,7 @@
     <div class="tab-pane{% if tab == 'chair' %} is-active{% endif %}" id="chair">
       {% if chairs|length > 0 %}
         <p>The following users have indicated a willingness to chair a session at the {{ conference }}.</p>
-        {% include 'table/volunteers.html.twig' with { users: chairs } %}
+        {% include 'admin/_include/conference/volunteers.twig' with { users: chairs } %}
       {% else %}
         <p>No one in the database has indicated a willingness to chair a session at the {{ conference }}.</p>
       {% endif %}

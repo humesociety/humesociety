@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-      {% if issue.articles | length > 0 %}
+      {% if issue.articles|length > 0 %}
         <table>
           <thead>
             <tr>
@@ -79,7 +79,7 @@
                     <a class="control" title="Move Down" href="{{ path('admin_journal_article_down', { id: article.id }) }}"><span class="icon"><i class="fas fa-caret-down"></i></span></a>
                   {% endif %}
                 </td>
-                <td><a href="/uploads/issues/v{{ article.issue.volume }}n{{ article.issue.number }}/{{ article.filename }}">{{ article.title | raw }}</a></td>
+                <td><a href="/uploads/issues/v{{ article.issue.volume }}n{{ article.issue.number }}/{{ article.filename }}">{{ article.title|raw }}</a></td>
                 <td style="white-space:nowrap;">{{ article.authors }}</td>
                 <td class="controls">
                   <a href="{{ path('admin_journal_article_edit', { id: article.id }) }}">Edit</a>

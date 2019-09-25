@@ -242,6 +242,7 @@ class EmailHandler
         $goodRecipients = [];
         $badRecipients = [];
         foreach ($recipientUsers as $user) {
+            $subject = $this->prepareUserContent($subject, $user);
             $content = $this->prepareUserContent($content, $user);
             $email = $this->createEmail($user, $sender, $subject, $content, $pathToAttachment);
             $sent = $this->mailer->send($email);
@@ -304,7 +305,7 @@ class EmailHandler
         $emailTemplate = $this->getEmailTemplateByType('welcome');
         if ($emailTemplate) {
             $sender = $emailTemplate->getSender();
-            $subject = $emailTemplate->getSubject();
+            $subject = $this->prepareUserContent($emailTemplate->getSubject(), $user);
             $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
             $email = $this->createEmail($user, $sender, $subject, $content);
             $this->mailer->send($email);
@@ -322,7 +323,7 @@ class EmailHandler
         $emailTemplate = $this->getEmailTemplateByType('reminder');
         if ($emailTemplate) {
             $sender = $emailTemplate->getSender();
-            $subject = $emailTemplate->getSubject();
+            $subject = $this->prepareUserContent($emailTemplate->getSubject(), $user);
             $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
             $email = $this->createEmail($user, $sender, $subject, $content);
             $this->mailer->send($email);
@@ -340,7 +341,85 @@ class EmailHandler
         $emailTemplate = $this->getEmailTemplateByType('submission');
         if ($emailTemplate) {
             $sender = $emailTemplate->getSender();
-            $subject = $emailTemplate->getSubject();
+            $subject = $this->prepareSubmissionContent($emailTemplate->getSubject(), $submission);
+            $content = $this->prepareSubmissionContent($emailTemplate->getContent(), $submission);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * Send submission acceptance email.
+     *
+     * @param Submission The submission to accept.
+     * @return void
+     */
+    public function sendSubmissionAcceptanceEmail(Submission $submission)
+    {
+        $emailTemplate = $this->getEmailTemplateByType('accept');
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $this->prepareSubmissionContent($emailTemplate->getSubject(), $submission);
+            $content = $this->prepareSubmissionContent($emailTemplate->getContent(), $submission);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * Send submission rejection email.
+     *
+     * @param Submission The submission to rejept.
+     * @return void
+     */
+    public function sendSubmissionRejectionEmail(Submission $submission)
+    {
+        $emailTemplate = $this->getEmailTemplateByType('reject');
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $this->prepareSubmissionContent($emailTemplate->getSubject(), $submission);
+            $content = $this->prepareSubmissionContent($emailTemplate->getContent(), $submission);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * Send submission review invitation email.
+     *
+     * @param Submission The submission to be reviewed.
+     * @param User The potential reviewer.
+     * @return void
+     */
+    public function sendSubmissionReviewInvitationEmail(Submission $submission, User $user)
+    {
+        $emailTemplate = $this->getEmailTemplateByType('review');
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $this->prepareUserContent($emailTemplate->getSubject(), $user);
+            $subject = $this->prepareSubmissionContent($emailTemplate->getSubject(), $submission);
+            $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
+            $content = $this->prepareSubmissionContent($emailTemplate->getContent(), $submission);
+            $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * Send submission review acknowledgement email.
+     *
+     * @param Submission The submission whose review is to be acknowledged.
+     * @param User The reviewer.
+     * @return void
+     */
+    public function sendSubmissionReviewAcknowledgementEmail(Submission $submission, User $user)
+    {
+        $emailTemplate = $this->getEmailTemplateByType('thanks');
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $subject = $this->prepareUserContent($emailTemplate->getSubject(), $user);
+            $subject = $this->prepareSubmissionContent($emailTemplate->getSubject(), $submission);
+            $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
             $content = $this->prepareSubmissionContent($emailTemplate->getContent(), $submission);
             $email = $this->createEmail($user, $sender, $subject, $content);
             $this->mailer->send($email);

@@ -4,7 +4,7 @@
   <img src="{{ conference.splash.url }}" alt="{{ conference.town }}">
 {% endif %}
 <p>{{ conference.dates }}</p>
-{% if conference.cfp or conference.website or conference.submissionsAreOpen %}
+{% if conference.cfp or conference.website or conference.isOpen %}
   <div class="links">
     {% if conference.cfp %}
       <a href="{{ conference.cfp.url }}">Call for Papers</a>
@@ -15,7 +15,7 @@
     {% if conference.site %}
       <a href="{{ conference.site.url }}">Conference Website Backup</a>
     {% endif %}
-    {% if conference.submissionsAreOpen %}
+    {% if conference.isOpen %}
       <a href="{{ path('account_research', { tab: 'submissions' }) }}">Submit a Paper</a>
     {% endif %}
   </div>

@@ -7,6 +7,7 @@ use App\Entity\Issue\IssueHandler;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -89,6 +90,28 @@ class DataController extends AbstractController
     public function conference(SerializerInterface $serializer, ConferenceHandler $conferenceHandler): Response
     {
         $conference = $conferenceHandler->getCurrentConference();
-        return new Response($serializer->serialize($issues, 'json', ['groups' => 'json']));
+        if ($conference) {
+            return new Response($serializer->serialize($conference, 'json', ['groups' => 'json']));
+        }
+        return new JsonResponse(null);
+    }
+
+    /**
+     * Details of the current Hume Conference.
+     *
+     * @param SerializerInterface Symfony's serializer.
+     * @param ConferenceHandler The conference handler.
+     * @return Response
+     * @Route("/conference/keywords", name="conference_keywords")
+     */
+    public function conferenceKeywords(
+        SerializerInterface $serializer,
+        ConferenceHandler $conferenceHandler
+    ): Response {
+        $conference = $conferenceHandler->getCurrentConference();
+        if ($conference) {
+            return new JsonResponse($conferenceHandler->getSubmissionKeywords($conference));
+        }
+        return new JsonResponse(null);
     }
 }

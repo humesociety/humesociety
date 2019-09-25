@@ -14,7 +14,7 @@
     <table class="loading" id="reports">
       <tbody>
         {% for report in reports %}
-          <tr data-year="{{ report.year }}"><td><a href="{{ report.url }}">{{ report.name }}</a></td></tr>
+          <tr data-year="{{ report.subpath }}"><td><a href="{{ report.url }}">{{ report.name }}</a></td></tr>
         {% endfor %}
       </tbody>
     </table>

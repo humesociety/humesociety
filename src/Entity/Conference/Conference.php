@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -42,6 +43,140 @@ class Conference
     private $id;
 
     /**
+     * The conference's (unique) number.
+     *
+     * @var int
+     * @Groups("json")
+     * @ORM\Column(type="integer", unique=true)
+     */
+    private $number;
+
+    /**
+     * The conference's ordinal (derived from its number).
+     *
+     * @var string
+     * @Groups("json")
+     */
+    private $ordinal;
+
+    /**
+     * The year of the conference.
+     *
+     * @var int
+     * @Groups("json")
+     * @ORM\Column(type="integer", unique=true)
+     */
+    private $year;
+
+    /**
+     * The start date of the conference.
+     *
+     * @var \DateTimeInterface|null
+     * @Groups("json")
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $startDate;
+
+    /**
+     * The end date of the conference.
+     *
+     * @var \DateTimeInterface|null
+     * @Groups("json")
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $endDate;
+
+    /**
+     * The host institution for the conference.
+     *
+     * @var string
+     * @Groups("json")
+     * @ORM\Column(type="string", length=255)
+     */
+    private $institution;
+
+    /**
+     * The town where the conference is held.
+     *
+     * @var string
+     * @Groups("json")
+     * @ORM\Column(type="string", length=255)
+     */
+    private $town;
+
+    /**
+     * The three-letter country code of the country where the conference is held.
+     *
+     * @var string
+     * @Groups("json")
+     * @ORM\Column(type="string", length=3)
+     */
+    private $country;
+
+    /**
+     * The URL of the conference's web site.
+     *
+     * @var string|null
+     * @Groups("json")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $website;
+
+    /**
+     * The date at which submissions to this conference close.
+     *
+     * A null value for this property indicates that submissions have not yet been opened.
+     *
+     * @var \DateTimeInterface|null
+     * @Groups("json")
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $deadline;
+
+    /**
+     * A collection of submissions to this conference.
+     *
+     * @var Submission[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $submissions;
+
+    /**
+     * An array of uploads associated with this conference.
+     *
+     * Note that uploads are not persisted to the database, but simply saved to disk. The
+     * ConferenceHandler should set this array when fetching Conferences from the database, by
+     * reading from the appropriate directory on the disk.
+     *
+     * @var Upload[]
+     */
+    private $uploads;
+
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        // initialise the uploads as an array
+        $this->uploads = [];
+        // initialise the submissions as a Symfony ArrayCollection
+        $this->submissions = new ArrayCollection();
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->getOrdinal().' Hume Conference';
+    }
+
+    /**
      * Get the conference's unique identifier (null when the object is first created).
      *
      * @return int|null
@@ -50,14 +185,6 @@ class Conference
     {
         return $this->id;
     }
-
-    /**
-     * The conference's (unique) number.
-     *
-     * @var int
-     * @ORM\Column(type="integer", unique=true)
-     */
-    private $number;
 
     /**
      * Get the conference's (unique) number (null when the object is first created).
@@ -83,12 +210,19 @@ class Conference
     }
 
     /**
-     * The year of the conference.
+     * Get the ordinal of this conference (from its number).
      *
-     * @var int
-     * @ORM\Column(type="integer", unique=true)
+     * @return string
      */
-    private $year;
+    public function getOrdinal(): string
+    {
+        if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
+            return $this->number.'th';
+        }
+
+        $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+        return $this->number.$ends[$this->number % 10];
+    }
 
     /**
      * Get the year of the conference (null when the object is first created).
@@ -114,12 +248,14 @@ class Conference
     }
 
     /**
-     * The start date of the conference.
+     * Get the decade of this conference (from its year).
      *
-     * @var \DateTimeInterface|null
-     * @ORM\Column(type="date", nullable=true)
+     * @return int
      */
-    private $startDate;
+    public function getDecade(): int
+    {
+        return $this->year - ($this->year % 10);
+    }
 
     /**
      * Get the start date of the conference.
@@ -145,14 +281,6 @@ class Conference
     }
 
     /**
-     * The end date of the conference.
-     *
-     * @var \DateTimeInterface|null
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $endDate;
-
-    /**
      * Get the end date of the conference.
      *
      * @return \DateTimeInterface|null
@@ -176,12 +304,18 @@ class Conference
     }
 
     /**
-     * The host institution for the conference.
+     * Get a string representation of the dates of this conference.
      *
-     * @var string
-     * @ORM\Column(type="string", length=255)
+     * @return string
      */
-    private $institution;
+    public function getDates(): string
+    {
+        if ($this->startDate && $this->endDate) {
+            return date_format($this->startDate, 'F j').' - '.date_format($this->endDate, 'F j').', '.$this->year;
+        }
+
+        return $this->year;
+    }
 
     /**
      * Get the host institution for the conference (null when the object is first created).
@@ -207,14 +341,6 @@ class Conference
     }
 
     /**
-     * The town where the conference is held.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $town;
-
-    /**
      * Get the town where the conference is held (null when the object is first created).
      *
      * @return string|null
@@ -236,14 +362,6 @@ class Conference
 
         return $this;
     }
-
-    /**
-     * The three-letter country code of the country where the conference is held.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=3)
-     */
-    private $country;
 
     /**
      * Get the three-letter country code of the country where the conference is held (null when the
@@ -270,14 +388,6 @@ class Conference
     }
 
     /**
-     * The URL of the conference's web site.
-     *
-     * @var string|null
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $website;
-
-    /**
      * Get the URL of the conference's web site.
      *
      * @return string|null
@@ -299,16 +409,6 @@ class Conference
 
         return $this;
     }
-
-    /**
-     * The date at which submissions to this conference close.
-     *
-     * A null value for this property indicates that submissions have not yet been opened.
-     *
-     * @var \DateTimeInterface|null
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $deadline;
 
     /**
      * Get the date at which submissions to this conference close.
@@ -334,13 +434,24 @@ class Conference
     }
 
     /**
-     * A collection of submissions to this conference.
+     * Get whether submissions are open.
      *
-     * @var Submission[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
-     * @ORM\JoinColumn(nullable=false)
+     * @return bool
      */
-    private $submissions;
+    public function isOpen(): bool
+    {
+        return $this->deadline && $this->deadline >= new \DateTime('today');
+    }
+
+    /**
+     * Get whether submissions are closed.
+     *
+     * @return bool
+     */
+    public function isClosed(): bool
+    {
+        return $this->deadline && $this->deadline < new \DateTime('today');
+    }
 
     /**
      * Get the collection of submissions to this conference.
@@ -351,52 +462,6 @@ class Conference
     {
         return $this->submissions;
     }
-
-    /**
-     * Add a submission to this conference.
-     *
-     * @param Submission The submission entity to add.
-     * @return self
-     */
-    public function addSubmission(Submission $submission): self
-    {
-        if (!$this->submissions->contains($submission)) {
-            $this->submissions[] = $submission;
-            $submission->setConference($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove a submission from this conference.
-     *
-     * @param Submission The submission entity to remove.
-     * @return self
-     */
-    public function removeSubmission(Submission $submission): self
-    {
-        if ($this->submissions->contains($submission)) {
-            $this->submissions->removeElement($submission);
-            // set the owning side to null (unless already changed)
-            if ($submission->getConference() === $this) {
-                $submission->setConference(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * An array of uploads associated with this conference.
-     *
-     * Note that uploads are not persisted to the database, but simply saved to disk. The
-     * ConferenceHandler should set this array when fetching Conferences from the database, by
-     * reading from the appropriate directory on the disk.
-     *
-     * @var Upload[]
-     */
-    private $uploads;
 
     /**
      * Get the array of uploads associated with this conference.
@@ -422,85 +487,13 @@ class Conference
     }
 
     /**
-     * Constructor function.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        // initialise the uploads as an array
-        $this->uploads = [];
-        // initialise the submissions as a Symfony ArrayCollection
-        $this->submissions = new ArrayCollection();
-    }
-
-    /**
-     * ToString function.
+     * Get the path to the conference's uploaded files.
      *
      * @return string
      */
-    public function __toString(): string
+    public function getPath(): string
     {
-        return $this->getOrdinal().' Hume Conference';
-    }
-
-    /**
-     * Get the ordinal of this conference (from its number).
-     *
-     * @return string
-     */
-    public function getOrdinal(): string
-    {
-        if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
-            return $this->number.'th';
-        }
-
-        $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
-        return $this->number.$ends[$this->number % 10];
-    }
-
-    /**
-     * Get the decade of this conference (from its year).
-     *
-     * @return int
-     */
-    public function getDecade(): int
-    {
-        return $this->year - ($this->year % 10);
-    }
-
-    /**
-     * Get a string representation of the dates of this conference.
-     *
-     * @return string
-     */
-    public function getDates(): string
-    {
-        if ($this->startDate && $this->endDate) {
-            return date_format($this->startDate, 'F j').' - '.date_format($this->endDate, 'F j').', '.$this->year;
-        }
-
-        return $this->year;
-    }
-
-    /**
-     * Get whether submissions are open.
-     *
-     * @return bool
-     */
-    public function isOpen(): bool
-    {
-        return $this->deadline && $this->deadline >= new \DateTime('today');
-    }
-
-    /**
-     * Get whether submissions are closed.
-     *
-     * @return bool
-     */
-    public function isClosed(): bool
-    {
-        return $this->deadline && $this->deadline < new \DateTime('today');
+        return 'conferences/'.$this->number.'/';
     }
 
     /**

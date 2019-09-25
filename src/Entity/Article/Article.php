@@ -3,6 +3,7 @@
 namespace App\Entity\Article;
 
 use App\Entity\Issue\Issue;
+use App\Entity\Upload\Upload;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,6 +43,111 @@ class Article
     private $id;
 
     /**
+     * The issue the article is published in.
+     *
+     * @var Issue
+     * @ORM\ManyToOne(targetEntity="App\Entity\Issue\Issue", inversedBy="articles")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $issue;
+
+    /**
+     * The position of the article in the issue.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     * @Groups("json")
+     */
+    private $position;
+
+    /**
+     * The title of the article.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     * @Groups("json")
+     */
+    private $title;
+
+    /**
+     * The authors of the article.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("json")
+     */
+    private $authors;
+
+    /**
+     * The start page of the article.
+     *
+     * @var int|null
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups("json")
+     */
+    private $startPage;
+
+    /**
+     * The end page of the article.
+     *
+     * @var int|null
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups("json")
+     */
+    private $endPage;
+
+    /**
+     * The article's ID on Project MUSE.
+     *
+     * @ORM\Column(type="integer", unique=true, nullable=true)
+     * @Groups("json")
+     */
+    private $museId;
+
+    /**
+     * The article's DOI.
+     *
+     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @Groups("json")
+     */
+    private $doi;
+
+    /**
+     * The file itself (a temporary property used when uploading the article).
+     * @var UploadedFile|null
+     * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
+     * @Assert\File(
+     *     mimeTypes = {"application/pdf"},
+     *     mimeTypesMessage = "Please upload the article in PDF format."
+     * )
+     */
+    private $file;
+
+    /**
+     * The article's filename on disk (derivative property, not persisted to the database).
+     *
+     * @Groups("json")
+     */
+    private $filename;
+
+    /**
+     * The path to the article's file on disk (derivative property, not persisted to the database).
+     *
+     * @Groups("json")
+     */
+    private $path;
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->title;
+    }
+
+    /**
      * Get the article's unique identifier (null when the object is first created).
      *
      * @return int|null
@@ -50,15 +156,6 @@ class Article
     {
         return $this->id;
     }
-
-    /**
-     * The issue the article is published in.
-     *
-     * @var Issue
-     * @ORM\ManyToOne(targetEntity="App\Entity\Issue\Issue", inversedBy="articles")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $issue;
 
     /**
      * Get the issue the article is published in (null when the object is first created).
@@ -81,15 +178,6 @@ class Article
 
         return $this;
     }
-
-    /**
-     * The position of the article in the issue.
-     *
-     * @var int
-     * @ORM\Column(type="integer")
-     * @Groups("json")
-     */
-    private $position;
 
     /**
      * Get the position of the article in the issue (null when the object is first created).
@@ -115,15 +203,6 @@ class Article
     }
 
     /**
-     * The title of the article.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     * @Groups("json")
-     */
-    private $title;
-
-    /**
      * Get the title of the article (null when the object is first created).
      *
      * @return string|null
@@ -139,19 +218,12 @@ class Article
      * @param string The title of the article.
      * @return self
      */
-    public function setTitle(string $title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
-    }
 
-    /**
-     * The authors of the article.
-     *
-     * @var string|null
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("json")
-     */
-    private $authors;
+        return $this;
+    }
 
     /**
      * Get the authors of the article.
@@ -169,24 +241,17 @@ class Article
      * @param string|null The authors of the article.
      * @return self
      */
-    public function setAuthors(?string $authors)
+    public function setAuthors(?string $authors): self
     {
         $this->authors = $authors;
-    }
 
-    /**
-     * The start page of the article.
-     *
-     * @var int|null
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups("json")
-     */
-    private $startPage;
+        return $this;
+    }
 
     /**
      * Get the start page of the article.
      *
-     * @return int|null The start page of the article.
+     * @return int|null
      */
     public function getStartPage(): ?int
     {
@@ -199,24 +264,17 @@ class Article
      * @param int|null The start page of the article.
      * @return self
      */
-    public function setStartPage(?int $startPage)
+    public function setStartPage(?int $startPage): self
     {
         $this->startPage = $startPage;
-    }
 
-    /**
-     * The end page of the article.
-     *
-     * @var int|null
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups("json")
-     */
-    private $endPage;
+        return $this;
+    }
 
     /**
      * Get the end page of the article.
      *
-     * @return int|null The start page of the article.
+     * @return int|null
      */
     public function getEndPage(): ?int
     {
@@ -229,22 +287,29 @@ class Article
      * @param int|null The end page of the article.
      * @return self
      */
-    public function setEndPage(?int $endPage)
+    public function setEndPage(?int $endPage): self
     {
         $this->endPage = $endPage;
+
+        return $this;
     }
 
     /**
-     * @ORM\Column(type="integer", unique=true, nullable=true)
-     * @Groups("json")
+     * Get the article's ID on Project MUSE.
+     *
+     * @return int|null
      */
-    private $museId;
-
     public function getMuseId(): ?int
     {
         return $this->museId;
     }
 
+    /**
+     * Set the article's ID on Project MUSE.
+     *
+     * @param int|null The article's ID on Project MUSE.
+     * @return self
+     */
     public function setMuseId(?int $museId): self
     {
         $this->museId = $museId;
@@ -253,16 +318,21 @@ class Article
     }
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
-     * @Groups("json")
+     * Get the article's DOI.
+     *
+     * @return int|null
      */
-    private $doi;
-
     public function getDoi(): ?string
     {
         return $this->doi;
     }
 
+    /**
+     * Set the article's DOI.
+     *
+     * @param string|null The article's DOI.
+     * @return self
+     */
     public function setDoi(?string $doi): self
     {
         $this->doi = $doi;
@@ -271,24 +341,22 @@ class Article
     }
 
     /**
-     * @Assert\NotBlank(groups={"create"}, message="Please attach a PDF file.")
-     * @Assert\File(
-     *     mimeTypes = {"application/pdf"},
-     *     mimeTypesMessage = "Please upload a valid PDF file."
-     * )
+     * Get the file itself.
      *
-     * This property is used when uploading the file; once uploaded it is stored in the `uploads`
-     * directory, rather than in the database. A file must be included when a new Article is
-     * created; subsequent editing need not alter that file.
+     * @return UploadedFile|null
      */
-    private $file;
-
     public function getFile(): ?UploadedFile
     {
         return $this->file;
     }
 
-    public function setFile(?UploadedFile $file): self
+    /**
+     * Set the uploaded file.
+     *
+     * @param UploadedFile The file.
+     * @return self
+     */
+    public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
 
@@ -296,22 +364,22 @@ class Article
     }
 
     /**
-     * @Groups("json")
+     * Get the article's filename on disk.
+     *
+     * @return string
      */
-    private $filename;
-
-    public function getFilename(): ?string
+    public function getFilename(): string
     {
         return $this->museId ? $this->museId.'.pdf' : $this->title.'.pdf';
     }
 
     /**
-     * ToString function.
+     * Get the path to the article's file on disk.
      *
      * @return string
      */
-    public function __toString(): string
+    public function getPath(): string
     {
-        return $this->title;
+        return 'issues/v'.$this->issue->getVolume().'n'.$this->issue->getNumber().'/';
     }
 }

@@ -28,23 +28,25 @@ class ArticleController extends AbstractController
      */
     public function edit(Article $article, ArticleHandler $articleHandler, Request $request): Response
     {
+        // remember the current filename in case it changes
         $oldFilename = $article->getFilename();
 
+        // create and handle the edit article form
         $articleForm = $this->createForm(ArticleEditType::class, $article);
         $articleForm->handleRequest($request);
-
         if ($articleForm->isSubmitted() && $articleForm->isValid()) {
             $articleHandler->saveArticle($article);
             if ($article->getFilename() !== $oldFilename) {
                 $articleHandler->renameArticleFile($article, $oldFilename);
             }
-            $this->addFlash('notice', 'Article "'.$article.'" has been updated.');
+            $this->addFlash('notice', '"'.$article.'" has been updated.');
             return $this->redirectToRoute('admin_journal_issue_edit', [
                 'id' => $article->getIssue()->getId(),
                 'tab' => 'articles'
             ]);
         }
 
+        // return the response
         return $this->render('admin/journal/article/edit.twig', [
             'area' => 'journal',
             'subarea' => 'issue',
@@ -59,7 +61,6 @@ class ArticleController extends AbstractController
     public function up(Article $article, ArticleHandler $articleHandler): Response
     {
         $articleHandler->moveArticleUp($article);
-        $this->addFlash('notice', 'Article "'.$article.'" has been moved up.');
         return $this->redirectToRoute('admin_journal_issue_edit', [
             'id' => $article->getIssue()->getId(),
             'tab' => 'articles'
@@ -72,7 +73,6 @@ class ArticleController extends AbstractController
     public function down(Article $article, ArticleHandler $articleHandler): Response
     {
         $articleHandler->moveArticleDown($article);
-        $this->addFlash('notice', 'Article "'.$article.'" has been moved down.');
         return $this->redirectToRoute('admin_journal_issue_edit', [
             'id' => $article->getIssue()->getId(),
             'tab' => 'articles'
@@ -84,18 +84,19 @@ class ArticleController extends AbstractController
      */
     public function delete(Article $article, ArticleHandler $articleHandler, Request $request): Response
     {
+        // create and handle the delete article form
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
-
         if ($form->isSubmitted()) {
             $articleHandler->deleteArticle($article);
-            $this->addFlash('notice', 'Article "'.$article.'" has been deleted.');
+            $this->addFlash('notice', '"'.$article.'" has been deleted.');
             return $this->redirectToRoute('admin_journal_issue_edit', [
                 'id' => $article->getIssue()->getId(),
                 'tab' => 'articles'
             ]);
         }
 
+        // return the response
         return $this->render('admin/journal/article/delete.twig', [
             'area' => 'journal',
             'subarea' => 'issue',
@@ -109,22 +110,24 @@ class ArticleController extends AbstractController
      */
     public function create(Issue $issue, ArticleHandler $articleHandler, Request $request): Response
     {
+        // create a new article
         $article = new Article();
         $article->setIssue($issue);
         $article->setPosition($articleHandler->getNextArticlePosition($issue));
 
+        // create and handle the new article form
         $articleForm = $this->createForm(ArticleCreateType::class, $article);
         $articleForm->handleRequest($request);
-
         if ($articleForm->isSubmitted() && $articleForm->isValid()) {
             $articleHandler->saveArticle($article);
-            $this->addFlash('notice', 'Article "'.$article.'" has been created.');
-            return $this->redirectToRoute('admin_journal_issue_view', [
+            $this->addFlash('notice', '"'.$article.'" has been created.');
+            return $this->redirectToRoute('admin_journal_issue_edit', [
                 'id' => $issue->getId(),
                 'tab' => 'articles'
             ]);
         }
 
+        // return the response
         return $this->render('admin/journal/article/create.twig', [
             'area' => 'journal',
             'subarea' => 'issue',

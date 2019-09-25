@@ -3,13 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Candidate\CandidateHandler;
-use App\Entity\Election\ElectionHandler;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\NewsItem\NewsItemHandler;
 use App\Entity\Page\Page;
 use App\Entity\Page\PageHandler;
 use App\Entity\Upload\UploadHandler;
-use App\Entity\User\UserHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,11 +67,9 @@ class DefaultController extends AbstractController
     public function page(
         CandidateHandler $candidateHandler,
         ConferenceHandler $conferenceHandler,
-        ElectionHandler $electionHandler,
         NewsItemHandler $newsItemHandler,
         PageHandler $pageHandler,
         UploadHandler $uploadHandler,
-        UserHandler $userHandler,
         Request $request,
         string $section,
         string $slug = 'index'
@@ -112,7 +108,78 @@ class DefaultController extends AbstractController
             }
         }
 
-        // otherwise render the page with the appropriate template
+        // render the page
+        return $this->renderPage(
+            $page,
+            $siblings,
+            $candidateHandler,
+            $conferenceHandler,
+            $newsItemHandler,
+            $uploadHandler
+        );
+    }
+
+    /**
+     * Dummy template pages (used for testing the templates). Not to be made available in production.
+     *
+     * @param CandidateHandler The candidate handler.
+     * @param ConferenceHandler The conference handler.
+     * @param NewsItemHandler The news item handler.
+     * @param UploadHandler The upload handler.
+     * @param string The template to render.
+     * @return Response
+     * @Route(
+     *     "/template/{template}",
+     *     name="society_template",
+     *     condition="'%kernel.environment%' !== 'prod'"
+     * )
+     */
+    public function template(
+        CandidateHandler $candidateHandler,
+        ConferenceHandler $conferenceHandler,
+        NewsItemHandler $newsItemHandler,
+        UploadHandler $uploadHandler,
+        string $template
+    ): Response {
+          // create a dummy page with the given template
+          $page = new Page();
+          $page->setSection('about')
+              ->setPosition(1)
+              ->setSlug($template)
+              ->setTitle($template)
+              ->setTemplate($template)
+              ->setContent('<p>Example of this template.</p>');
+
+          // return the response
+          return $this->renderPage(
+              $page,
+              [$page],
+              $candidateHandler,
+              $conferenceHandler,
+              $newsItemHandler,
+              $uploadHandler
+          );
+    }
+
+    /**
+     * Function for rendering a given page.
+     *
+     * @param Page The page to render.
+     * @param Page[] The page's siblings.
+     * @param CandidateHandler The candidate handler.
+     * @param ConferenceHandler The conference handler.
+     * @param NewsItemHandler The news item handler.
+     * @param UploadHandler The upload handler.
+     * @return Response
+     */
+    private function renderPage(
+        Page $page,
+        array $siblings,
+        CandidateHandler $candidateHandler,
+        ConferenceHandler $conferenceHandler,
+        NewsItemHandler $newsItemHandler,
+        UploadHandler $uploadHandler
+    ): Response {
         switch ($page->getTemplate()) {
             case 'society-governance':
                 return $this->render('site/templates/society-governance.twig', [

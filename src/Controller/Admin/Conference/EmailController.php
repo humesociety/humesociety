@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin\Conference;
 
+use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Email\EmailHandler;
 use App\Entity\Email\EmailTemplate;
 use App\Entity\Email\EmailTemplateType;
@@ -44,6 +45,7 @@ class EmailController extends AbstractController
     public function edit(
         string $type,
         Request $request,
+        ConferenceHandler $conferenceHandler,
         EmailHandler $emailHandler
     ): Response {
         $emailTemplate = $emailHandler->getEmailTemplateByType($type);
@@ -65,6 +67,7 @@ class EmailController extends AbstractController
         return $this->render('admin/conference/email/edit.twig', [
             'area' => 'conference',
             'subarea' => 'email',
+            'conference' => $conferenceHandler->getCurrentConference(),
             'emailTemplate' => $emailTemplate,
             'emailTemplateForm' => $form->createView()
         ]);

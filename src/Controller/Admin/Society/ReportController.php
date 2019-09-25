@@ -79,7 +79,7 @@ class ReportController extends AbstractController
         $reportForm->handleRequest($request);
 
         if ($reportForm->isSubmitted() && $reportForm->isValid()) {
-            $year = $reportForm->getData()->getYear();
+            $year = $reportForm['year']->getData();
             $uploadHandler->saveReport($report, $year);
             $this->addFlash('notice', 'Report "'.$report.'" has been uploaded.');
             return $this->redirectToRoute('admin_society_report_view', ['year' => $year]);

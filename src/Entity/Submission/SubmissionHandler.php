@@ -2,8 +2,8 @@
 
 namespace App\Entity\Submission;
 
-use App\Entity\Upload\UploadHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * The sumission handler contains the main business logic for reading and writing submission data.
@@ -25,24 +25,24 @@ class SubmissionHandler
     private $repository;
 
     /**
-     * The upload handler (dependency injection).
+     * The submissions directory.
      *
-     * @var UploadHandler
+     * @var string
      */
-    private $uploadHandler;
+    private $submissionsDirectory;
 
     /**
      * Constructor function.
      *
      * @param EntityManagerInterface The Doctrine entity manager.
-     * @param UploadHandler The upload handler.
+     * @param ParameterBagInterface Symfony's paramater bag interface.
      * @return void
      */
-    public function __construct(EntityManagerInterface $manager, UploadHandler $uploadHandler)
+    public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Submission::class);
-        $this->uploadHandler = $uploadHandler;
+        $this->submissionsDirectory = $params->get('uploads_directory').'submissions/';
     }
 
     /**
@@ -53,7 +53,8 @@ class SubmissionHandler
     public function saveSubmission(Submission $submission)
     {
         if ($submission->getFile()) {
-            $this->uploadHandler->saveSubmissionFile($submission);
+            $path = $this->submissionsDirectory.$submission->getPath();
+            $submission->getFile()->move($path, $submission->getFilename());
         }
         $this->manager->persist($submission);
         $this->manager->flush();
@@ -66,7 +67,11 @@ class SubmissionHandler
      */
     public function deleteSubmission(Submission $submission)
     {
-        $uploadHandler->deleteSubmissionFile($submission);
+        $fullpath = $this->submissionsDirectory.$article->getPath().$article->getFilename();
+        if (file_exists($fullpath)) {
+            $fs = new FileSystem();
+            $fs->remove($fullpath);
+        }
         $this->manager->remove($submission);
         $this->manager->flush();
     }

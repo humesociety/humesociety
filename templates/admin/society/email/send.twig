@@ -13,7 +13,15 @@
       </div>
     </div>
     {% include 'admin/_include/email/help.twig' %}
-    {% include 'admin/_include/email/send.twig' with { 'form': emailForm } %}
+    <div class="columns">
+      <div class="column" style="flex:2">
+        {% include 'admin/_include/email/send.twig' with { 'form': emailForm } %}
+      </div>
+      <div class="column" style="flex:1">
+        <h6>Variables</h6>
+        {% include 'admin/_include/email/user-variables.twig' %}
+      </div>
+    </div>
   </div>
   <div class="box content">
     {% include 'admin/_include/email/preview.twig' %}

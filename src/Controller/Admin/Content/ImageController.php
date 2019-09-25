@@ -61,7 +61,7 @@ class ImageController extends AbstractController
         if ($form->isSubmitted()) {
             $uploadHandler->deleteImage($filename);
             $this->addFlash('notice', 'File "'.$filename.'" has been deleted.');
-            return $this->redirectToRoute('admin_content_images_view');
+            return $this->redirectToRoute('admin_content_image_view');
         }
 
         return $this->render('admin/content/image/delete.twig', [

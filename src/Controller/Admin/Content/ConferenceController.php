@@ -54,6 +54,7 @@ class ConferenceController extends AbstractController
         Request $request,
         string $tab = 'details'
     ): Response {
+        // the conference form
         $conference = $conferenceHandler->enrich($conference);
         $conferenceForm = $this->createForm(ConferenceType::class, $conference);
         $conferenceForm->handleRequest($request);
@@ -66,19 +67,24 @@ class ConferenceController extends AbstractController
             ]);
         }
 
+        // the upload file
         $upload = new Upload();
         $uploadForm = $this->createForm(UploadType::class, $upload);
         $uploadForm->handleRequest($request);
 
-        if ($uploadForm->isSubmitted() && $uploadForm->isValid()) {
-            $uploadHandler->saveConferenceFile($upload, $conference);
-            $this->addFlash('notice', 'File "'.$upload.'" has been uploaded.');
-            return $this->redirectToRoute('admin_content_conference_edit', [
-                'id' => $conference->getId(),
-                'tab' => 'files'
-            ]);
+        if ($uploadForm->isSubmitted()) {
+            $tab = 'files';
+            if ($uploadForm->isValid()) {
+                $uploadHandler->saveConferenceFile($upload, $conference);
+                $this->addFlash('notice', 'File "'.$upload.'" has been uploaded.');
+                return $this->redirectToRoute('admin_content_conference_edit', [
+                    'id' => $conference->getId(),
+                    'tab' => 'files'
+                ]);
+            }
         }
 
+        // render the page
         return $this->render('admin/content/conference/edit.twig', [
             'area' => 'content',
             'subarea' => 'conference',
@@ -92,8 +98,11 @@ class ConferenceController extends AbstractController
     /**
      * @Route("/delete/{id}", name="delete")
      */
-    public function delete(Conference $conference, ConferenceHandler $conferenceHandler, Request $request): Response
-    {
+    public function delete(
+        Conference $conference,
+        ConferenceHandler $conferenceHandler,
+        Request $request
+    ): Response {
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 

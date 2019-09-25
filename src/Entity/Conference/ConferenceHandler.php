@@ -138,6 +138,26 @@ class ConferenceHandler
     }
 
     /**
+     * Get the keywords of all submissions to the given conference.
+     *
+     * @param Conference The conference to check.
+     * @return string[]
+     */
+    public function getSubmissionKeywords(Conference $conference): array
+    {
+        $keywords = [];
+        foreach ($conference->getSubmissions() as $submission) {
+            foreach (explode(', ', $submission->getKeywords()) as $k) {
+                if (!in_array($k, $keywords)) {
+                    $keywords[] = $k;
+                }
+            }
+        }
+        sort($keywords);
+        return $keywords;
+    }
+
+    /**
      * Save/update a conference in the database.
      *
      * @param Conference The conference to be saved/updated.

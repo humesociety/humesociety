@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * A review for a submission for the Hume Conference.
+ *
  * @ORM\Entity(repositoryClass="App\Entity\Review\ReviewRepository")
  * @UniqueEntity(
  *     fields={"user", "submission"},
  *     errorPath="submission",
  *     message="You have already submitted a review for this paper."
  * )
- *
- * A review for a submission for the Hume Conference.
  */
 class Review
 {
@@ -148,29 +148,5 @@ class Review
     public function setComments(string $comments)
     {
         $this->comments = $comments;
-    }
-
-    public function getFile(): ?UploadedFile
-    {
-        return $this->file;
-    }
-
-    public function setFile(?UploadedFile $file): self
-    {
-        $this->file = $file;
-        $this->ext = $file->guessClientExtension();
-
-        return $this;
-    }
-
-    public function getPath(): string
-    {
-        return 'reviews/user'.$this->user->getId().'/'.$this->conference->getYear().'/';
-    }
-
-    // Getters for derivative properties
-    public function getSubmitted(): bool
-    {
-        return $this->dateSubmitted !== null;
     }
 }

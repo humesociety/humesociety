@@ -12,7 +12,7 @@
             <label for="show-year">Year:</label>
             <select id="show-year" data-filter="year" data-table="reports">
               {% for y in years|reverse %}
-            <option value="{{ y }}"{% if y == year %} selected="selected"{% endif %}>{{ y }}</option>
+                <option value="{{ y }}"{% if y == year %} selected="selected"{% endif %}>{{ y }}</option>
               {% endfor %}
             </select>
           </div>
@@ -33,10 +33,10 @@
         </thead>
         <tbody>
           {% for report in reports %}
-            <tr data-year="{{ report.year }}">
+            <tr data-year="{{ report.subpath }}">
               <td><a href="{{ report.url }}">{{ report.name }}</a></td>
               <td class="controls">
-                <a href="{{ path('admin_society_report_delete', { year: report.year, filename: report.filename }) }}">Delete</a>
+                <a href="{{ path('admin_society_report_delete', { year: report.subpath, filename: report.filename }) }}">Delete</a>
               </td>
             </tr>
           {% endfor %}

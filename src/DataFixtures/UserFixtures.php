@@ -2,14 +2,12 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Conference\Conference;
-use App\Entity\Page\Page;
 use App\Entity\User\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class AppFixtures extends Fixture
+class UserFixtures extends Fixture
 {
     private $encoder;
 
@@ -79,22 +77,25 @@ class AppFixtures extends Fixture
         $user->setPassword($encodedPassword);
         $manager->persist($user);
 
-        $conference = new Conference();
-        $year = (int) date('Y');
-        $conference->setNumber(1)
-              ->setYear($year + 1)
-              ->setTown('Oxford')
-              ->setCountry('GBR')
-              ->setInstitution('Oxford University');
-        $manager->persist($conference);
+        $user = new User();
+        $user->setUsername('lapsed_member')
+             ->addRole('ROLE_MEMBER')
+             ->setEmail('lapsed_member@humesociety.org')
+             ->setFirstname('Lapsed')
+             ->setLastname('Member')
+             ->setDues(0);
+        $encodedPassword = $this->encoder->encodePassword($user, 'password');
+        $user->setPassword($encodedPassword);
+        $manager->persist($user);
 
-        $page = new Page();
-        $page->setSection('about')
-             ->setPosition(1)
-             ->setSlug('index')
-             ->setTitle('About')
-             ->setTemplate('default')
-             ->setContent('<p>About the Hume Society.</p>');
+        $user = new User();
+        $user->setUsername('non_member')
+             ->setEmail('non_member@humesociety.org')
+             ->setFirstname('Non')
+             ->setLastname('Member');
+        $encodedPassword = $this->encoder->encodePassword($user, 'password');
+        $user->setPassword($encodedPassword);
+        $manager->persist($user);
 
         $manager->flush();
     }

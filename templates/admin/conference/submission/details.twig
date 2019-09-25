@@ -1,0 +1,29 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Submission Details{% endblock %}
+
+{% block main %}
+  <div class="box content">
+    <div class="heading">
+      <h5>{{ submission }}</h5>
+      <div class="heading-right">
+        <div class="input">
+          <a href="{{ path('admin_conference_submission_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Submissions</a>
+        </div>
+      </div>
+    </div>
+    <h6>1. Submission</h6>
+    <table>
+      <tbody>
+        <tr><th>Title</th><td>{{ submission.title }}</td></tr>
+        <tr><th>File</th><td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.filename }}</a></td></tr>
+        <tr><th>Keywords</th><td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td></tr>
+        <tr><th>Abstract</th><td>{{ submission.abstract }}</td></tr>
+      </tbody>
+    </table>
+    <h6>2. Review</h6>
+    <p>TODO</p>
+    <h6>3. Decision</h6>
+    <p>TODO</p>
+  </div>
+{% endblock %}

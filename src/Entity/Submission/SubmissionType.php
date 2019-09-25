@@ -38,6 +38,9 @@ class SubmissionType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => Submission::class]);
+        $resolver->setDefaults([
+            'data_class' => Submission::class,
+            'validation_groups' => ['Default', 'create', 'submission']
+        ]);
     }
 }

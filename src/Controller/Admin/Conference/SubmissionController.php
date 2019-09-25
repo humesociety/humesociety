@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -37,10 +38,16 @@ class SubmissionController extends AbstractController
      */
     public function view(ConferenceHandler $conferenceHandler): Response
     {
+        $conference = $conferenceHandler->getCurrentConference();
+        if (!$conference) {
+            return $this->render('admin/conference/no-current-conference.twig', ['area' => 'conference']);
+        }
+
         return $this->render('admin/conference/submission/view.twig', [
             'area' => 'conference',
             'subarea' => 'submission',
-            'conference' => $conferenceHandler->getCurrentConference()
+            'conference' => $conference,
+            'keywords' => $conferenceHandler->getSubmissionKeywords($conference)
         ]);
     }
 
@@ -52,10 +59,31 @@ class SubmissionController extends AbstractController
         SubmissionHandler $submissionHandler,
         Submission $submission
     ): Response {
+        $conference = $conferenceHandler->getCurrentConference();
+        if (!$conference) {
+            return $this->render('admin/conference/no-current-conference.twig', ['area' => 'conference']);
+        }
+
         return $this->render('admin/conference/submission/details.twig', [
             'area' => 'conference',
             'subarea' => 'submission',
+            'conference' => $conference,
             'submission' => $submission
         ]);
+    }
+
+    /**
+     * Update the keywords for a submission.
+     *
+     * @Route("/keywords/{submission}/{keywords}", name="keywords")
+     */
+    public function keywords(
+        SubmissionHandler $submissionHandler,
+        Submission $submission,
+        string $keywords
+    ): JsonResponse {
+        $submission->setKeywords($keywords);
+        $submissionHandler->saveSubmission($submission);
+        return $this->json(['ok' => true]);
     }
 }

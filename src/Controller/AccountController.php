@@ -159,13 +159,13 @@ class AccountController extends AbstractController
                     if ($submissionForm->isValid()) {
                         $submissionHandler->saveSubmission($submission);
                         $emailHandler->sendSubmissionAcknowledgementEmail($submission);
-                        $this->addFlash('success', 'Your paper has been submitted. A confirmation email has been sent to '.$user->getEmail());
+                        $this->addFlash('success', 'Your paper has been submitted. A confirmation email has been sent to '.$this->getUser()->getEmail());
                     }
                 }
             }
         }
 
-        // TODO: submission and review forms ...
+        // TODO: review forms ...
 
         // return the response
         return $this->render('site/account/research.twig', [
@@ -226,14 +226,10 @@ class AccountController extends AbstractController
         string $orderId
     ): Response {
         // create the PayPal environment
-        if ($_ENV['APP_ENV'] === 'dev') {
-            $clientId = $_ENV['PAYPAL_SANDBOX_CLIENT_ID'];
-            $secret = $_ENV['PAYPAL_SANDBOX_SECRET'];
-            $environment = new SandboxEnvironment($clientId, $secret);
+        if ($_ENV['APP_ENV'] === 'prod') {
+            $environment = new ProductionEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SANDBOX_SECRET']);
         } else {
-            $clientId = $_ENV['PAYPAL_CLIENT_ID'];
-            $secret = $_ENV['PAYPAL_SECRET'];
-            $environment = new ProductionEnvironment($clientId, $secret);
+            $environment = new SandboxEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SANDBOX_SECRET']);
         }
 
         // create the PayPal client and check the order status
