@@ -1,0 +1,8 @@
+<p>Are you sure you want to delete the record of this candidate? This action cannot be undone!</p>
+<p>Note that committee membership records do not need to be deleted when the member's term is over; they will automatically be removed from any web page showing current committee membership data. For the sake of the historical record, they should be preserved. Records should only be deleted when they are erroneous.</p>
+{{ form_start(candidateForm) }}
+  {{ form_row(candidateForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button delete">Delete</button>
+  </div>
+{{ form_end(candidateForm) }}

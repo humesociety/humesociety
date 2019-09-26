@@ -82,11 +82,27 @@ button, .button {
     background: lighten($blue, 10%);
     text-decoration: none !important;
   }
+  &.create, &.update {
+    background: $green;
+    &:hover {
+      background: darken($green, 10%);
+    }
+  }
+  &.delete {
+    background: $red;
+    &:hover {
+      background: darken($red, 10%);
+    }
+  }
+  .fas, .far {
+    padding-right: .5em;
+  }
 }
 
 .inline-form {
   form {
     display: flex;
+    align-items: baseline;
     margin-bottom: 1em;
     label {
       display: none;

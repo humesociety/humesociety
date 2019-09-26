@@ -1,47 +1,22 @@
 {% extends 'admin/society/_layout.twig' %}
 
-{% block title %}View Candidates{% endblock %}
+{% block title %}Election Candidates{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Candidates for the {{ election.year }} Election</h5>
-      <div class="heading-right">
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Election Candidates for {{ election.year }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
         <a href="{{ path('admin_society_election_view', { decade: election.decade }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
       </div>
-    </div>
-    <p>The list of candidates for each election is generated automatically, according to the candidate's term of office. Any candidate whose (potential) term is recorded as starting in 2020, for example, will automatically be entered into the election for 2020.</p>
-    {% if candidates %}
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Votes</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for candidate in candidates %}
-            <tr>
-              <td>{{ candidate }}{% if candidate.evpt %} (EVPT){% endif %}{% if candidate.president %} (President){% endif %}</td>
-              <td>{% if candidate.elected %}Elected{% else %}Not Elected{% endif %}</td>
-              <td>{{ candidate.votes | number_format }}</td>
-              <td class="controls">
-                {% if candidate.elected %}
-                  <a href="{{ path('admin_society_candidate_unelect', { id: candidate.id }) }}">Unelect</a>
-                {% else %}
-                  <a href="{{ path('admin_society_candidate_elect', { id: candidate.id }) }}">Elect</a>
-                {% endif %}
-                <a href="{{ path('admin_society_candidate_edit', { id: candidate.id }) }}">Edit</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>There are no candidates for this election. To add some, use the <a href="{{ path('admin_society_candidate_create') }}">Create Candidate</a> form to create a candidate whose start year coincides with the year of this election.</p>
-    {% endif %}
-    </div>
-  </div>
+    {% endblock %}
+    {% block body %}
+      <p>The list of candidates for each election is generated automatically, according to the candidate's term of office. Any candidate whose (potential) term is recorded as starting in 2020, for example, will automatically be entered into the election for 2020.</p>
+      {% if candidates %}
+        {% include 'admin/_include/candidate/list.twig' %}
+      {% else %}
+        <p>There are no candidates for this election. To add some, use the <a href="{{ path('admin_society_candidate_create') }}">Create Candidate</a> form to create a candidate whose start year coincides with the year of this election.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

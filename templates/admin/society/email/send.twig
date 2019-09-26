@@ -1,29 +1,31 @@
 {% extends 'admin/society/_layout.twig' %}
 
-{% block title %}Send Email{% endblock %}
+{% block title %}Send Membership Email{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Send Membership Email</h5>
-      <div class="heading-right">
-        <div class="input">
-          <a href="{{ path('admin_society_email_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Send Membership Email{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_society_email_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
       </div>
-    </div>
-    {% include 'admin/_include/email/help.twig' %}
-    <div class="columns">
-      <div class="column" style="flex:2">
-        {% include 'admin/_include/email/send.twig' with { 'form': emailForm } %}
+    {% endblock %}
+    {% block body %}
+      <nav class="tabs">
+        <a class="is-active" data-tab="edit">Send</a>
+        <a data-tab="preview">Preview</a>
+        <a data-tab="help">Help</a>
+      </nav>
+      <div class="tab-pane is-active" id="edit">
+        {% include 'admin/_include/email/send.twig' %}
       </div>
-      <div class="column" style="flex:1">
-        <h6>Variables</h6>
+      <div class="tab-pane" id="preview">
+        {% include 'admin/_include/email/preview.twig' %}
+      </div>
+      <div class="tab-pane" id="help">
+        {% include 'admin/_include/email/help.twig' %}
         {% include 'admin/_include/email/user-variables.twig' %}
       </div>
-    </div>
-  </div>
-  <div class="box content">
-    {% include 'admin/_include/email/preview.twig' %}
-  </div>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

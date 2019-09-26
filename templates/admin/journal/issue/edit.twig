@@ -3,95 +3,31 @@
 {% block title %}Edit Journal Issue{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Edit <i>Hume Studies</i> {{ issue }}</h5>
-      <div class="heading-right">
-        <div class="input">
-          <a href="{{ path('admin_journal_issue_view', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit Issue {{ issue }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_journal_issue_view', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
       </div>
-    </div>
-    <div class="tabs">
-      <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
-      <a data-tab="articles"{% if tab == 'articles' %} class="is-active"{% endif %}>Articles</a>
-    </div>
-    <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
-      <p>Typically issues will be numbered 1 or 2. Use '3' for supplementary issues (e.g. the 10th anniversary special issue), and '0' for double issues (i.e. issues 1&amp;2).</p>
-      <p>The Project MUSE ID is a five-digit number, which you can find by browsing for this issue on the Project MUSE archive. When viewing the page for this issue, look at the URL in your browser, which should be something like "muse.jhu.edu/issue/12345", where "12345" is the Project MUSE ID.</p>
-      {{ form_start(issueForm) }}
-        <div class="columns">
-          <div class="column">
-            {{ form_row(issueForm.volume) }}
-          </div>
-          <div class="column">
-            {{ form_row(issueForm.number) }}
-          </div>
-          <div class="column">
-            {{ form_row(issueForm.museId) }}
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column">
-            {{ form_row(issueForm.name) }}
-          </div>
-          <div class="column">
-            {{ form_row(issueForm.editors) }}
-          </div>
-        </div>
-        <div class="buttons">
-          <button type="submit" class="button">Update</button>
-        </div>
-      {{ form_end(issueForm) }}
-    </div>
-    <div class="tab-pane{% if tab == 'articles' %} is-active{% endif %}" id="articles">
-      <div class="heading">
-        <h6></h6>
-        <div class="heading-right">
-          <div class="input">
-            <a href="{{ path('admin_journal_article_create', { id: issue.id }) }}" class="button"><i class="fas fa-plus"></i> Create Article</a>
-          </div>
-        </div>
+    {% endblock %}
+    {% block body %}
+      <div class="tabs">
+        <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
+        <a data-tab="articles"{% if tab == 'articles' %} class="is-active"{% endif %}>Articles</a>
       </div>
-      {% if issue.articles|length > 0 %}
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th>Title</th>
-              <th>Authors</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for article in issue.articles %}
-              <tr>
-                <td>{{ article.position }}</td>
-                <td class="controls">
-                  {% if article.position > 1 %}
-                    <a class="control" title="Move Up" href="{{ path('admin_journal_article_up', { id: article.id }) }}"><span class="icon"><i class="fas fa-caret-up"></i></span></a>
-                  {% endif %}
-                </td>
-                <td class="controls">
-                  {% if not loop.last %}
-                    <a class="control" title="Move Down" href="{{ path('admin_journal_article_down', { id: article.id }) }}"><span class="icon"><i class="fas fa-caret-down"></i></span></a>
-                  {% endif %}
-                </td>
-                <td><a href="/uploads/issues/v{{ article.issue.volume }}n{{ article.issue.number }}/{{ article.filename }}">{{ article.title|raw }}</a></td>
-                <td style="white-space:nowrap;">{{ article.authors }}</td>
-                <td class="controls">
-                  <a href="{{ path('admin_journal_article_edit', { id: article.id }) }}">Edit</a>
-                  <a href="{{ path('admin_journal_article_delete', { id: article.id }) }}">Delete</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p>There are no articles associated with this issue.</p>
-      {% endif %}
-    </div>
-  </div>
+      <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
+        {% include 'admin/_include/issue/create-update.twig' %}
+      </div>
+      <div class="tab-pane{% if tab == 'articles' %} is-active{% endif %}" id="articles">
+        <div class="box-buttons">
+          <a href="{{ path('admin_journal_article_create', { id: issue.id }) }}" class="button create"><i class="fas fa-plus"></i> Upload Article</a>
+        </div>
+        {% if issue.articles|length > 0 %}
+          {% include 'admin/_include/article/list.twig' %}
+        {% else %}
+          <p>There are no articles associated with this issue.</p>
+        {% endif %}
+      </div>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

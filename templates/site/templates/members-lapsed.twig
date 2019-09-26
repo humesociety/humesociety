@@ -3,6 +3,6 @@
 {% block title %}Access Forbidden{% endblock %}
 
 {% block main %}
-  <h1>{{ page.title }}</h1>
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
   <p>This page is restricted to Hume Society members in good standing. Your dues lapsed on {{ app.user.dues | date('m/Y') }}. Please <a href="{{ path('account_pay') }}">Pay Your Dues</a> to access this content.</p>
 {% endblock %}

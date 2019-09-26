@@ -1,22 +1,22 @@
-{{ form_start(form) }}
-  {{ form_row(form.sender) }}
+{{ form_start(emailForm) }}
+  {{ form_row(emailForm.sender) }}
   <label>To</label>
   <div class="columns has-checkboxes">
     <div class="column has-checkbox">
-      {{ form_row(form.current) }}
+      {{ form_row(emailForm.current) }}
     </div>
     <div class="column has-checkbox">
-      {{ form_row(form.lapsed) }}
+      {{ form_row(emailForm.lapsed) }}
     </div>
     <div class="column has-checkbox">
-      {{ form_row(form.declining) }}
+      {{ form_row(emailForm.declining) }}
     </div>
   </div>
-  {{ form_row(form.subject) }}
-  {{ form_row(form.attachment) }}
-  {{ form_row(form.content) }}
-  {{ form_row(form._token) }}
+  {{ form_row(emailForm.subject) }}
+  {{ form_row(emailForm.attachment) }}
+  {{ form_row(emailForm.content) }}
+  {{ form_row(emailForm._token) }}
   <div class="buttons">
-    <button type="submit">Send Email</button>
+    <button type="submit" class="button create">Send Email</button>
   </div>
-{{ form_end(form) }}
+{{ form_end(emailForm) }}

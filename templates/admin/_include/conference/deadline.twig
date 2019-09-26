@@ -1,0 +1,9 @@
+<p>When you are ready to open up the system for submissions, set a submission deadline below. Submissions will then be accepted until that date has passed (i.e. until midnight Eastern Time at the start of the following day). While the submission deadline is left blank, submissions will be considered <em>not yet open</em>.</p>
+<p>Standardly the deadline for submissions is the 1st November the year before the conference, but you can set this to any date you wish. If you want to extend the date after submissions have closed, simply change this to a later date.</p>
+{{ form_start(conferenceDeadlineForm) }}
+  {{ form_row(conferenceDeadlineForm.deadline) }}
+  {{ form_row(conferenceDeadlineForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button update">Update</button>
+  </div>
+{{ form_end(conferenceDeadlineForm) }}

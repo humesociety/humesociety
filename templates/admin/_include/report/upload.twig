@@ -1,0 +1,14 @@
+{{ form_start(reportForm) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(reportForm.year) }}
+    </div>
+    <div class="column">
+      {{ form_row(reportForm.file) }}
+    </div>
+  </div>
+  {{ form_row(reportForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button create">Upload</button>
+  </div>
+{{ form_end(reportForm) }}

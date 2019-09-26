@@ -1,0 +1,27 @@
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Votes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for candidate in candidates %}
+      <tr>
+        <td>{{ candidate }}{% if candidate.evpt %} (EVPT){% endif %}{% if candidate.president %} (President){% endif %}</td>
+        <td>{% if candidate.elected %}Elected{% else %}Not Elected{% endif %}</td>
+        <td>{{ candidate.votes | number_format }}</td>
+        <td class="controls">
+          {% if candidate.elected %}
+            <a href="{{ path('admin_society_candidate_unelect', { id: candidate.id }) }}">Unelect</a>
+          {% else %}
+            <a href="{{ path('admin_society_candidate_elect', { id: candidate.id }) }}">Elect</a>
+          {% endif %}
+          <a href="{{ path('admin_society_candidate_edit', { id: candidate.id }) }}">Edit</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

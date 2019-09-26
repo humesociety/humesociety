@@ -42,7 +42,7 @@ class CandidateType extends AbstractType
             ->add('elected')
             ->add('reelectable')
             ->add('president')
-            ->add('evpt', CheckboxType::class, ['label' => 'EVPT'])
+            ->add('evpt', CheckboxType::class, ['label' => 'EVPT', 'required' => false])
             ->add('votes')
             ->add('description');
     }

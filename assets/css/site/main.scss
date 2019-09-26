@@ -1,29 +1,6 @@
 .main {
   flex: 1;
   padding: 1em 1em 3em;
-  .title-with-options {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-bottom: 1em;
-    h1 {
-      margin: 0;
-    }
-    select {
-      font-size: 1.25em;
-      border: 0;
-      border-bottom: 2px solid $green;
-      margin: 0;
-    }
-  }
-  .join-button {
-    margin: 2rem 0;
-    a {
-      text-align: center;
-      font-size: 1.5em;
-      display: block;
-    }
-  }
   @media (min-width: $break1) {
     min-height: 30rem;
   }

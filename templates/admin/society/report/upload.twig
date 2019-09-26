@@ -3,28 +3,15 @@
 {% block title %}Upload Report{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Upload Report</h5>
-      <div class="heading-right">
-        <div class="input">
-          <a href="{{ path('admin_society_report_view', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Upload Report{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_society_report_view', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
       </div>
-    </div>
-    {{ form_start(reportForm) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(reportForm.year) }}
-        </div>
-        <div class="column">
-          {{ form_row(reportForm.file) }}
-        </div>
-      </div>
-      {{ form_row(reportForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button">Upload</button>
-      </div>
-    {{ form_end(reportForm) }}
-  </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_include/report/upload.twig' %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

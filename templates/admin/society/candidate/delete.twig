@@ -3,20 +3,15 @@
 {% block title %}Delete Candidate{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Delete Record for {{ candidate.firstname }} {{ candidate.lastname }} ({{ candidate.start }} - {{ candidate.end }})</h5>
-      <div class="heading-right">
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete Record for {{ candidate }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
         <a href="{{ path('admin_society_candidate_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Committee Members List</a>
       </div>
-    </div>
-    <p>Are you sure you want to delete the record of this candidate? This action cannot be undone!</p>
-    <p>Note that committee membership records do not need to be deleted when the member's term is over; they will automatically be removed from any web page showing current committee membership data. For the sake of the historical record, they should be preserved. Records should only be deleted when they are erroneous.</p>
-    {{ form_start(candidateForm) }}
-      {{ form_row(candidateForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button is-danger">Delete</button>
-      </div>
-    {{ form_end(candidateForm) }}
-  </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_include/candidate/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

@@ -1,10 +1,12 @@
-{% extends 'admin/base.twig' %}
+{% extends 'admin/conference/_layout.twig' %}
 
-{% block title %}Conference Details{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <h5>No Current Conference</h5>
-    <p>There is no current conference in the database. Please ask the EVPT or Technical Director to create one.</p>
-  </div>
+  {% embed 'admin/_embed/box.twig' %}
+{% block title %}{{ title }}{% endblock %}
+    {% block body %}
+      <p>There is no current conference in the database. Please ask the EVPT or Technical Director to create one.</p>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

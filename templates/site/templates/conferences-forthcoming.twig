@@ -1,7 +1,7 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  <h1>{{ page.title }}</h1>
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
   {% if conferences|length > 0 %}
     {% for conference in conferences %}
       <div class="hero">

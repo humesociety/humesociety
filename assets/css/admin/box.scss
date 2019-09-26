@@ -1,0 +1,52 @@
+.box {
+  margin: 1em auto;
+  max-width: 64rem;
+  background: #fff;
+  border: 1px solid $grey;
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $grey;
+  padding: .75em;
+  h1 {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+}
+
+.box-header-right {
+  display: flex;
+  .input {
+    display: flex;
+    align-items: baseline;
+    margin-left: 1em;
+  }
+  form {
+    display: flex;
+    align-items: baseline;
+    label {
+      display: none;
+    }
+  }
+  input, select {
+    margin: 0;
+    background: #fff;
+  }
+  label, button, .button {
+    padding: .25em .75em;
+    margin: 0;
+  }
+}
+
+.box-body {
+  padding: 1em;
+}
+
+.box-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1em;
+}

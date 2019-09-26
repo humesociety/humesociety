@@ -1,9 +1,9 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  {% if societyNewsItems or membersNewsItems or conferencesNewsItems or fellowshipsNewsItems %}
-    {% embed 'site/_embed/title-with-options.twig' %}
-      {% block option %}
+  {% embed 'site/_embed/heading.twig' %}
+    {% block right %}
+      {% if societyNewsItems or membersNewsItems or conferencesNewsItems or fellowshipsNewsItems %}
         <select data-filter="year" data-table="newsItems">
           {% for year in years %}
             <option value="{{ year }}">{{ year }}</option>
@@ -11,6 +11,8 @@
         </select>
       {% endblock %}
     {% endembed %}
+  {% endif %}
+  {% if societyNewsItems or membersNewsItems or conferencesNewsItems or fellowshipsNewsItems %}
     <div class="loading" id="newsItems">
       {% if societyNewsItems %}
         {% include 'site/_include/news-items.twig' with { 'newsItems': societyNewsItems } %}
@@ -26,7 +28,6 @@
       {% endif %}
     </div>
   {% else %}
-    <h1>{{ page.title }}</h1>
     <p>There is no archived news available.</p>
   {% endif %}
 {% endblock %}

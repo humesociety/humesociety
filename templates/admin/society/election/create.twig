@@ -3,24 +3,15 @@
 {% block title %}Create Election{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Create Election</h5>
-      <div class="heading-right">
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Election{% endblock %}
+    {% block header_right %}
+      <div class="input">
         <a href="{{ path('admin_society_election_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
       </div>
-    </div>
-    <p>When creating a new election, you need only specify the year. This should be <em>the first year of the relevant term of office</em>, rather than the present year; typically this will be the year <em>after</em> the present year.</p>
-    {{ form_start(electionForm) }}
-      {{ form_row(electionForm.year) }}
-      <div class="hidden">
-        {{ form_row(electionForm.votes) }}
-        {{ form_row(electionForm.population) }}
-      </div>
-      {{ form_row(electionForm._token) }}
-      <div class="buttons">
-        <button type="submit">Create</button>
-      </div>
-    {{ form_end(electionForm, { render_rest: false }) }}
-  </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_include/election/create-update.twig' with { create: true } %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

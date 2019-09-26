@@ -1,0 +1,7 @@
+<p>Are you sure you want to delete this news item? This action cannot be undone!</p>
+{{ form_start(newsItemForm) }}
+  {{ form_row(newsItemForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button delete">Delete</button>
+  </div>
+{{ form_end(newsItemForm) }}

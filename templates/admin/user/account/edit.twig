@@ -3,7 +3,10 @@
 {% block title %}Edit User Account{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <h5>Edit Account for {{ user.username }}</h5>
-  </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit Account for {{ user.username }}{% endblock %}
+    {% block body %}
+      <p>TODO</p>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

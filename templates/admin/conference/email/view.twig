@@ -3,11 +3,13 @@
 {% block title %}Emails{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <h5>Emails</h5>
-    {% for id, template in conference_email_templates %}
-      <h6><a href="{{ path('admin_conference_email_edit', { type: id }) }}">Edit {{ template.title }} Email</a></h6>
-      <p>{{ template.description }}</p>
-    {% endfor %}
-  </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conference Emails{% endblock %}
+    {% block body %}
+      {% for id, template in conference_email_templates %}
+        <h4><a href="{{ path('admin_conference_email_edit', { type: id }) }}">Edit {{ template.title }} Email</a></h4>
+        <p>{{ template.description }}</p>
+      {% endfor %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

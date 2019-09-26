@@ -54,7 +54,7 @@ class ReportController extends AbstractController
         $reportForm->handleRequest($request);
 
         if ($reportForm->isSubmitted()) {
-            $uploadHandler->deleteReport($year, $filename);
+            $uploadHandler->deleteReport($filename, $year);
             $this->addFlash('notice', 'Report "'.$filename.'" has been deleted.');
             return $this->redirectToRoute('admin_society_report_view');
         }

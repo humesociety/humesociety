@@ -1,0 +1,15 @@
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 1em;
+  h1 {
+    margin: 0;
+  }
+  select {
+    font-size: 1.25em;
+    border: 0;
+    border-bottom: 2px solid $green;
+    margin: 0;
+  }
+}

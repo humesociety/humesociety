@@ -1,0 +1,23 @@
+<table class="loading" id="issues">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Volume</th>
+      <th>Number</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for issue in issues %}
+      <tr data-decade="{{ issue.decade }}">
+        <td>{{ issue.year }}</td>
+        <td>{{ issue.volume }}</td>
+        <td>{{ issue.number }}</td>
+        <td class="controls">
+          <a href="{{ path('admin_journal_issue_edit', { id: issue.id }) }}">Edit</a>
+          <a href="{{ path('admin_journal_issue_delete', { id: issue.id }) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

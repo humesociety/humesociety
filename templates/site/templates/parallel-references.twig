@@ -1,7 +1,7 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  <h1>{{ page.title }}</h1>
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
   <p>The following three Guides convert page numbers of the Selby‑Bigge/Nidditch editions of Hume’s <i>Treatise</i>, <i>Abstract</i>, and <i>Enquiries</i> into the universal references established by the new Oxford University Press editions of them. The Guides, prepared by David and Mary Norton, were published in the November 2003 issue of <i>Hume Studies</i>.</p>
   <ul>
     <li><a href="/pdfs/Web-Guide-for-Treatise.pdf">Treatise and Abstract</a></li>

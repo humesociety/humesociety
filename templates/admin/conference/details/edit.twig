@@ -3,104 +3,28 @@
 {% block title %}Conference Details{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <h5>{{ conference.ordinal }} Hume Conference: Details</h5>
-    <div class="tabs">
-      <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
-      <a data-tab="files"{% if tab == 'files' %} class="is-active"{% endif %}>Files</a>
-      <a data-tab="deadline"{% if tab == 'deadline' %} class="is-active"{% endif %}>Submission Deadline</a>
-    </div>
-    <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
-      {{ form_start(conferenceForm) }}
-        <div class="columns hidden">
-          <div class="column">
-            {{ form_row(conferenceForm.number) }}
-          </div>
-          <div class="column">
-            {{ form_row(conferenceForm.year) }}
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column">
-            {{ form_row(conferenceForm.startDate) }}
-          </div>
-          <div class="column">
-            {{ form_row(conferenceForm.endDate) }}
-          </div>
-        </div>
-        {{ form_row(conferenceForm.institution) }}
-        <div class="columns">
-          <div class="column">
-            {{ form_row(conferenceForm.town) }}
-          </div>
-          <div class="column">
-            {{ form_row(conferenceForm.country) }}
-          </div>
-        </div>
-        {{ form_row(conferenceForm.website) }}
-        {{ form_row(conferenceForm._token) }}
-        <div class="buttons">
-          <button type="submit" class="button">Update</button>
-        </div>
-      {{ form_end(conferenceForm) }}
-    </div>
-    <div class="tab-pane{% if tab == 'files' %} is-active{% endif %}" id="files">
-      <div class="heading">
-        <h6></h6>
-        <div class="heading-right">
-          {{ form_start(uploadForm ) }}
-            <div class="input">
-              {{ form_row(uploadForm.file) }}
-              {{ form_row(uploadForm._token) }}
-            </div>
-            <div class="input">
-              <button type="submit" class="button">Upload</button>
-            </div>
-          {{ form_end(uploadForm) }}
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conference Details{% endblock %}
+    {% block body %}
+      <nav class="tabs">
+        <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
+        <a data-tab="files"{% if tab == 'files' %} class="is-active"{% endif %}>Files</a>
+        <a data-tab="deadline"{% if tab == 'deadline' %} class="is-active"{% endif %}>Submission Deadline</a>
+      </nav>
+      <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
+        {% include 'admin/_include/conference/create-update.twig' with { hideBasics: true } %}
       </div>
-      <p>When uploading a file, note that certain associations are automatically created for you. If you upload a file called 'CFP.pdf' or 'cfp.html', this will serve as the call for papers for that conference. If you upload a file called 'splash.jpg', 'splash.gif', or 'splash.png', this image will be displayed in the box for this conference on the home page and the forthcoming conferences page. If you upload a file called 'program.pdf' or 'program.html', this will serve as the conference program. Finally, if you upload a file called 'index.html', this will serve as the home page of the conference web site. Any other HTML file can be uploaded here and linked to from that home page; in this way, a local archive of the conference web site can be created for posterity.</p>
-      {% if conference.uploads %}
-        <table>
-          <thead>
-            <tr>
-              <th style="width:100%">Filename</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for upload in conference.uploads %}
-              <tr>
-                <td>
-                  {{ upload.filename }}
-                  {% if upload == conference.splash %} (splash image){% endif %}
-                  {% if upload == conference.cfp %} (call for papers){% endif %}
-                  {% if upload == conference.program %} (program){% endif %}
-                  {% if upload == conference.site %} (web site index){% endif %}
-                </td>
-                <td class="controls">
-                  <a href="{{ upload.url }}">View</a>
-                  <a href="{{ path('admin_conference_details_delete_upload', { id: conference.id, filename: upload.filename }) }}">Delete</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p>There are no files associated with this conference.</p>
-      {% endif %}
-    </div>
-    <div class="tab-pane{% if tab == 'deadline' %} is-active{% endif %}" id="deadline">
-      <p>When you are ready to open up the system for submissions, set a submission deadline below. Submissions will then be accepted until that date has passed (i.e. until midnight Eastern Time at the start of the following day). While the submission deadline is left blank, submissions will be considered <em>not yet open</em>.</p>
-      <p>Standardly the deadline for submissions is the 1st November the year before the conference, but you can set this to any date you wish. If you want to extend the date after submissions have closed, simply change this to a later date.</p>
-      <div class="box error"><strong>Temporary Notice:</strong> Do not set this date yet! The software for handling submissions is still being finalised and tested.</div>
-      {{ form_start(conferenceDeadlineForm) }}
-        {{ form_row(conferenceDeadlineForm.deadline) }}
-        {{ form_row(conferenceDeadlineForm._token) }}
-        <div class="buttons">
-          <button type="submit" class="button">Update</button>
-        </div>
-      {{ form_end(conferenceDeadlineForm) }}
-    </div>
-  </div>
+      <div class="tab-pane{% if tab == 'files' %} is-active{% endif %}" id="files">
+        {% include 'admin/_include/conference-file/upload.twig' %}
+        {% if conference.uploads|length > 0 %}
+          {% include 'admin/_include/conference-file/list.twig' %}
+        {% else %}
+          <p>There are no files associated with this conference.</p>
+        {% endif %}
+      </div>
+      <div class="tab-pane{% if tab == 'deadline' %} is-active{% endif %}" id="deadline">
+        {% include 'admin/_include/conference/deadline.twig' %}
+      </div>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

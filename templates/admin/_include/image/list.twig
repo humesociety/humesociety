@@ -1,0 +1,20 @@
+<table>
+  <thead>
+    <tr>
+      <th>Filename</th>
+      <th>Preview</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for image in images %}
+      <tr>
+        <td>{{ image.filename }}</td>
+        <td><img class="thumbnail" src="{{ image.url }}"></td>
+        <td class="controls">
+          <a href="{{ path('admin_content_image_delete', { 'filename': image.filename }) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

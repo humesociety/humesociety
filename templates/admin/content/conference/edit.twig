@@ -3,98 +3,29 @@
 {% block title %}Edit Conference{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Edit Conference {{ conference }}</h5>
-      <div class="heading-right">
-        <div class="input">
-          <a href="{{ path('admin_content_conference_view', { decade: conference.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit the {{ conference }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_content_conference_view', { decade: conference.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
       </div>
-    </div>
-    <div class="tabs">
-      <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
-      <a data-tab="files"{% if tab == 'files' %} class="is-active"{% endif %}>Files</a>
-    </div>
-    <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
-      {{ form_start(conferenceForm) }}
-        <div class="columns">
-          <div class="column">
-            {{ form_row(conferenceForm.number) }}
-          </div>
-          <div class="column">
-            {{ form_row(conferenceForm.year) }}
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column">
-            {{ form_row(conferenceForm.startDate) }}
-          </div>
-          <div class="column">
-            {{ form_row(conferenceForm.endDate) }}
-          </div>
-        </div>
-        {{ form_row(conferenceForm.institution) }}
-        <div class="columns">
-          <div class="column">
-            {{ form_row(conferenceForm.town) }}
-          </div>
-          <div class="column">
-            {{ form_row(conferenceForm.country) }}
-          </div>
-        </div>
-        {{ form_row(conferenceForm.website) }}
-        {{ form_row(conferenceForm._token) }}
-        <div class="buttons">
-          <button type="submit" class="button">Update</button>
-        </div>
-      {{ form_end(conferenceForm) }}
-    </div>
-    <div class="tab-pane{% if tab == 'files' %} is-active{% endif %}" id="files">
-      <div class="heading">
-        <h6></h6>
-        <div class="heading-right">
-          {{ form_start(uploadForm ) }}
-            <div class="input">
-              {{ form_row(uploadForm.file) }}
-              {{ form_row(uploadForm._token) }}
-            </div>
-            <div class="input">
-              <button type="submit" class="button">Upload</button>
-            </div>
-          {{ form_end(uploadForm) }}
-        </div>
+    {% endblock %}
+    {% block body %}
+      <div class="tabs">
+        <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
+        <a data-tab="files"{% if tab == 'files' %} class="is-active"{% endif %}>Files</a>
       </div>
-      <p>When uploading a file, note that certain associations are automatically created for you. If you upload a file called 'CFP.pdf' or 'cfp.html', this will serve as the call for papers for that conference. If you upload a file called 'splash.jpg', 'splash.gif', or 'splash.png', this image will be displayed in the box for this conference on the home page and the forthcoming conferences page. If you upload a file called 'program.pdf' or 'program.html', this will serve as the conference program. Finally, if you upload a file called 'index.html', this will serve as the home page of the conference web site. Any other HTML file can be uploaded here and linked to from that home page; in this way, a local archive of the conference web site can be created for posterity.</p>
-      {% if conference.uploads %}
-        <table>
-          <thead>
-            <tr>
-              <th style="width:100%">Filename</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for upload in conference.uploads %}
-              <tr>
-                <td>
-                  {{ upload.filename }}
-                  {% if upload == conference.splash %} (splash image){% endif %}
-                  {% if upload == conference.cfp %} (call for papers){% endif %}
-                  {% if upload == conference.program %} (program){% endif %}
-                  {% if upload == conference.site %} (web site index){% endif %}
-                </td>
-                <td class="controls">
-                  <a href="{{ upload.url }}">View</a>
-                  <a href="{{ path('admin_content_conference_delete_upload', { id: conference.id, filename: upload.filename }) }}">Delete</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p>There are no files associated with this conference.</p>
-      {% endif %}
-    </div>
-  </div>
+      <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
+        {% include 'admin/_include/conference/create-update.twig' %}
+      </div>
+      <div class="tab-pane{% if tab == 'files' %} is-active{% endif %}" id="files">
+        {% include 'admin/_include/conference-file/upload.twig' %}
+        {% if conference.uploads|length > 0 %}
+          {% include 'admin/_include/conference-file/list.twig' %}
+        {% else %}
+          <p>There are no files associated with this conference.</p>
+        {% endif %}
+      </div>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

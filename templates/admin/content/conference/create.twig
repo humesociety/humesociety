@@ -3,47 +3,16 @@
 {% block title %}Create Conference{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Create Conference</h5>
-      <div class="heading-right">
-        <div class="input">
-          <a href="{{ path('admin_content_conference_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Conference{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_content_conference_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
       </div>
-    </div>
-    <p>Enter details of the new conference below, and click 'Create' when ready. The conference number and year have been entered for you automatically, by adding 1 to the values for the most recent conference in the database, but they can be edited manually. You will not be able to duplicate the number or year of an existing conference. After you have created the conference, you will be able to upload associated files (call for papers, conference program, etc.).</p>
-    {{ form_start(conferenceForm) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(conferenceForm.number) }}
-        </div>
-        <div class="column">
-          {{ form_row(conferenceForm.year) }}
-        </div>
-      </div>
-      <div class="columns">
-        <div class="column">
-          {{ form_row(conferenceForm.startDate) }}
-        </div>
-        <div class="column">
-          {{ form_row(conferenceForm.endDate) }}
-        </div>
-      </div>
-      {{ form_row(conferenceForm.institution) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(conferenceForm.town) }}
-        </div>
-        <div class="column">
-          {{ form_row(conferenceForm.country) }}
-        </div>
-      </div>
-      {{ form_row(conferenceForm.website) }}
-      {{ form_row(conferenceForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button">Create</button>
-      </div>
-    {{ form_end(conferenceForm) }}
-  </div>
+    {% endblock %}
+    {% block body %}
+      <p>Enter details of the new conference below, and click 'Create' when ready. The conference number and year have been entered for you automatically, by adding 1 to the values for the most recent conference in the database, but they can be edited manually. You will not be able to duplicate the number or year of an existing conference. After you have created the conference, you will be able to upload associated files (call for papers, conference program, etc.).</p>
+      {% include 'admin/_include/conference/create-update.twig' with { create: true } %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

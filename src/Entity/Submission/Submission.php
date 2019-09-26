@@ -391,7 +391,7 @@ class Submission
      */
     public function getPath(): string
     {
-        return 'submissions/user'.$this->getUser()->getId().'/'.$this->getConference()->getNumber().'/';
+        return 'user'.$this->getUser()->getId().'/'.$this->getConference()->getNumber().'/';
     }
 
     /**

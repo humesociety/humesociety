@@ -3,57 +3,36 @@
 {% block title %}Submissions{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    {% if conference.submissions|length > 0 %}
-      <div class="heading">
-        <h5>Submissions</h5>
-        <div class="heading-right">
-          <div class="input">
-            <label for="show-keyword">Keyword:</label>
-            <select id="show-keyword" data-include="keyword" data-table="submissions">
-              <option value="all">all</option>
-              {% for keyword in keywords %}
-                <option value="{{ keyword }}">{{ keyword }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="input">
-            <label for="show-status">Status:</label>
-            <select id="show-status" data-filter="status" data-table="submissions">
-              <option value="all">all</option>
-              <option value="submitted">submitted</option>
-              <option value="accepted">accepted</option>
-              <option value="rejected">rejected</option>
-            </select>
-          </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conference Submissions{% endblock %}
+    {% block header_right %}
+      {% if conference.submissions|length > 0 %}
+        <div class="input">
+          <label for="show-keyword">Keyword:</label>
+          <select id="show-keyword" data-include="keyword" data-table="submissions">
+            <option value="all">all</option>
+            {% for keyword in keywords %}
+              <option value="{{ keyword }}">{{ keyword }}</option>
+            {% endfor %}
+          </select>
         </div>
-      </div>
-      <p>Keywords are initially entered by the user who submits the paper, but you can edit them here, and filter the table by keyword using the dropdown menu above. Your edited keywords will not be seen by the user who submitted the paper.</p>
-      <table id="submissions">
-        <thead>
-          <tr>
-            <th>Paper</th>
-            <th>Keywords</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for submission in conference.submissions %}
-            <tr data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
-              <td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.title }}</a></td>
-              <td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td>
-              <td>{{ submission.status }}</td>
-              <td class="controls">
-                <a href="{{ path('admin_conference_submission_details', { submission: submission.id }) }}">Manage</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <h5>Submissions</h5>
-      <p>There are no submissions for this conference.</p>
-    {% endif %}
-  </div>
+        <div class="input">
+          <label for="show-status">Status:</label>
+          <select id="show-status" data-filter="status" data-table="submissions">
+            <option value="all">all</option>
+            <option value="submitted">submitted</option>
+            <option value="accepted">accepted</option>
+            <option value="rejected">rejected</option>
+          </select>
+        </div>
+      {% endif %}
+    {% endblock %}
+    {% block body %}
+      {% if conference.submissions|length > 0 %}
+        {% include 'admin/_include/submission/list.twig' %}
+      {% else %}
+        <p>There are no submissions for this conference.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

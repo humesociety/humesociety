@@ -14,9 +14,9 @@ const filter = (e) => {
   const value = e.currentTarget.value
   rows.forEach((row) => {
     if (value === 'all' || row.dataset[field] === value) {
-      row.classList.remove('collapsed')
+      row.classList.remove('hidden')
     } else {
-      row.classList.add('collapsed')
+      row.classList.add('hidden')
     }
   })
   table.classList.remove('loading')
@@ -46,9 +46,9 @@ const include = (e) => {
   const value = e.currentTarget.value
   rows.forEach((row) => {
     if (value === 'all' || row.dataset[field].split(', ').includes(value)) {
-      row.classList.remove('collapsed')
+      row.classList.remove('hidden')
     } else {
-      row.classList.add('collapsed')
+      row.classList.add('hidden')
     }
   })
   table.classList.remove('loading')

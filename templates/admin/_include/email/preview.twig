@@ -1,2 +1,10 @@
-<p>Below is a preview of what the rendered HTML of the email content will look like (though note that the precise appearance will depend on the email client at the other end). This preview is updated automatically as you edit the content field in the form above.</p>
-<div class="box" data-preview="email"></div>
+<p>Below is a preview of what the rendered HTML of the email content will look like (though note that the precise appearance will depend on the email client at the other end). This preview is updated automatically as you edit the content field in the form under the ‘Edit’ tab.</p>
+<p>Variables are show in green boldface. If something intended as a variable is not highlighted in this way, please check that you have written it in the right way.</p>
+<div class="preview">
+  {% embed 'email/base.twig' %}
+    {% block image %}/logo.jpg{% endblock %}
+    {% block content %}
+      <div data-preview="email"></div>
+    {% endblock %}
+  {% endembed %}
+</div>

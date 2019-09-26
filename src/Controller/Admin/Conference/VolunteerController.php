@@ -31,11 +31,21 @@ class VolunteerController extends AbstractController
      */
     public function view(ConferenceHandler $conferenceHandler, UserHandler $userHandler, $tab = 'review'): Response
     {
+        $conference = $conferenceHandler->getCurrentConference();
+
+        if (!$conference) {
+            return $this->render('admin/conference/no-current-conference.twig', [
+                'area' => 'conference',
+                'subarea' => 'volunteers',
+                'title' => 'Conference Volunteers'
+            ]);
+        }
+
         return $this->render('admin/conference/volunteer/view.twig', [
             'area' => 'conference',
             'subarea' => 'volunteer',
             'tab' => $tab,
-            'conference' => $conferenceHandler->getCurrentConference(),
+            'conference' => $conference,
             'reviewers' => $userHandler->getReviewVolunteers(),
             'commentators' => $userHandler->getCommentVolunteers(),
             'chairs' => $userHandler->getChairVolunteers()

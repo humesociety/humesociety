@@ -1,0 +1,7 @@
+<p>Are you sure you want to delete this article? This action cannot be undone!</p>
+{{ form_start(articleForm) }}
+  {{ form_row(articleForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button delete">Delete</button>
+  </div>
+{{ form_end(articleForm, { render_rest: false }) }}

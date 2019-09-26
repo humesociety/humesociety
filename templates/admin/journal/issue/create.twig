@@ -3,41 +3,15 @@
 {% block title %}New Journal Issue{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>New <i>Hume Studies</i> Issue</h5>
-      <div class="heading-right">
-        <div class="input">
-          <a href="{{ path('admin_journal_issue_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
-        </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Issue{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_journal_issue_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
       </div>
-    </div>
-    <p>Typically issues will be numbered 1 or 2. Use '3' for supplementary issues (e.g. the 10th anniversary special issue), and '0' for double issues (i.e. issues 1&amp;2). You can add notes and articles to an issue after you have created it.</p>
-    <p>The Project MUSE ID is a five-digit number, which you can find by browsing for this issue on the Project MUSE archive. When viewing the page for this issue, look at the URL in your browser, which should be something like "muse.jhu.edu/issue/12345", where "12345" is the Project MUSE ID.</p>
-    {{ form_start(issueForm) }}
-      <div class="columns">
-        <div class="column">
-          {{ form_row(issueForm.volume) }}
-        </div>
-        <div class="column">
-          {{ form_row(issueForm.number) }}
-        </div>
-        <div class="column">
-          {{ form_row(issueForm.museId) }}
-        </div>
-      </div>
-      <div class="columns">
-        <div class="column">
-          {{ form_row(issueForm.name) }}
-        </div>
-        <div class="column">
-          {{ form_row(issueForm.editors) }}
-        </div>
-      </div>
-      {{ form_row(issueForm._token) }}
-      <div class="buttons">
-        <button type="submit" class="button">Create</button>
-      </div>
-    {{ form_end(issueForm) }}
-  </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_include/issue/create-update.twig' with { create: true } %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

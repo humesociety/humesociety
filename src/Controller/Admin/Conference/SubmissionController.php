@@ -39,8 +39,13 @@ class SubmissionController extends AbstractController
     public function view(ConferenceHandler $conferenceHandler): Response
     {
         $conference = $conferenceHandler->getCurrentConference();
+
         if (!$conference) {
-            return $this->render('admin/conference/no-current-conference.twig', ['area' => 'conference']);
+            return $this->render('admin/conference/no-current-conference.twig', [
+                'area' => 'conference',
+                'subarea' => 'submission',
+                'title' => 'Conference Submissions'
+            ]);
         }
 
         return $this->render('admin/conference/submission/view.twig', [
@@ -60,8 +65,13 @@ class SubmissionController extends AbstractController
         Submission $submission
     ): Response {
         $conference = $conferenceHandler->getCurrentConference();
+
         if (!$conference) {
-            return $this->render('admin/conference/no-current-conference.twig', ['area' => 'conference']);
+            return $this->render('admin/conference/no-current-conference.twig', [
+                'area' => 'conference',
+                'subarea' => 'submission',
+                'title' => 'Conference Submissions'
+            ]);
         }
 
         return $this->render('admin/conference/submission/details.twig', [

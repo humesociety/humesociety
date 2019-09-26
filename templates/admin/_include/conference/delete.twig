@@ -1,0 +1,7 @@
+<p>Are you sure you want to delete this conference? All files associated with this conference will be deleted as well. This action cannot be undone!</p>
+{{ form_start(conferenceForm) }}
+  {{ form_row(conferenceForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button delete">Delete</button>
+  </div>
+{{ form_end(conferenceForm) }}

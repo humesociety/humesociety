@@ -152,7 +152,7 @@ class UploadsController extends AbstractController
 
         // look for the file
         $path = $this->container->get('parameter_bag')->get('uploads_directory');
-        $path .= $submission->getPath().$submission->getFilename();
+        $path .= 'submissions/'.$submission->getPath().$submission->getFilename();
         if (!file_exists($path)) {
             throw new NotFoundHttpException('File not found.');
         }

@@ -140,6 +140,7 @@ class AccountController extends AbstractController
         if ($availabilityForm->isSubmitted() && $availabilityForm->isValid()) {
             $userHandler->saveUser($this->getUser());
             $this->addFlash('success', 'Your availability has been updated.');
+            return $this->redirectToRoute('account_research');
         }
 
         // conference submission form
@@ -160,6 +161,7 @@ class AccountController extends AbstractController
                         $submissionHandler->saveSubmission($submission);
                         $emailHandler->sendSubmissionAcknowledgementEmail($submission);
                         $this->addFlash('success', 'Your paper has been submitted. A confirmation email has been sent to '.$this->getUser()->getEmail());
+                        return $this->redirectToRoute('account_research', ['tab' => 'submissions']);
                     }
                 }
             }

@@ -5,6 +5,7 @@ namespace App\Entity\Article;
 use App\Entity\Issue\Issue;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 
 /**

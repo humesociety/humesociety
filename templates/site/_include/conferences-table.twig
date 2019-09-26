@@ -1,0 +1,30 @@
+<table class="loading" id="conferences">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Dates</th>
+      <th>Location</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for conference in conferences %}
+      <tr data-decade="{{ conference.decade }}">
+        <td>{{ conference.number }}</td>
+        <td>{{ conference.dates }}</td>
+        <td>{{ conference.town }}, {{ countries[conference.country] }}<br>{{ conference.institution }}</td>
+        <td>
+          {% if conference.cfp %}
+            <a href="{{ conference.cfp.url }}">Call for Papers</a><br>
+          {% endif %}
+          {% if conference.program %}
+            <a href="{{ conference.program.url }}">Program</a><br>
+          {% endif %}
+          {% if conference.site %}
+            <a href="{{ conference.site.url }}">Web Site</a><br>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

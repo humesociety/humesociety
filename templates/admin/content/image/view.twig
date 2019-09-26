@@ -3,45 +3,26 @@
 {% block title %}Images{% endblock %}
 
 {% block main %}
-  <div class="box content">
-    <div class="heading">
-      <h5>Images</h5>
-      <div class="heading-right">
-        {{ form_start(uploadForm ) }}
-          <div class="input">
-            {{ form_row(uploadForm.file) }}
-            {{ form_row(uploadForm._token) }}
-          </div>
-          <div class="input">
-            <button type="submit" class="button"><i class="fas fa-plus"></i> Upload Image</button>
-          </div>
-        {{ form_end(uploadForm) }}
-      </div>
-    </div>
-    <p>Any image files uploaded here will be available to use in the pages on this site. To display an image, use the code <code>&lt;img src="/uploads/images/filename"&gt;</code> in the content of the page.
-    {% if images %}
-      <table class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Preview</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for image in images %}
-            <tr>
-              <td>{{ image.filename }}</td>
-              <td><img class="thumbnail" src="{{ image.url }}"></td>
-              <td class="controls">
-                <a href="{{ path('admin_content_image_delete', { 'filename': image.filename }) }}">Delete</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>There are no images in the database.</p>
-    {% endif %}
-  </div>
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Images{% endblock %}
+    {% block header_right %}
+      {{ form_start(uploadForm ) }}
+        <div class="input">
+          {{ form_row(uploadForm.file) }}
+          {{ form_row(uploadForm._token) }}
+        </div>
+        <div class="input">
+          <button type="submit" class="button create"><i class="fas fa-plus"></i> Upload Image</button>
+        </div>
+      {{ form_end(uploadForm) }}
+    {% endblock %}
+    {% block body %}
+      <p>Any image files uploaded here will be available to use in the pages on this site. To display an image, use the code <code>&lt;img src="/uploads/images/filename"&gt;</code> in the content of the page.
+      {% if images %}
+        {% include 'admin/_include/image/list.twig' %}
+      {% else %}
+        <p>There are no images in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
 {% endblock %}

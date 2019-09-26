@@ -1,48 +1,20 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  {% if conferences %}
-    {% embed 'site/_embed/title-with-options.twig' %}
-      {% block option %}
+  {% embed 'site/_embed/heading.twig' %}
+    {% if conferences|length > 0 %}
+      {% block right %}
         <select data-filter="decade" data-table="conferences">
           {% for decade in decades %}
             <option value="{{ decade }}">{{ decade }}s</option>
           {% endfor %}
         </select>
       {% endblock %}
-    {% endembed %}
-    <table class="loading" id="conferences">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Dates</th>
-          <th>Location</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for conference in conferences %}
-          <tr data-decade="{{ conference.decade }}">
-            <td>{{ conference.number }}</td>
-            <td>{{ conference.dates }}</td>
-            <td>{{ conference.town }}, {{ conference.country }}<br>{{ conference.institution }}</td>
-            <td>
-              {% if conference.cfp %}
-                <a href="{{ conference.cfp.url }}">Call for Papers</a><br>
-              {% endif %}
-              {% if conference.program %}
-                <a href="{{ conference.program.url }}">Program</a><br>
-              {% endif %}
-              {% if conference.site %}
-                <a href="{{ conference.site.url }}">Web Site</a><br>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    {% endif %}
+  {% endembed %}
+  {% if conferences|length > 0 %}
+    {% include 'site/_include/conferences-table.twig' %}
   {% else %}
-    <h1>{{ page.title }}</h1>
-    <p>There is no past conference data available.</p>
+    <p>There is no conference data available.</p>
   {% endif %}
 {% endblock %}

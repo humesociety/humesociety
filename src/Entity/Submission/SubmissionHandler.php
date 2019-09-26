@@ -4,6 +4,7 @@ namespace App\Entity\Submission;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * The sumission handler contains the main business logic for reading and writing submission data.

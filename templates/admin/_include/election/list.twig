@@ -1,0 +1,33 @@
+<table class="loading" id="elections">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Status</th>
+      <th>Votes</th>
+      <th>Population</th>
+      <th>Turnout</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for election in elections %}
+      <tr data-decade="{{ election.decade }}">
+        <td>{{ election.year }}</td>
+        <td>{% if election.open %}Open{% else %}Closed{% endif %}</td>
+        <td>{{ election.votes }}</td>
+        <td>{{ election.population }}</td>
+        <td>{% if election.turnout %}{{ election.turnout }}%{% else %}-{% endif %}</td>
+        <td class="controls">
+          {% if election.open %}
+            <a href="{{ path('admin_society_election_close', { id: election.id }) }}">Close</a>
+          {% else %}
+            <a href="{{ path('admin_society_election_edit', { id: election.id }) }}">Edit</a>
+            <a href="{{ path('admin_society_election_open', { id: election.id }) }}">Open</a>
+          {% endif %}
+          <a href="{{ path('admin_society_election_candidates', { id: election.id }) }}">Candidates</a>
+          <a href="{{ path('admin_society_election_delete', { id: election.id }) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

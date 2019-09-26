@@ -1,13 +1,15 @@
 {% extends 'site/templates/_layout.twig' %}
 
 {% block main %}
-  {% embed 'site/_embed/title-with-options.twig' %}
-    {% block option %}
-      <select id="year-select" data-range="start-end" data-table="governance">
-        {% for year in years|reverse %}
-          <option value="{{ year }}">{{ year }}</option>
-        {% endfor %}
-      </select>
+  {% embed 'site/_embed/heading.twig' %}
+    {% block right %}
+      {% if evpts and execs %}
+        <select id="year-select" data-range="start-end" data-table="governance">
+          {% for year in years|reverse %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      {% endif %}
     {% endblock %}
   {% endembed %}
   <p>The Executive Committee consists of ten members. Nine are elected by the membership of the Society to staggered three-year terms, so that in principle three are elected each year. The Executive Vice President-Treasurer is appointed by the Executive Committee to a five-year term and serves on the Committee <i>ex officio</i>.</p>

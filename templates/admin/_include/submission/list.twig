@@ -1,0 +1,14 @@
+<p>Keywords are initially entered by the user who submits the paper, but you can edit them here, and filter the table by keyword using the dropdown menu above. Your edited keywords will not be seen by the user who submitted the paper.</p>
+<div class="submissions" id="submissions">
+  {% for submission in conference.submissions %}
+    <div class="submission" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
+      <div class="heading">
+        <h5><a href="{{ path('admin_conference_submission_details', { submission: submission.id }) }}">{{ submission.title }}</a></h5>
+        <p>{{ submission.status }}</p>
+      </div>
+      <div class="keywords">
+        <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+      </div>
+    </div>
+  {% endfor %}
+</div>

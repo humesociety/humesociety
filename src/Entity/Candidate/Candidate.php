@@ -150,7 +150,7 @@ class Candidate
      */
     public function __toString()
     {
-        return $this->getLastname().', '.$this->getFirstname();
+        return $this->firstname.' '.$this->lastname.' ('.$this->start.' - '.$this->end.')';
     }
 
     /**

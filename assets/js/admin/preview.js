@@ -3,12 +3,13 @@ Show live preview of HTML content (for pages and emails).
 */
 const previews = Array.from(document.querySelectorAll('[data-preview]'))
 
+const prepare = html =>
+  html.replace(/{{ ?(firstname|lastname|email|username|title|abstract|ordinal|town|country) ?}}/g, '<span class="variable">{{ $1 }}</span>')
+
 previews.forEach((preview) => {
   const source = document.getElementById('email_content') || document.getElementById('email_template_content')
-  preview.innerHTML = '<div style="max-width:600px;margin:0 auto;"><div><img src="/logo.png" style="height:auto;max-width:100%;"></div><div style="padding:1em;" data-content></div></div>'
-  const content = preview.querySelector('[data-content]')
-  content.innerHTML = source.value
+  preview.innerHTML = prepare(source.value)
   source.addEventListener('keyup', (e) => {
-    content.innerHTML = source.value
+    preview.innerHTML = prepare(source.value)
   })
 })

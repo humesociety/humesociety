@@ -40,6 +40,15 @@ class DetailsController extends AbstractController
         string $tab = 'details'
     ): Response {
         $conference = $conferenceHandler->getCurrentConference();
+
+        if (!$conference) {
+            return $this->render('admin/conference/no-current-conference.twig', [
+                'area' => 'conference',
+                'subarea' => 'details',
+                'title' => 'Conference Details'
+            ]);
+        }
+
         $conferenceForm = $this->createForm(ConferenceType::class, $conference);
         $conferenceForm->handleRequest($request);
 

@@ -1,0 +1,7 @@
+<p>Are you sure you want to delete this file? This action cannot be undone!</p>
+{{ form_start(uploadForm) }}
+  {{ form_row(uploadForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button delete">Delete</button>
+  </div>
+{{ form_end(uploadForm) }}
