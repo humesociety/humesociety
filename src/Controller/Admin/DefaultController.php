@@ -49,13 +49,7 @@ class DefaultController extends AbstractController
      */
     public function conference(ConferenceHandler $conferenceHandler): Response
     {
-        if ($conferenceHandler->getCurrentConference()) {
-            return $this->redirectToRoute('admin_conference_details_index');
-        } else {
-            return $this->render('admin/conference/no-current-conference.twig', [
-                'area' => 'conference'
-            ]);
-        }
+        return $this->redirectToRoute('admin_conference_details_index');
     }
 
     /**

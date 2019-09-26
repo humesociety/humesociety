@@ -8,9 +8,9 @@
     {% if app.user.lifetimeMember %}
       <p>You have a lifetime membership to the Hume Society. Dues payments are not required.</p>
     {% elseif app.user.memberInGoodStanding %}
-      <p>Your dues are paid up to {{ app.user.dues | date('F Y') }}. You can pay your next dues here two months before your current membership expires.</p>
+      <p>Your dues are paid up to {{ app.user.dues|date('F Y') }}. You can pay your next dues here two months before your current membership expires.</p>
     {% elseif app.user.member %}
-      <p>Your dues lapsed on {{ app.user.dues | date('m/Y') }}. To receive the benefits of Hume Society membership, including access to restricted parts of this site and a subscription to the journal <i>Hume Studies</i>, please pay your dues using the form below.</p>
+      <p>Your dues lapsed in {{ app.user.dues|date('F Y') }}. To receive the benefits of Hume Society membership, including access to restricted parts of this site and a subscription to the journal <i>Hume Studies</i>, please pay your dues using the form below.</p>
     {% else %}
       <p>Thank you for creating an account on this site. To complete your registration and become a member of the Hume Society, please pay your dues using the form below.</p>
     {% endif %}

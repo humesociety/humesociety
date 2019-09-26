@@ -1,8 +1,8 @@
 <div style="font-size: 16px; font-family: -apple-system, system-ui, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial, sans-serif; line-height: 1.5; color: #282828; max-width: 600px; margin: 1em auto;">
   <div>
-    <img src="{% block image %}{% endblock %}" style="height:auto;max-width:100%;" alt="The Hume Society">
+    <img src="{% block image %}{{ image }}{% endblock %}" style="height:auto;max-width:100%;" alt="The Hume Society">
   </div>
   <div style="padding: 1em;">
-    {% block content %}{% endblock %}
+    {% block content %}{{ content|raw }}{% endblock %}
   </div>
 </div>

@@ -9,6 +9,7 @@ use App\Entity\Email\EmailHandler;
 use App\Entity\Submission\Submission;
 use App\Entity\Submission\SubmissionHandler;
 use App\Entity\Submission\SubmissionType;
+use App\Entity\Text\TextHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserDetailsType;
@@ -125,6 +126,7 @@ class AccountController extends AbstractController
         ConferenceHandler $conferenceHandler,
         EmailHandler $emailHandler,
         SubmissionHandler $submissionHandler,
+        TextHandler $textHandler,
         UserHandler $userHandler,
         $tab = 'availability'
     ): Response {
@@ -159,7 +161,7 @@ class AccountController extends AbstractController
                     $tab = 'submissions';
                     if ($submissionForm->isValid()) {
                         $submissionHandler->saveSubmission($submission);
-                        $emailHandler->sendSubmissionAcknowledgementEmail($submission);
+                        $emailHandler->sendConferenceEmail($this->getUser(), $submission, 'submission');
                         $this->addFlash('success', 'Your paper has been submitted. A confirmation email has been sent to '.$this->getUser()->getEmail());
                         return $this->redirectToRoute('account_research', ['tab' => 'submissions']);
                     }
@@ -177,7 +179,8 @@ class AccountController extends AbstractController
             'userCanSubmitToConference' => $userCanSubmitToConference,
             'userAvailabilityForm' => $availabilityForm->createView(),
             'submissionForm' => $submissionForm ? $submissionForm->createView() : null,
-            'submissions' => $this->getUser()->getSubmissions($conference)
+            'submissions' => $this->getUser()->getSubmissions($conference),
+            'guidanceText' => $textHandler->getTextContentByLabel('submission')
         ]);
     }
 
@@ -252,7 +255,7 @@ class AccountController extends AbstractController
                 $duesPaymentHandler->saveDuesPayment($duesPayment);
                 $userHandler->updateDues($this->getUser(), $duesPayment);
                 if ($newMember) {
-                    $emailHandler->sendNewMemberEmail($this->getUser());
+                    $emailHandler->sendSocietyEmail($this->getUser(), 'welcome');
                 }
             }
         }

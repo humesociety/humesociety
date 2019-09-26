@@ -11,7 +11,7 @@
       </div>
     {% endblock %}
     {% block body %}
-      <p>Enter details of the new conference below, and click 'Create' when ready. The conference number and year have been entered for you automatically, by adding 1 to the values for the most recent conference in the database, but they can be edited manually. You will not be able to duplicate the number or year of an existing conference. After you have created the conference, you will be able to upload associated files (call for papers, conference program, etc.).</p>
+      <p>Enter details of the new conference below, and click ‘Create’ when ready. The conference number and year have been entered for you automatically, by adding 1 to the values for the most recent conference in the database, but they can be edited manually. You will not be able to duplicate the number or year of an existing conference. After you have created the conference, you will be able to upload associated files (call for papers, conference program, etc.).</p>
       {% include 'admin/_include/conference/create-update.twig' with { create: true } %}
     {% endblock %}
   {% endembed %}

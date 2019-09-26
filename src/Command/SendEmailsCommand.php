@@ -61,7 +61,7 @@ class SendEmailsCommand extends Command
         $users = $this->userHandler->getMembersExpiringThisMonth();
         $count = 0;
         foreach ($users as $user) {
-            $this->emailHandler->sendDuesReminderEmail($user);
+            $this->emailHandler->sendSocietyEmail($user, 'reminder');
             $count += 1;
         }
         $output->writeln(sizeof($users).' member(s) will lapse at the end of this month.');

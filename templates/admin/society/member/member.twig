@@ -15,8 +15,8 @@
         <tbody>
           <tr><th>Name</th><td style="width:80%">{{ user.firstname }} {{ user.lastname }}</td></tr>
           <tr><th>Email</th><td>{{ user.email }}</td></tr>
-          <tr><th>Date Joined</th><td>{{ user.dateJoined | date('m-d-Y') }}</td></tr>
-          <tr><th>Dues</th><td>{{ user.dues | date('F Y') }}</td></tr>
+          <tr><th>Date Joined</th><td>{{ user.dateJoined|date('m/d/Y') }}</td></tr>
+          <tr><th>Dues</th><td>{{ user.dues|date('F Y') }}</td></tr>
           <tr><th>Lifetime Member</th><td>{% if user.lifetimeMember %}yes{% else %}no{% endif %}</td></tr>
           <tr><th>Receives Email</th><td>{% if user.receiveEmail %}yes{% else %}no{% endif %}</td></tr>
           <tr><th>Receives Hume Studies</th><td>{% if user.receiveHumeStudies %}yes{% else %}no{% endif %}</td></tr>

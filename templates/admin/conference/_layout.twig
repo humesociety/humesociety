@@ -6,6 +6,10 @@
       <span class="icon"><i class="far fa-file-alt"></i></span>
       <span class="link-text">Details</span>
     </a>
+    <a href="{{ path('admin_conference_text_index') }}"{% if subarea == 'text' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-align-left"></i></span>
+      <span class="link-text">Custom Text</span>
+    </a>
     <a href="{{ path('admin_conference_email_index') }}"{% if subarea == 'email' %} class="is-active"{% endif %}>
       <span class="icon"><i class="far fa-envelope"></i></span>
       <span class="link-text">Emails</span>

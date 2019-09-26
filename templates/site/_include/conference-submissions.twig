@@ -1,7 +1,8 @@
 <h4>Submissions to the {{ conference }}</h4>
 {% if conference.isOpen %}
   {% if userCanSubmitToConference %}
-    <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on {{ conference.deadline|date('F d') }}. Please submit your paper using the form below.</p>
+    <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on {{ conference.deadline|date('F jS') }}. Please submit your paper using the form below.</p>
+    {% if guidanceText is defined %}{{ guidanceText|raw }}{% endif %}
     {% include 'site/_form/conference-submission.twig' %}
   {% endif %}
 {% elseif conference.isClosed %}

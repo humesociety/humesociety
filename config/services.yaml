@@ -67,6 +67,12 @@ parameters:
         conferences: Other Conferences
         fellowships: Fellowships and Awards
 
+    conference_text_ids: submission
+    conference_texts:
+        submission:
+            title: Submission Guidance
+            description: The submission guidance text is shown directly above the submission form.
+
     countries:
         AFG: Afghanistan
         ALA: Åland Islands

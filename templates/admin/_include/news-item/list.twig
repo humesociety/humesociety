@@ -10,7 +10,7 @@
     {% for item in newsItems %}
       <tr data-category="{{ item.category }}">
         <td>{{ item.title }}</td>
-        <td>{{ item.date | date('m/d/Y') }}</td>
+        <td>{{ item.date|date('m/d/Y') }}</td>
         <td class="controls">
           <a href="{{ path('admin_content_news-item_edit', { id: item.id }) }}">Edit</a>
           <a href="{{ path('admin_content_news-item_delete', { id: item.id }) }}">Delete</a>

@@ -4,7 +4,7 @@
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Delete “{{ newsItem }}” ({{ newsItem.date | date('m/d/Y') }}){% endblock %}
+    {% block title %}Delete “{{ newsItem }}” ({{ newsItem.date|date('m/d/Y') }}){% endblock %}
     {% block header_right %}
       <div class="input">
         <a href="{{ path('admin_content_news-item_view', { category: newsItem.category }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to News Item List</a>

@@ -6,7 +6,7 @@
   <div class="section content">
     {% if result.status == 'COMPLETED' %}
       <h1>Payment Received</h1>
-      <p>Thank you for your payment. Your dues are now paid until {{ app.user.dues | date('F Y') }}.</p>
+      <p>Thank you for your payment. Your dues are now paid until {{ app.user.dues|date('F Y') }}.</p>
     {% else %}
       <h1>Oops</h1>
       <p>There was an error processing your payment. Please try again later, and contact <a href="mailto:web@humesociety.org">web@humesociety.org</a> if the problem persists.</p>

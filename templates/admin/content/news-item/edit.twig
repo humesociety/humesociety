@@ -4,7 +4,7 @@
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Edit “{{ newsItem }}” ({{ newsItem.date | date('m/d/Y') }}){% endblock %}
+    {% block title %}Edit “{{ newsItem }}” ({{ newsItem.date|date('m/d/Y') }}){% endblock %}
     {% block header_right %}
       <div class="input">
         <a href="{{ path('admin_content_news-item_view') }}" class="button" data-menu="news_item_category"><i class="fas fa-chevron-left"></i> Back to News Item List</a>
