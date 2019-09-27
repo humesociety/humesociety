@@ -26,7 +26,7 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Find the article before to the given article in an issue.
+     * Find the article preceeding the given article in an issue.
      *
      * @param Article The article.
      * @return Article|null

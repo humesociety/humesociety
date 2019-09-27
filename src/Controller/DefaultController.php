@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * permissions), the main sections are hardwired (otherwise the route matching would be too
  * general, and wouldn't work well). To edit the sections, change the requirements on the page
  * method in this controller, and edit the corresponding parameters in `/services.yaml`. N.B. Every
-  * section expects an `index` page in the database, to display by default. If one is not
+ * section expects an `index` page in the database, to display by default. If one is not
  * found, the base route for that section will return a 404 error.
  */
 class DefaultController extends AbstractController
@@ -69,7 +69,7 @@ class DefaultController extends AbstractController
         Request $request,
         string $section,
         string $slug = 'index'
-    ) : Response {
+    ): Response {
         // look for the page (and its siblings for the side menu)
         $page = $pageHandler->getPage($section, $slug);
         $siblings = $pageHandler->getSectionPages($section);

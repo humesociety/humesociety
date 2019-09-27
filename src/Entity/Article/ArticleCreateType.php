@@ -4,12 +4,11 @@ namespace App\Entity\Article;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * The form type for creating (uploading) an article.
+ * The form type for uploading an article. Like the one for editing an article, except that the
+ * file field is required.
  */
 class ArticleCreateType extends AbstractType
 {
@@ -27,8 +26,8 @@ class ArticleCreateType extends AbstractType
             ->add('authors')
             ->add('startPage')
             ->add('endPage')
-            ->add('museId', IntegerType::class, ['label' => 'Project MUSE ID', 'required' => false])
-            ->add('doi', TextType::class, ['label' => 'DOI', 'required' => false])
+            ->add('museId', null, ['label' => 'Project MUSE ID', 'required' => false])
+            ->add('doi', null, ['label' => 'DOI', 'required' => false])
             ->add('file');
     }
 
@@ -42,7 +41,7 @@ class ArticleCreateType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Article::class,
-            'validation_groups' => ['Default', 'create', 'article']
+            'validation_groups' => ['Default', 'create']
         ]);
     }
 }

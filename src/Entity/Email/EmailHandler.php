@@ -15,28 +15,28 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class EmailHandler
 {
     /**
-     * Swift Mailer (dependency injection).
+     * Swift Mailer.
      *
      * @var \Swift_Mailer
      */
     private $mailer;
 
     /**
-     * The Doctrine entity manager (dependency injection).
+     * The Doctrine entity manager.
      *
      * @var EntityManagerInterface
      */
     private $manager;
 
     /**
-     * The email template repository (dependency injection).
+     * The email template repository.
      *
      * @var EmailTemplateRepository
      */
     private $repository;
 
     /**
-     * The user handler (dependency injection).
+     * The user handler .
      *
      * @var UserHandler
      */

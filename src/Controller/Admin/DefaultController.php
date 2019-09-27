@@ -9,14 +9,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin", name="admin_")
+ * The default controller for the admin area. These routes simply redirect to the appropriate
+ * place.
  *
  * Access is restricted to those with ROLE_ADMIN. This is configured for any '/admin' URL in the
  * config/packages/security.yaml, and also - you can't be too careful - with annotations here.
+ *
+ * @Route("/admin", name="admin_")
  */
 class DefaultController extends AbstractController
 {
     /**
+     * The admin index page; redirect according to the user's permissions.
+     *
+     * @return Response
      * @Route("/", name="index")
      * @IsGranted("ROLE_ADMIN")
      */
@@ -35,6 +41,9 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * The content area index page.
+     *
+     * @return Response
      * @Route("/content", name="content")
      * @IsGranted("ROLE_EVPT")
      */
@@ -44,6 +53,10 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * The conference area index page.
+     *
+     * @param ConferenceHandler The conference handler.
+     * @return Response
      * @Route("/conference", name="conference")
      * @IsGranted("ROLE_ORGANISER")
      */
@@ -53,6 +66,9 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * The journal area index page.
+     *
+     * @return Response
      * @Route("/journal", name="journal")
      * @IsGranted("ROLE_EDITOR")
      */
@@ -62,6 +78,9 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * The society area index page.
+     *
+     * @return Response
      * @Route("/society", name="society")
      * @IsGranted("ROLE_EVPT")
      */
@@ -71,6 +90,9 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * The user area index page.
+     *
+     * @return Response
      * @Route("/user", name="user")
      * @IsGranted("ROLE_TECH")
      */

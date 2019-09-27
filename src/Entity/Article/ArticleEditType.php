@@ -4,13 +4,11 @@ namespace App\Entity\Article;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * The form type for editing an article.
+ * The form type for editing an article. Like the one for uploading an article, except that the
+ * file field is optional.
  */
 class ArticleEditType extends AbstractType
 {
@@ -28,9 +26,9 @@ class ArticleEditType extends AbstractType
             ->add('authors')
             ->add('startPage')
             ->add('endPage')
-            ->add('museId', IntegerType::class, ['label' => 'Project MUSE ID', 'required' => false])
-            ->add('doi', TextType::class, ['label' => 'DOI', 'required' => false])
-            ->add('file', FileType::class, ['required' => false]);
+            ->add('museId', null, ['label' => 'Project MUSE ID', 'required' => false])
+            ->add('doi', null, ['label' => 'DOI', 'required' => false])
+            ->add('file', null, ['required' => false]);
     }
 
     /**

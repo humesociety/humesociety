@@ -145,16 +145,16 @@ class UploadsController extends AbstractController
      */
     public function submission(Submission $submission): Response
     {
-        // permissions check
-        if (!$submission->userCanView($this->getUser())) {
-            throw new AccessDeniedException('You do not have permission to download this file.');
-        }
-
         // look for the file
         $path = $this->container->get('parameter_bag')->get('uploads_directory');
         $path .= 'submissions/'.$submission->getPath().$submission->getFilename();
         if (!file_exists($path)) {
             throw new NotFoundHttpException('File not found.');
+        }
+
+        // check the user is allowed to view the file
+        if (!$submission->userCanView($this->getUser())) {
+            throw new AccessDeniedException('You do not have permission to download this file.');
         }
 
         // return the response

@@ -174,11 +174,10 @@ class SecurityController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // create the reset password form
+        // the reset password form
         $form = $this->createForm(UserResetPasswordType::class);
         $form->handleRequest($request);
 
-        // handle the reset password form
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('password')->getData();
             $encodedPassword = $passwordEncoder->encodePassword($user, $plainPassword);

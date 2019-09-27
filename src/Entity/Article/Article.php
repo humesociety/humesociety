@@ -3,7 +3,6 @@
 namespace App\Entity\Article;
 
 use App\Entity\Issue\Issue;
-use App\Entity\Upload\Upload;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -99,6 +98,7 @@ class Article
     /**
      * The article's ID on Project MUSE.
      *
+     * @var int|null
      * @ORM\Column(type="integer", unique=true, nullable=true)
      * @Groups("json")
      */
@@ -107,6 +107,7 @@ class Article
     /**
      * The article's DOI.
      *
+     * @var string|null
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
      * @Groups("json")
      */
@@ -114,6 +115,7 @@ class Article
 
     /**
      * The file itself (a temporary property used when uploading the article).
+     *
      * @var UploadedFile|null
      * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
      * @Assert\File(
@@ -126,6 +128,7 @@ class Article
     /**
      * The article's filename on disk (derivative property, not persisted to the database).
      *
+     * @var string
      * @Groups("json")
      */
     private $filename;
@@ -133,6 +136,7 @@ class Article
     /**
      * The path to the article's file on disk (derivative property, not persisted to the database).
      *
+     * @var string
      * @Groups("json")
      */
     private $path;
@@ -171,6 +175,7 @@ class Article
      * Set the issue the article is published in.
      *
      * @param Issue The issue the article is published in.
+     * @return self
      */
     public function setIssue(Issue $issue): self
     {
@@ -320,7 +325,7 @@ class Article
     /**
      * Get the article's DOI.
      *
-     * @return int|null
+     * @return string|null
      */
     public function getDoi(): ?string
     {

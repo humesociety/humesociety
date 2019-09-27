@@ -134,7 +134,7 @@ class Conference
     private $deadline;
 
     /**
-     * A collection of submissions to this conference.
+     * The submissions to this conference.
      *
      * @var Submission[]
      * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
@@ -143,7 +143,7 @@ class Conference
     private $submissions;
 
     /**
-     * An array of uploads associated with this conference.
+     * The uploads associated with this conference.
      *
      * Note that uploads are not persisted to the database, but simply saved to disk. The
      * ConferenceHandler should set this array when fetching Conferences from the database, by
@@ -454,7 +454,7 @@ class Conference
     }
 
     /**
-     * Get the collection of submissions to this conference.
+     * Get the submissions to this conference.
      *
      * @return Collection
      */
@@ -464,7 +464,7 @@ class Conference
     }
 
     /**
-     * Get the array of uploads associated with this conference.
+     * Get the uploads associated with this conference.
      *
      * @return Upload[]
      */
@@ -474,7 +474,7 @@ class Conference
     }
 
     /**
-     * Set the array of uploads associated with this conference.
+     * Set the uploads associated with this conference.
      *
      * @param Upload[] The array of uploads.
      * @return self

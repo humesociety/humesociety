@@ -18,14 +18,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for managing conference submissions.
+ *
  * @Route("/admin/conference/submission", name="admin_conference_submission_")
  * @IsGranted("ROLE_ORGANISER")
- *
- * Controller for managing conference submissions.
  */
 class SubmissionController extends AbstractController
 {
     /**
+     * The submissions index page.
+     *
+     * @return Response
      * @Route("/", name="index")
      */
     public function index() : Response
@@ -34,12 +37,18 @@ class SubmissionController extends AbstractController
     }
 
     /**
+     * The page for viewing all submissions.
+     *
+     * @param ConferenceHandler The conference handler.
+     * @return Response
      * @Route("/view", name="view")
      */
     public function view(ConferenceHandler $conferenceHandler): Response
     {
+        // look for the current conference
         $conference = $conferenceHandler->getCurrentConference();
 
+        // return a basic page if there isn't one
         if (!$conference) {
             return $this->render('admin/conference/no-current-conference.twig', [
                 'area' => 'conference',
@@ -48,6 +57,7 @@ class SubmissionController extends AbstractController
             ]);
         }
 
+        // return the response
         return $this->render('admin/conference/submission/view.twig', [
             'area' => 'conference',
             'subarea' => 'submission',
@@ -57,6 +67,12 @@ class SubmissionController extends AbstractController
     }
 
     /**
+     * The page for an individual submission.
+     *
+     * @param ConferenceHandler The conference handler.
+     * @param SubmissionHandler The submission handler.
+     * @param Submission The submission.
+     * @return Response
      * @Route("/details/{submission}", name="details")
      */
     public function details(
@@ -64,8 +80,10 @@ class SubmissionController extends AbstractController
         SubmissionHandler $submissionHandler,
         Submission $submission
     ): Response {
+        // look for the current conference
         $conference = $conferenceHandler->getCurrentConference();
 
+        // return a basic page if there isn't one
         if (!$conference) {
             return $this->render('admin/conference/no-current-conference.twig', [
                 'area' => 'conference',
@@ -74,6 +92,12 @@ class SubmissionController extends AbstractController
             ]);
         }
 
+        // only allow access to submissions to the current conference
+        if ($submission->getConference() !== $conference) {
+            throw $this->createNotFoundException('Page not found.');
+        }
+
+        // return the response
         return $this->render('admin/conference/submission/details.twig', [
             'area' => 'conference',
             'subarea' => 'submission',
@@ -85,6 +109,10 @@ class SubmissionController extends AbstractController
     /**
      * Update the keywords for a submission.
      *
+     * @param SubmissionHandler The submission handler.
+     * @param Submission The submission to edit.
+     * @param string The new keywords.
+     * @return JsonResponse
      * @Route("/keywords/{submission}/{keywords}", name="keywords")
      */
     public function keywords(
