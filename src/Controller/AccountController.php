@@ -232,9 +232,9 @@ class AccountController extends AbstractController
     ): Response {
         // create the PayPal environment
         if ($_ENV['APP_ENV'] === 'prod') {
-            $environment = new ProductionEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SANDBOX_SECRET']);
+            $environment = new ProductionEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SECRET']);
         } else {
-            $environment = new SandboxEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SANDBOX_SECRET']);
+            $environment = new SandboxEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SECRET']);
         }
 
         // create the PayPal client and check the order status
