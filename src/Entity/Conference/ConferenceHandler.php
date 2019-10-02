@@ -11,21 +11,21 @@ use Doctrine\ORM\EntityManagerInterface;
 class ConferenceHandler
 {
     /**
-     * The Doctrine entity manager (dependency injection).
+     * The Doctrine entity manager.
      *
      * @var EntityManagerInterface
      */
     private $manager;
 
     /**
-     * The conference repository (dependency injection).
+     * The conference repository.
      *
      * @var ConferenceRepository
      */
     private $repository;
 
     /**
-     * The upload handler (dependency injection).
+     * The upload handler.
      *
      * @var UploadHandler
      */

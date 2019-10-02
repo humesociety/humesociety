@@ -46,8 +46,11 @@ class AccountController extends AbstractController
      * @Route("/{tab}", name="index", requirements={"tab": "details|settings"})
      * @IsGranted("ROLE_USER")
      */
-    public function index(Request $request, UserHandler $userHandler, $tab = 'details'): Response
-    {
+    public function index(
+        Request $request,
+        UserHandler $userHandler,
+        $tab = 'details'
+    ): Response {
         // contact details form
         $detailsForm = $this->createForm(UserDetailsType::class, $this->getUser());
         $detailsForm->handleRequest($request);
@@ -61,10 +64,12 @@ class AccountController extends AbstractController
         $settingsForm = $this->createForm(UserSettingsType::class, $this->getUser());
         $settingsForm->handleRequest($request);
 
-        if ($settingsForm->isSubmitted() && $settingsForm->isValid()) {
-            $userHandler->saveUser($this->getUser());
-            $this->addFlash('success', 'Your membership settings have been updated.');
+        if ($settingsForm->isSubmitted()) {
             $tab = 'settings';
+            if ($settingsForm->isValid()) {
+                $userHandler->saveUser($this->getUser());
+                $this->addFlash('success', 'Your membership settings have been updated.');
+            }
         }
 
         // return the response
@@ -91,7 +96,7 @@ class AccountController extends AbstractController
         UserHandler $userHandler,
         UserPasswordEncoderInterface $passwordEncoder
     ): Response {
-        // the change password form
+        // change password form
         $form = $this->createForm(UserChangePasswordType::class);
         $form->handleRequest($request);
 
@@ -130,7 +135,7 @@ class AccountController extends AbstractController
         UserHandler $userHandler,
         $tab = 'availability'
     ): Response {
-        // look for current conference
+        // look for the current conference (possibly null)
         $conference = $conferenceHandler->getCurrentConference();
 
         // research availability form
@@ -209,8 +214,7 @@ class AccountController extends AbstractController
         // return the response
         return $this->render('site/account/pay.twig', [
             'page' => ['id' => 'pay', 'section' => 'account'],
-            'payable' => $payable,
-            'dev' => ($_ENV['APP_ENV'] === 'dev')
+            'payable' => $payable
         ]);
     }
 

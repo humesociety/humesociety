@@ -10,16 +10,16 @@ use Doctrine\ORM\EntityManagerInterface;
 class DuesPaymentHandler
 {
     /**
-     * The Doctrine entity manager (dependency injection).
+     * The Doctrine entity manager.
      *
      * @var EntityManagerInterface
      */
     private $manager;
 
     /**
-     * The dues payment repository (dependency injection).
+     * The dues payment repository.
      *
-     * @var ConferenceRepository
+     * @var DuesPaymentRepository
      */
     private $repository;
 

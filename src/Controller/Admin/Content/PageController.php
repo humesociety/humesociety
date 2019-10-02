@@ -85,7 +85,8 @@ class PageController extends AbstractController
             'area' => 'content',
             'subarea' => 'page',
             'page' => $page,
-            'pageForm' => $form->createView()
+            'pageForm' => $form->createView(),
+            'formName' => $form->getName()
         ]);
     }
 
@@ -135,7 +136,8 @@ class PageController extends AbstractController
         return $this->render('admin/content/page/create.twig', [
             'area' => 'content',
             'subarea' => 'page',
-            'pageForm' => $form->createView()
+            'pageForm' => $form->createView(),
+            'formName' => $form->getName()
         ]);
     }
 }

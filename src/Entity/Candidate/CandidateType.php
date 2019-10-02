@@ -4,7 +4,6 @@ namespace App\Entity\Candidate;
 
 use App\Entity\User\User;
 use App\Entity\User\UserRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,7 +25,7 @@ class CandidateType extends AbstractType
         $builder
             ->add('firstname')
             ->add('lastname')
-            ->add('user', EntityType::class, [
+            ->add('user', null, [
                 'required' => false,
                 'placeholder' => '[none]',
                 'label' => 'Linked User',

@@ -85,7 +85,8 @@ class EmailController extends AbstractController
         return $this->render('admin/society/email/send.twig', [
             'area' => 'society',
             'subarea' => 'email',
-            'emailForm' => $form->createView()
+            'emailForm' => $form->createView(),
+            'formName' => $form->getName()
         ]);
     }
 
@@ -118,7 +119,8 @@ class EmailController extends AbstractController
             'area' => 'society',
             'subarea' => 'email',
             'emailTemplate' => $emailTemplate,
-            'emailTemplateForm' => $form->createView()
+            'emailTemplateForm' => $form->createView(),
+            'formName' => $form->getName()
         ]);
     }
 }

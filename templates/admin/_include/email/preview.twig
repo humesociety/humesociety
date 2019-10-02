@@ -4,7 +4,7 @@
   {% embed 'email/base.twig' %}
     {% block image %}/logo.jpg{% endblock %}
     {% block content %}
-      <div data-preview="email"></div>
+      <div data-preview="email" data-form="{{ formName }}"></div>
     {% endblock %}
   {% endembed %}
 </div>

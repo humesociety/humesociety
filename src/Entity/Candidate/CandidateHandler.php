@@ -10,14 +10,14 @@ use Doctrine\ORM\EntityManagerInterface;
 class CandidateHandler
 {
     /**
-     * The Doctrine entity manager (dependency injection).
+     * The Doctrine entity manager.
      *
      * @var EntityManagerInterface
      */
     private $manager;
 
     /**
-     * The candidate repository (dependency injection).
+     * The candidate repository.
      *
      * @var CandidateRepository
      */

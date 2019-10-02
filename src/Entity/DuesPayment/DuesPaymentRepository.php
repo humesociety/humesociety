@@ -6,7 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * The dues pyament repository.
+ * The dues payment repository.
  *
  * Controllers should not interact with the dues payment repository directly, but instead use the
  * dues payment handler. The latter injects this class as a dependency, and exposes all the

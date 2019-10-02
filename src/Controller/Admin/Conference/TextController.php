@@ -13,10 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for managing conference text variables.
+ *
  * @Route("/admin/conference/text", name="admin_conference_text_")
  * @IsGranted("ROLE_ORGANISER")
- *
- * Controller for managing conference text variables.
  */
 class TextController extends AbstractController
 {
@@ -32,6 +32,9 @@ class TextController extends AbstractController
     }
 
     /**
+     * The conference texts index page.
+     *
+     * @return Response
      * @Route("/", name="index")
      */
     public function index() : Response
@@ -40,6 +43,9 @@ class TextController extends AbstractController
     }
 
     /**
+     * The page for viewing all texts.
+     *
+     * @return Response
      * @Route("/view", name="view")
      */
     public function view(): Response
@@ -51,21 +57,31 @@ class TextController extends AbstractController
     }
 
     /**
+     * The page for editing some text.
+     *
+     * @param Request Symfony's request object.
+     * @param ConferenceHandler The conference handler.
+     * @param TextHandler The text handler.
+     * @param string The text's label.
+     * @return Response
      * @Route("/edit/{label}", name="edit", requirements={"label": "%conference_text_ids%"})
      */
     public function edit(
-        string $label,
         Request $request,
         ConferenceHandler $conferenceHandler,
-        TextHandler $textHandler
+        TextHandler $textHandler,
+        string $label
     ): Response {
+        // look for the text
         $text = $textHandler->getTextByLabel($label);
 
+        // create a new one if it doesn't exist
         if (!$text) {
             $text = new Text();
             $text->setLabel($label);
         }
 
+        // text form
         $form = $this->createForm(TextType::class, $text);
         $form->handleRequest($request);
 
@@ -75,6 +91,7 @@ class TextController extends AbstractController
             return $this->redirectToRoute('admin_conference_text_view');
         }
 
+        // return the response
         return $this->render('admin/conference/text/edit.twig', [
             'area' => 'conference',
             'subarea' => 'text',

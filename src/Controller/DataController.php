@@ -87,8 +87,10 @@ class DataController extends AbstractController
      * @return Response
      * @Route("/conference", name="conference")
      */
-    public function conference(SerializerInterface $serializer, ConferenceHandler $conferenceHandler): Response
-    {
+    public function conference(
+        SerializerInterface $serializer,
+        ConferenceHandler $conferenceHandler
+    ): Response {
         $conference = $conferenceHandler->getCurrentConference();
         if ($conference) {
             return new Response($serializer->serialize($conference, 'json', ['groups' => 'json']));

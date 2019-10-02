@@ -72,7 +72,7 @@ class Candidate
     private $start;
 
     /**
-     * The end year of this term of office (null when the object is first created).
+     * The end year of this term of office.
      *
      * @var int
      * @ORM\Column(type="integer")
@@ -219,6 +219,12 @@ class Candidate
         return $this->institution;
     }
 
+    /**
+     * Set the candidate's institution.
+     *
+     * @param string|null The candidate's institution.
+     * @return self
+     */
     public function setInstitution(string $institution): self
     {
         $this->institution = $institution;
