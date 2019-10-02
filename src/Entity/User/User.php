@@ -4,6 +4,7 @@ namespace App\Entity\User;
 
 use App\Entity\Candidate\Candidate;
 use App\Entity\Conference\Conference;
+use App\Entity\Foo;
 use App\Entity\Reviewer\Reviewer;
 use App\Entity\Submission\Submission;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -113,7 +114,7 @@ class User implements UserInterface
      * committee.
      *
      * @var Candidate[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Candidate\Candidate", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\Candidate\Candidate", mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $candidacies;
@@ -299,7 +300,7 @@ class User implements UserInterface
      * A collection of the user's submissions to the Hume Conference.
      *
      * @var Submission[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $submissions;
@@ -308,7 +309,7 @@ class User implements UserInterface
      * The user's linked reviewer entity (if any).
      *
      * @var Reviewer
-     * @ORM\OneToOne(targetEntity="App\Entity\Reviewer\Reviewer", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="App\Entity\Reviewer\Reviewer", mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $reviewer;
@@ -404,7 +405,7 @@ class User implements UserInterface
      */
     public function __toString(): string
     {
-        return $this->firstname.' '.$this->lastname;
+        return $this->firstname.' '.$this->lastname.' ('.$this->email.')';
     }
 
     /**
@@ -1124,11 +1125,24 @@ class User implements UserInterface
     }
 
     /**
+     * Set the user's linked reviewer entity.
+     *
+     * @param Reviewer|null The user's liked reviewer entity.
+     * @return self
+     */
+    public function setReviewer(?Reviewer $reviewer): self
+    {
+        $this->reviewer = $reviewer;
+
+        return $this;
+    }
+
+    /**
      * Get whether the user is willing to receive requests to review articles.
      *
      * @return bool
      */
-    public function getWillingToReview(): ?bool
+    public function isWillingToReview(): ?bool
     {
         return $this->willingToReview;
     }
@@ -1151,7 +1165,7 @@ class User implements UserInterface
      *
      * @return bool
      */
-    public function getWillingToComment(): ?bool
+    public function isWillingToComment(): ?bool
     {
         return $this->willingToComment;
     }
@@ -1174,7 +1188,7 @@ class User implements UserInterface
      *
      * @return bool
      */
-    public function getWillingToChair(): ?bool
+    public function isWillingToChair(): ?bool
     {
         return $this->willingToChair;
     }

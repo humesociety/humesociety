@@ -65,7 +65,7 @@ class Issue
     private $editors;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Article\Article", mappedBy="issue")
+     * @ORM\OneToMany(targetEntity="App\Entity\Article\Article", mappedBy="issue", cascade={"persist", "remove"})
      * @ORM\OrderBy({"position" = "ASC"})
      * @Groups("json")
      */

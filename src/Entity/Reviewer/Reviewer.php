@@ -14,6 +14,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Entity(repositoryClass="App\Entity\Reviewer\ReviewerRepository")
  * @UniqueEntity(
+ *     fields={"user"},
+ *     message="This user is already registered as a reviewer."
+ * )
+ * @UniqueEntity(
  *     fields={"email"},
  *     message="There is already a reviewer with this email address."
  * )
@@ -34,7 +38,7 @@ class Reviewer
      * The linked user.
      *
      * @var User|null
-     * @ORM\OneToOne(targetEntity="App\Entity\User\User", inversedBy="reviewer")
+     * @ORM\OneToOne(targetEntity="App\Entity\User\User", inversedBy="reviewer", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $user;
@@ -43,7 +47,7 @@ class Reviewer
      * The reviewer's reviews.
      *
      * @var Review[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="reviewer")
+     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="reviewer", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $reviews;
@@ -84,7 +88,7 @@ class Reviewer
      * The reviewer's secret (randomly generated string for linking to their reviews).
      *
      * @var string
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=8)
      */
     private $secret;
 
@@ -96,8 +100,8 @@ class Reviewer
     public function __construct()
     {
         $this->secret = '';
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for ($i = 0; $i < 16; $i++) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        for ($i = 0; $i < 8; $i++) {
             $this->secret .= $characters[rand(0, strlen($characters) - 1)];
         }
         $this->reviews = new ArrayCollection();
@@ -110,7 +114,7 @@ class Reviewer
      */
     public function __toString(): string
     {
-        return $this->firstname.' '.$this->lastname.' ('.$this->email.')';
+        return $this->getFirstname().' '.$this->getLastname().' ('.$this->getEmail().')';
     }
 
     /**
@@ -141,6 +145,17 @@ class Reviewer
      */
     public function setUser(?User $user): self
     {
+        // remove reviewer association of the current linked user
+        if ($this->user) {
+            $this->user->setReviewer(null);
+        }
+
+        // add reviewer association of the new linked user
+        if ($user) {
+            $user->setReviewer($this);
+        }
+
+        // set the linked user
         $this->user = $user;
 
         return $this;
@@ -157,13 +172,28 @@ class Reviewer
     }
 
     /**
+     * Get the reviewer's accepted reviews.
+     *
+     * @return Reviews[]
+     */
+    public function getAcceptedReviews(): Collection
+    {
+        return $this->reviews->filter(function ($review) {
+            return $review->isAccepted();
+        });
+    }
+
+    /**
      * Get the reviewer's email address (null when the object is first created).
      *
      * @return string|null
      */
     public function getEmail(): ?string
     {
-        return $this->user ? $this->user->getEmail() : $this->email;
+        if ($this->user && $this->user->getEmail()) {
+            $this->user->getEmail();
+        }
+        return $this->email;
     }
 
     /**
@@ -185,7 +215,10 @@ class Reviewer
      */
     public function getFirstname(): ?string
     {
-        return $this->user ? $this->user->getFirstname() : $this->firstname;
+        if ($this->user && $this->user->getFirstname()) {
+            $this->user->getFirstname();
+        }
+        return $this->firstname;
     }
 
     /**
@@ -208,7 +241,10 @@ class Reviewer
      */
     public function getLastname(): ?string
     {
-        return $this->user ? $this->user->getLastname() : $this->lastname;
+        if ($this->user && $this->user->getLastname()) {
+            $this->user->getLastname();
+        }
+        return $this->lastname;
     }
 
     /**
@@ -231,7 +267,10 @@ class Reviewer
      */
     public function getKeywords(): ?string
     {
-        return $this->user ? $this->user->getKeywords() : $this->keywords;
+        if ($this->user && $this->user->getKeywords()) {
+            $this->user->getKeywords();
+        }
+        return $this->keywords;
     }
 
     /**
@@ -245,5 +284,42 @@ class Reviewer
         $this->keywords = $keywords;
 
         return $this;
+    }
+
+    /**
+     * Get the reviewer's secret.
+     *
+     * @return string
+     */
+    public function getSecret(): string
+    {
+        return $this->secret;
+    }
+
+    /**
+     * Get whether the reviewer has explicitly indicated a willingness to review.
+     *
+     * @return bool
+     */
+    public function isWillingToReview(): bool
+    {
+        return $this->user ? $this->user->isWillingToReview() : false;
+    }
+
+    /**
+     * Set user-related properties base on those of the linked user.
+     *
+     * @return void
+     */
+    public function setPropertiesFromUser()
+    {
+        if ($this->user) {
+            $this->email = $this->user->getEmail();
+            $this->firstname = $this->user->getFirstname();
+            $this->lastname = $this->user->getLastname();
+            if ($this->user->getKeywords()) {
+                $this->keywords = $this->user->getKeywords();
+            }
+        }
     }
 }

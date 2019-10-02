@@ -2,6 +2,7 @@
 
 namespace App\Entity\Review;
 
+use App\Entity\Reviewer\Reviewer;
 use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,9 +14,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Entity(repositoryClass="App\Entity\Review\ReviewRepository")
  * @UniqueEntity(
- *     fields={"user", "submission"},
- *     errorPath="submission",
- *     message="You have already submitted a review for this paper."
+ *     fields={"reviewer", "submission"},
+ *     errorPath="reviewer",
+ *     message="This reviewer has already been invited to review this paper."
  * )
  */
 class Review
@@ -34,7 +35,7 @@ class Review
      * The reviewer.
      *
      * @var Reviewer
-     * @ORM\ManyToOne(targetEntity="App\Entity\Reviewer\Reviewer", inversedBy="reviews")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Reviewer\Reviewer", inversedBy="reviews", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $reviewer;
@@ -43,10 +44,18 @@ class Review
      * The submission.
      *
      * @var Submission
-     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="reviews")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="reviews", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $submission;
+
+    /**
+     * The review's secret (randomly generated string for linking to the review).
+     *
+     * @var string
+     * @ORM\Column(type="string", length=8)
+     */
+    private $secret;
 
     /**
      * Whether the reviewer accepts the invitation to review.
@@ -88,6 +97,11 @@ class Review
     public function __construct()
     {
         $this->accepted = false;
+        $this->secret = '';
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        for ($i = 0; $i < 8; $i++) {
+            $this->secret .= $characters[rand(0, strlen($characters) - 1)];
+        }
     }
 
     /**
@@ -161,7 +175,7 @@ class Review
      *
      * @return bool
      */
-    public function getAccepted(): bool
+    public function isAccepted(): bool
     {
         return $this->accepted;
     }
@@ -254,5 +268,31 @@ class Review
     public function getSubmitted(): bool
     {
         return $this->dateSubmitted !== null;
+    }
+
+    /**
+     * Get the review's status.
+     *
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        if ($this->accepted) {
+            if ($this->dateSubmitted) {
+                return 'submitted';
+            }
+            return 'accepted';
+        }
+        return 'pending';
+    }
+
+    /**
+     * Get the link to this review.
+     *
+     * @return string
+     */
+    public function getLink(): string
+    {
+        return 'https://www.humesociety.org/review/'.$this->getReviewer()->getSecret().'/'.$this->secret;
     }
 }

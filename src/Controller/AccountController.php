@@ -166,11 +166,13 @@ class AccountController extends AbstractController
                     $tab = 'submissions';
                     if ($submissionForm->isValid()) {
                         $submissionHandler->saveSubmission($submission);
-                        $emailHandler->sendConferenceEmail($this->getUser(), $submission, 'submission');
+                        $userHandler->refreshUser($this->getUser());
+                        $userCanSubmitToConference = false;
+                        $emailHandler->sendSubmissionEmail($submission, 'submission');
+                        $emailHandler->sendSubmissionNotification($submission);
                         $message = 'Your paper has been submitted. A confirmation email has been '
                                  . 'sent to '.$this->getUser()->getEmail();
                         $this->addFlash('success', $message);
-                        // $userHandler->refreshUser($this->getUser());
                     }
                 }
             }

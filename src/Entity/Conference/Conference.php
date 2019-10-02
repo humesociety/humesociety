@@ -137,7 +137,7 @@ class Conference
      * The submissions to this conference.
      *
      * @var Submission[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $submissions;

@@ -56,6 +56,7 @@ class SubmissionHandler
         if ($submission->getFile()) {
             $path = $this->submissionsDirectory.$submission->getPath();
             $submission->getFile()->move($path, $submission->getFilename());
+            $submission->setFile(null);
         }
         $this->manager->persist($submission);
         $this->manager->flush();

@@ -2,16 +2,20 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Email address</th>
       <th>Areas of expertise</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     {% for user in users %}
       <tr>
         <td>{{ user }}</td>
-        <td>{{ user.email }}</td>
         <td>{{ user.keywords }}</td>
+        <td class="controls">
+          {% if user.reviewer == null %}
+            <a href="{{ path('admin_conference_volunteer_create_reviewer', { user: user.id }) }}">add to reviewers</a>
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </tbody>

@@ -3,6 +3,9 @@
 namespace App\Controller\Admin\Conference;
 
 use App\Entity\Conference\ConferenceHandler;
+use App\Entity\Reviewer\Reviewer;
+use App\Entity\Reviewer\ReviewerHandler;
+use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,5 +68,26 @@ class VolunteerController extends AbstractController
             'commentators' => $userHandler->getCommentVolunteers(),
             'chairs' => $userHandler->getChairVolunteers()
         ]);
+    }
+
+    /**
+     * The page for creating a reviewer account for the given user.
+     *
+     * @param User The user.
+     * @return Response
+     * @Route("/create-reviewer/{user}", name="create_reviewer")
+     */
+    public function createReviewer(User $user, ReviewerHandler $reviewerHandler): Response
+    {
+        if ($user->getReviewer()) {
+            $this->addFlash('notice', $user.' is already registered as a reviewer.');
+        } else {
+            $reviewer = new Reviewer();
+            $reviewer->setUser($user);
+            $reviewer->setPropertiesFromUser();
+            $reviewerHandler->saveReviewer($reviewer);
+            $this->addFlash('notice', 'A reviewer record has been created for '.$user);
+        }
+        return $this->redirectToRoute('admin_conference_volunteer_view');
     }
 }

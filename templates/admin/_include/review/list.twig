@@ -1,0 +1,17 @@
+<div class="reviews">
+  {% for review in submission.reviews %}
+    <div class="review">
+      <div class="heading">
+        <h5>{{ review.reviewer }}</h5>
+        <p>{{ review.status }}</p>
+      </div>
+      {% if review.submitted %}
+        <div class="feedback">
+          <p><strong>Grade:</strong> {% if review.grade == null %}-{% else %}{{ review.grade }}{% endif %}</p>
+          <h6>Comments</h6>
+          <pre>{{ review.comments }}</pre>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

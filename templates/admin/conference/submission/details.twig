@@ -13,38 +13,23 @@
     {% block body %}
       <nav class="tabs">
         <a data-tab="submission"{% if tab == 'submission' %} class="is-active"{% endif %}>Submission</a>
-        <a data-tab="reviews"{% if tab == 'review' %} class="is-active"{% endif %}>Reviews</a>
+        <a data-tab="reviews"{% if tab == 'reviews' %} class="is-active"{% endif %}>Reviews</a>
         <a data-tab="decision"{% if tab == 'decision' %} class="is-active"{% endif %}>Decision</a>
       </nav>
       <div class="tab-pane{% if tab == 'submission' %} is-active{% endif %}" id="submission">
-        <table>
-          <tbody>
-            <tr><th>Title</th><td>{{ submission.title }}</td></tr>
-            <tr><th>File</th><td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.filename }}</a></td></tr>
-            <tr><th>Keywords</th><td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td></tr>
-            <tr><th>Abstract</th><td>{{ submission.abstract }}</td></tr>
-          </tbody>
-        </table>
+        {% include 'admin/_include/submission/details.twig' %}
       </div>
-      <div class="tab-pane{% if tab == 'review' %} is-active{% endif %}" id="reviews">
-        {% if submission.reviews|length > 0 %}
-          <div class="submissions">
-            {% for review in submission.reviews %}
-              <div class="submission">
-                <div class="heading">
-                  <h5><a href="">{{ review.reviewer.firstname }} {{ review.reviewer.lastname }}</a></h5>
-                  <p>{{ review.status }}</p>
-                </div>
-                <div class="keywords">
-                  <p>Grade: {% if review.grade == null %}-{% else %}{{ review.grade }}{% endif %}</p>
-                  <p><a href="">Read Comments</a></p>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
+      <div class="tab-pane{% if tab == 'reviews' %} is-active{% endif %}" id="reviews">
+        {% if reviewers|length > 0 %}
+          {% include 'admin/_include/review/create.twig' %}
+        {% else %}
+          <p>There are no active reviewers in the database. Please visit the <a href="{{ path('admin_conference_reviewer_view') }}">Reviewers</a> section to create some before coming back here.</p>
         {% endif %}
-        {{ form_start(reviewInvitationForm) }}
-        {{ form_end(reviewInvitationForm) }}
+        {% if submission.reviews|length > 0 %}
+          {% include 'admin/_include/review/list.twig' %}
+        {% else %}
+          <p>None.</p>
+        {% endif %}
       </div>
       <div class="tab-pane{% if tab == 'decision' %} is-active{% endif %}" id="decision">
         <p>TODO</p>

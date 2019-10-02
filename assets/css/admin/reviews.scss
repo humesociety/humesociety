@@ -1,8 +1,8 @@
-.submissions {
+.reviews {
   border-left: 1px solid $grey;
   border-right: 1px solid $grey;
   margin-bottom: 1em;
-  .submission {
+  .review {
     padding: 1em;
     border-left: 3px solid transparent;
     border-top: 1px solid $grey;
@@ -22,10 +22,7 @@
         padding: 0 .5em;
       }
     }
-    .keywords {
-      input {
-        margin: 0;
-      }
+    .feedback {
     }
   }
 }

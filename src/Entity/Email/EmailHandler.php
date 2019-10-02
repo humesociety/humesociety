@@ -4,6 +4,7 @@ namespace App\Entity\Email;
 
 use App\Entity\Conference\Conference;
 use App\Entity\Conference\ConferenceHandler;
+use App\Entity\Review\Review;
 use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
@@ -160,6 +161,20 @@ class EmailHandler
     }
 
     /**
+     * Replace review-related variables in email text.
+     *
+     * @param string The email text.
+     * @param Review The review.
+     * @return string
+     */
+    private function prepareReviewContent(string $text, Review $review): string
+    {
+        $text = $this->prepareSubmissionContent($text, $review->getSubmission());
+        $text = preg_replace('/{{ ?link ?}}/', $review->getLink(), $text);
+        return $text;
+    }
+
+    /**
      * Create a swift message email.
      *
      * @param User|Reviewer The recipient of the email.
@@ -170,7 +185,7 @@ class EmailHandler
      * @return \Swift_Message
      */
     private function createEmail(
-        User $recipient,
+        $recipient,
         string $sender,
         string $subject,
         string $content,
@@ -300,22 +315,44 @@ class EmailHandler
     }
 
     /**
-     * Send conference email from template.
+     * Send submission email from template.
      *
-     * @param User|Reviewer The recipient of the email.
      * @param Submission The submission concerned.
      * @param string The template to use.
      * @return void
      */
-    public function sendConferenceEmail($recipient, Submission $submission, string $template)
+    public function sendSubmissionEmail(Submission $submission, string $template)
     {
         $emailTemplate = $this->getEmailTemplateByType($template);
         if ($emailTemplate) {
             $sender = $emailTemplate->getSender();
+            $recipient = $submission->getUser();
             $subject = $this->prepareRecipientContent($emailTemplate->getSubject(), $recipient);
             $subject = $this->prepareSubmissionContent($subject, $submission);
             $content = $this->prepareRecipientContent($emailTemplate->getContent(), $recipient);
             $content = $this->prepareSubmissionContent($content, $submission);
+            $email = $this->createEmail($recipient, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * Send review email from template.
+     *
+     * @param Review The review concerned.
+     * @param string The template to use.
+     * @return void
+     */
+    public function sendReviewEmail(Review $review, string $template)
+    {
+        $emailTemplate = $this->getEmailTemplateByType($template);
+        if ($emailTemplate) {
+            $sender = $emailTemplate->getSender();
+            $recipient = $review->getReviewer();
+            $subject = $this->prepareRecipientContent($emailTemplate->getSubject(), $recipient);
+            $subject = $this->prepareReviewContent($subject, $review);
+            $content = $this->prepareRecipientContent($emailTemplate->getContent(), $recipient);
+            $content = $this->prepareReviewContent($content, $review);
             $email = $this->createEmail($recipient, $sender, $subject, $content);
             $this->mailer->send($email);
         }

@@ -26,11 +26,17 @@ class ReviewerType extends AbstractType
             ->add('user', EntityType::class, [
                 'class' => User::class,
                 'label' => 'Linked User',
-                'placeholder' => '[none]'
+                'required' => false,
+                'placeholder' => '[none]',
+                'attr' => [
+                    'data-action' => 'fill-user-details',
+                    'data-form' => $this->getBlockPrefix()
+                ]
             ])
             ->add('firstname')
             ->add('lastname')
-            ->add('email');
+            ->add('email')
+            ->add('keywords');
     }
 
     /**

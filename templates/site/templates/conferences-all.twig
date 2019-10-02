@@ -2,15 +2,15 @@
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}
-    {% if conferences|length > 0 %}
-      {% block right %}
+    {% block right %}
+      {% if conferences|length > 0 %}
         <select data-filter="decade" data-table="conferences">
           {% for decade in decades %}
             <option value="{{ decade }}">{{ decade }}s</option>
           {% endfor %}
         </select>
-      {% endblock %}
-    {% endif %}
+      {% endif %}
+    {% endblock %}
   {% endembed %}
   {% if conferences|length > 0 %}
     {% include 'site/_include/conferences-table.twig' %}

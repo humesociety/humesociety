@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Issue\IssueHandler;
+use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,9 +28,23 @@ class DataController extends AbstractController
      * @return Response
      * @Route("/user", name="user")
      */
-    public function user(SerializerInterface $serializer): Response
+    public function currentUser(SerializerInterface $serializer): Response
     {
         return new Response($serializer->serialize($this->getUser(), 'json', ['groups' => 'json']));
+    }
+
+    /**
+     * Details of a specific user.
+     *
+     * @param User The user.
+     * @param SerializerInterface Symfony's serializer.
+     * @return Response
+     * @Route("/user/{user}", name="user")
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function specifiedUser(User $user, SerializerInterface $serializer): Response
+    {
+        return new Response($serializer->serialize($user, 'json', ['groups' => 'json']));
     }
 
     /**
@@ -99,7 +114,7 @@ class DataController extends AbstractController
     }
 
     /**
-     * Details of the current Hume Conference.
+     * The current Hume Conference keywords.
      *
      * @param SerializerInterface Symfony's serializer.
      * @param ConferenceHandler The conference handler.

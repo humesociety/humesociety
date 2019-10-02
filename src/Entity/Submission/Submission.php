@@ -39,7 +39,7 @@ class Submission
      * The user who submitted the paper.
      *
      * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -48,7 +48,7 @@ class Submission
      * The conference the paper is submitted to.
      *
      * @var Conference
-     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $conference;
@@ -65,7 +65,7 @@ class Submission
      * The reviews of this submission.
      *
      * @var Review[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="submission")
+     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="submission", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $reviews;
@@ -121,7 +121,7 @@ class Submission
     /**
      * The uploaded submission file (used temporarily when uploading the file).
      *
-     * @var UploadedFile
+     * @var UploadedFile|null
      * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
      * @Assert\File(
      *     mimeTypes = {
@@ -373,13 +373,16 @@ class Submission
     /**
      * Set the submission file.
      *
-     * @param UploadedFile The submission file.
+     * @param UploadedFile|null The submission file.
      * @return self
      */
-    public function setFile(UploadedFile $file): self
+    public function setFile(?UploadedFile $file): self
     {
+        if ($file !== null) {
+            $this->filename = $file->getClientOriginalName();
+        }
+
         $this->file = $file;
-        $this->filename = $file->getClientOriginalName();
 
         return $this;
     }

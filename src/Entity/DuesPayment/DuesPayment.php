@@ -34,7 +34,7 @@ class DuesPayment
      * The user who made the payment.
      *
      * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;

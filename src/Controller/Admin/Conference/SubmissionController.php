@@ -5,9 +5,11 @@ namespace App\Controller\Admin\Conference;
 use App\Entity\Conference\Conference;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Conference\ConferenceType;
+use App\Entity\Email\EmailHandler;
 use App\Entity\Review\Review;
 use App\Entity\Review\ReviewInvitationType;
 use App\Entity\Review\ReviewHandler;
+use App\Entity\Reviewer\ReviewerHandler;
 use App\Entity\Submission\Submission;
 use App\Entity\Submission\SubmissionHandler;
 use App\Entity\Upload\Upload;
@@ -75,10 +77,21 @@ class SubmissionController extends AbstractController
      *     name="details",
      *     requirements={"tab": "submission|reviews|decision"}
      * )
+     *
+     * @param Request Symfony's request object.
+     * @param ConferenceHandler The conference handler.
+     * @param EmailHandler The email handler.
+     * @param ReviewHandler The review handler.
+     * @param SubmissionHandler The submission handler.
+     * @param string The initially visible tab.
+     * @return Response
      */
     public function details(
+        Request $request,
         ConferenceHandler $conferenceHandler,
+        EmailHandler $emailHandler,
         ReviewHandler $reviewHandler,
+        ReviewerHandler $reviewerHandler,
         SubmissionHandler $submissionHandler,
         Submission $submission,
         string $tab = 'submission'
@@ -104,11 +117,12 @@ class SubmissionController extends AbstractController
         $review = new Review();
         $review->setSubmission($submission);
         $reviewInvitationForm = $this->createForm(ReviewInvitationType::class, $review);
+        $reviewInvitationForm->handleRequest($request);
         if ($reviewInvitationForm->isSubmitted()) {
             $tab = 'reviews';
             if ($reviewInvitationForm->isValid()) {
                 $reviewHandler->saveReview($review);
-                $emailHandler->sendConferenceEmail($review->getReviewer(), $submission, 'review');
+                $emailHandler->sendReviewEmail($review, 'review');
                 $submissionHandler->refreshSubmission($submission);
                 $this->addFlash('notice', 'A review invitation email has been sent to '.$review->getReviewer().'.');
             }
@@ -121,6 +135,7 @@ class SubmissionController extends AbstractController
             'conference' => $conference,
             'submission' => $submission,
             'tab' => $tab,
+            'reviewers' => $reviewerHandler->getReviewers(),
             'reviewInvitationForm' => $reviewInvitationForm->createView()
         ]);
     }

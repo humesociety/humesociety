@@ -32,7 +32,11 @@ class CandidateType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (UserRepository $userRepository) {
                     return $userRepository->findElectableMembers();
-                }
+                },
+                'attr' => [
+                    'data-action' => 'fill-user-details',
+                    'data-form' => $this->getBlockPrefix()
+                ]
             ])
             ->add('institution')
             ->add('start')
