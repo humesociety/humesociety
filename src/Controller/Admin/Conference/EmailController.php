@@ -86,7 +86,8 @@ class EmailController extends AbstractController
             'subarea' => 'email',
             'conference' => $conferenceHandler->getCurrentConference(),
             'emailTemplate' => $emailTemplate,
-            'emailTemplateForm' => $form->createView()
+            'emailTemplateForm' => $form->createView(),
+            'formName' => $form->getName()
         ]);
     }
 }

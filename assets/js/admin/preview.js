@@ -11,10 +11,11 @@ const prepare = (html, type) => {
 }
 
 previews.forEach((preview) => {
-  const source = document.querySelector('form textarea')
-  const type = source.dataset.preview
+  const type = preview.dataset.preview
+  const form = preview.dataset.form
+  const source = document.querySelector(`form[name="${form}"] textarea`)
   preview.innerHTML = prepare(source.value, type)
   source.addEventListener('keyup', (e) => {
-    preview.innerHTML = prepare(source.value)
+    preview.innerHTML = prepare(source.value, type)
   })
 })

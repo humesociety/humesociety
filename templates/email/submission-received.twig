@@ -1,0 +1,11 @@
+{% extends 'email/base.twig' %}
+
+{% block image %}{{ image }}{% endblock %}
+
+{% block content %}
+  <p>A paper titled "{{ submission.title }}" has just been submitted for the {{ conference }}. {% if conference.submissions|length == 1 %}There is now 1 submission in the database.{% else %}There are now {{ conference.submissions|length }} submissions in the database.{% endif %}</p>
+  <h4>Keywords</h4>
+  <p>{{ submission.keywords }}</p>
+  <h4>Abstract</h4>
+  <p>{{ submission.abstract }}</p>
+{% endblock %}

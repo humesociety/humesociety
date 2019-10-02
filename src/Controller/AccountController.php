@@ -167,6 +167,7 @@ class AccountController extends AbstractController
                     if ($submissionForm->isValid()) {
                         $submissionHandler->saveSubmission($submission);
                         $emailHandler->sendConferenceEmail($this->getUser(), $submission, 'submission');
+                        $emailHandler->sendSubmissionNotification($submission);
                         $this->addFlash('success', 'Your paper has been submitted. A confirmation email has been sent to '.$this->getUser()->getEmail());
                         return $this->redirectToRoute('account_research', ['tab' => 'submissions']);
                     }

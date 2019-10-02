@@ -3,6 +3,7 @@
 namespace App\Entity\Email;
 
 use App\Entity\Conference\Conference;
+use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
@@ -36,6 +37,13 @@ class EmailHandler
     private $repository;
 
     /**
+     * The conference handler.
+     *
+     * @var ConferenceHandler
+     */
+    private $conferenceHandler;
+
+    /**
      * The user handler .
      *
      * @var UserHandler
@@ -62,6 +70,7 @@ class EmailHandler
      * @param \Swift_Mailer Swift Mailer.
      * @param \Twig_Environment. Twig.
      * @param EntityManagerInterface The Doctrine entity manager.
+     * @param ConferenceHandler The conference handler.
      * @param UserHandler The user handler.
      * @param ParameterBagInterface Symfony's parameter bag interface.
      * @return void
@@ -70,6 +79,7 @@ class EmailHandler
         \Swift_Mailer $mailer,
         \Twig_Environment $templating,
         EntityManagerInterface $manager,
+        ConferenceHandler $conferenceHandler,
         UserHandler $userHandler,
         ParameterBagInterface $params
     ) {
@@ -77,6 +87,7 @@ class EmailHandler
         $this->templating = $templating;
         $this->manager = $manager;
         $this->repository = $manager->getRepository(EmailTemplate::class);
+        $this->conferenceHandler = $conferenceHandler;
         $this->userHandler = $userHandler;
         $this->projectDir = $params->get('kernel.project_dir');
         $this->countries = $params->get('countries');
@@ -305,6 +316,30 @@ class EmailHandler
             $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
             $content = $this->prepareSubmissionContent($content, $submission);
             $email = $this->createEmail($user, $sender, $subject, $content);
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * Send submission notification email to conference organisers.
+     *
+     * @param Submission The submission.
+     * @return void
+     */
+    public function sendSubmissionNotification(Submission $submission)
+    {
+        $conference = $this->conferenceHandler->getCurrentConference();
+        if ($conference) {
+            // if there's no current conference, this function should never be called, since no
+            // submissions will be possible
+            $email = new \Swift_Message('Submission to the '.$conference);
+            $email->setFrom($this->userHandler->getOfficialEmail('web'));
+            $email->setTo($this->userHandler->getOfficialEmail('conference'));
+            $email->setBody($this->templating->render('email/submission-received.twig', [
+                'image' => $email->embed(\Swift_Image::fromPath($this->projectDir.'/public/logo.jpg')),
+                'conference' => $conference,
+                'submission' => $submission
+            ]), 'text/html');
             $this->mailer->send($email);
         }
     }
