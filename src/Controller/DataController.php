@@ -26,25 +26,14 @@ class DataController extends AbstractController
      *
      * @param SerializerInterface Symfony's serializer.
      * @return Response
-     * @Route("/user", name="user")
-     */
-    public function currentUser(SerializerInterface $serializer): Response
-    {
-        return new Response($serializer->serialize($this->getUser(), 'json', ['groups' => 'json']));
-    }
-
-    /**
-     * Details of a specific user.
-     *
-     * @param User The user.
-     * @param SerializerInterface Symfony's serializer.
-     * @return Response
      * @Route("/user/{user}", name="user")
-     * @IsGranted("ROLE_ADMIN")
      */
-    public function specifiedUser(User $user, SerializerInterface $serializer): Response
+    public function currentUser(?User $user = null, SerializerInterface $serializer): Response
     {
-        return new Response($serializer->serialize($user, 'json', ['groups' => 'json']));
+        if ($user) {
+            return new Response($serializer->serialize($user, 'json', ['groups' => 'json']));
+        }
+        return new Response($serializer->serialize($this->getUser(), 'json', ['groups' => 'json']));
     }
 
     /**
