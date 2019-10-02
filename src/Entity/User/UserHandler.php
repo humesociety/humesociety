@@ -257,6 +257,17 @@ class UserHandler
     }
 
     /**
+     * Refresh user.
+     *
+     * @param User The user to refresh.
+     * @return void
+     */
+    public function refreshUser(User $user)
+    {
+        $this->manager->refresh($user);
+    }
+
+    /**
      * Delete a user from the database.
      *
      * @param User The user to delete.

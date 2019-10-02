@@ -42,7 +42,7 @@ parameters:
             title: Dues Reminder
             description: The dues reminder email is sent out to every member at the start of the month when their subscription is due (i.e. 1st June or 1st December).
 
-    conference_email_template_ids: submission|accept|reject|review|thanks
+    conference_email_template_ids: submission|review|thanks|accept|reject
     conference_email_templates:
         submission:
             title: Submission Acknowledgement

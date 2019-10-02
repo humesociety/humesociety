@@ -11,19 +11,44 @@
       </div>
     {% endblock %}
     {% block body %}
-      <h3>1. Submission</h3>
-      <table>
-        <tbody>
-          <tr><th>Title</th><td>{{ submission.title }}</td></tr>
-          <tr><th>File</th><td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.filename }}</a></td></tr>
-          <tr><th>Keywords</th><td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td></tr>
-          <tr><th>Abstract</th><td>{{ submission.abstract }}</td></tr>
-        </tbody>
-      </table>
-      <h3>2. Review</h3>
-      <p>TODO</p>
-      <h3>3. Decision</h3>
-      <p>TODO</p>
+      <nav class="tabs">
+        <a data-tab="submission"{% if tab == 'submission' %} class="is-active"{% endif %}>Submission</a>
+        <a data-tab="reviews"{% if tab == 'review' %} class="is-active"{% endif %}>Reviews</a>
+        <a data-tab="decision"{% if tab == 'decision' %} class="is-active"{% endif %}>Decision</a>
+      </nav>
+      <div class="tab-pane{% if tab == 'submission' %} is-active{% endif %}" id="submission">
+        <table>
+          <tbody>
+            <tr><th>Title</th><td>{{ submission.title }}</td></tr>
+            <tr><th>File</th><td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.filename }}</a></td></tr>
+            <tr><th>Keywords</th><td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td></tr>
+            <tr><th>Abstract</th><td>{{ submission.abstract }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane{% if tab == 'review' %} is-active{% endif %}" id="reviews">
+        {% if submission.reviews|length > 0 %}
+          <div class="submissions">
+            {% for review in submission.reviews %}
+              <div class="submission">
+                <div class="heading">
+                  <h5><a href="">{{ review.reviewer.firstname }} {{ review.reviewer.lastname }}</a></h5>
+                  <p>{{ review.status }}</p>
+                </div>
+                <div class="keywords">
+                  <p>Grade: {% if review.grade == null %}-{% else %}{{ review.grade }}{% endif %}</p>
+                  <p><a href="">Read Comments</a></p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {{ form_start(reviewInvitationForm) }}
+        {{ form_end(reviewInvitationForm) }}
+      </div>
+      <div class="tab-pane{% if tab == 'decision' %} is-active{% endif %}" id="decision">
+        <p>TODO</p>
+      </div>
     {% endblock %}
   {% endembed %}
 {% endblock %}

@@ -116,18 +116,17 @@ class EmailHandler
     }
 
     /**
-     * Replace user-related variables in email text.
+     * Replace recipient-related variables in email text.
      *
      * @param string The email text.
-     * @param User The user.
+     * @param User|Reviewer The recipient of the email.
      * @return string
      */
-    private function prepareUserContent(string $text, User $user): string
+    private function prepareRecipientContent(string $text, $recipient): string
     {
-        $text = preg_replace('/{{ ?username ?}}/', $user->getUsername(), $text);
-        $text = preg_replace('/{{ ?email ?}}/', $user->getEmail(), $text);
-        $text = preg_replace('/{{ ?firstname ?}}/', $user->getFirstname(), $text);
-        $text = preg_replace('/{{ ?lastname ?}}/', $user->getLastname(), $text);
+        $text = preg_replace('/{{ ?email ?}}/', $recipient->getEmail(), $text);
+        $text = preg_replace('/{{ ?firstname ?}}/', $recipient->getFirstname(), $text);
+        $text = preg_replace('/{{ ?lastname ?}}/', $recipient->getLastname(), $text);
         return $text;
     }
 
@@ -152,7 +151,7 @@ class EmailHandler
     /**
      * Create a swift message email.
      *
-     * @param User The recipient of the email.
+     * @param User|Reviewer The recipient of the email.
      * @param string The sender of the email.
      * @param string The subject of the email.
      * @param string The content of the email.
@@ -160,7 +159,7 @@ class EmailHandler
      * @return \Swift_Message
      */
     private function createEmail(
-        User $user,
+        User $recipient,
         string $sender,
         string $subject,
         string $content,
@@ -178,7 +177,9 @@ class EmailHandler
         // set the email fields
         $email->setFrom($this->userHandler->getOfficialEmail($sender));
         $email->setBody($body, 'text/html');
-        $email->setTo([$user->getEmail() => $user->getFirstname().' '.$user->getLastname()]);
+        $email->setTo([
+            $recipient->getEmail() => $recipient->getFirstname().' '.$recipient->getLastname()
+        ]);
         if ($pathToAttachment) {
             $email->attach(\Swift_Attachment::fromPath($pathToAttachment));
         }
@@ -230,8 +231,8 @@ class EmailHandler
         $goodRecipients = [];
         $badRecipients = [];
         foreach ($recipientUsers as $user) {
-            $thisSubject = $this->prepareUserContent($subject, $user);
-            $thisContent = $this->prepareUserContent($content, $user);
+            $thisSubject = $this->prepareRecipientContent($subject, $user);
+            $thisContent = $this->prepareRecipientContent($content, $user);
             $email = $this->createEmail($user, $sender, $thisSubject, $thisContent, $pathToAttachment);
             $sent = $this->mailer->send($email);
             if ($sent) {
@@ -280,8 +281,8 @@ class EmailHandler
         $emailTemplate = $this->getEmailTemplateByType($template);
         if ($emailTemplate) {
             $sender = $emailTemplate->getSender();
-            $subject = $this->prepareUserContent($emailTemplate->getSubject(), $user);
-            $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
+            $subject = $this->prepareRecipientContent($emailTemplate->getSubject(), $user);
+            $content = $this->prepareRecipientContent($emailTemplate->getContent(), $user);
             $email = $this->createEmail($user, $sender, $subject, $content);
             $this->mailer->send($email);
         }
@@ -290,21 +291,21 @@ class EmailHandler
     /**
      * Send conference email from template.
      *
-     * @param User The recipient of the email.
+     * @param User|Reviewer The recipient of the email.
      * @param Submission The submission concerned.
      * @param string The template to use.
      * @return void
      */
-    public function sendConferenceEmail(User $user, Submission $submission, string $template)
+    public function sendConferenceEmail($recipient, Submission $submission, string $template)
     {
         $emailTemplate = $this->getEmailTemplateByType($template);
         if ($emailTemplate) {
             $sender = $emailTemplate->getSender();
-            $subject = $this->prepareUserContent($emailTemplate->getSubject(), $user);
+            $subject = $this->prepareRecipientContent($emailTemplate->getSubject(), $recipient);
             $subject = $this->prepareSubmissionContent($subject, $submission);
-            $content = $this->prepareUserContent($emailTemplate->getContent(), $user);
+            $content = $this->prepareRecipientContent($emailTemplate->getContent(), $recipient);
             $content = $this->prepareSubmissionContent($content, $submission);
-            $email = $this->createEmail($user, $sender, $subject, $content);
+            $email = $this->createEmail($recipient, $sender, $subject, $content);
             $this->mailer->send($email);
         }
     }

@@ -62,6 +62,17 @@ class SubmissionHandler
     }
 
     /**
+     * Refresh a submission.
+     *
+     * @var Submission The submission to refresh.
+     * @return void
+     */
+    public function refreshSubmission(Submission $submission)
+    {
+        $this->manager->refresh($submission);
+    }
+
+    /**
      * Delete a submission from the database.
      *
      * @param Submission The submission to delete.

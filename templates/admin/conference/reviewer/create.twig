@@ -1,0 +1,17 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Create Reviewer{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Reviewer{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_conference_reviewer_view') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Reviewer List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_include/reviewer/create-update.twig' with { create: true } %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

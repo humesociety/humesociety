@@ -1,0 +1,17 @@
+<p>In order to invite someone to review a paper, you must first create a record for them in the database. These records will remain in place, helping subsequent conference organisers. Records can be created from current users, or alternatively by inputting a name and email address by hand.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Keywords</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for reviewer in reviewers %}
+      <tr>
+        <td>{{ reviewer }}</td>
+        <td>{{ reviewer.keywords }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

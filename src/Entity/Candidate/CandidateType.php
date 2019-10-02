@@ -6,7 +6,6 @@ use App\Entity\User\User;
 use App\Entity\User\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -42,7 +41,7 @@ class CandidateType extends AbstractType
             ->add('elected')
             ->add('reelectable')
             ->add('president')
-            ->add('evpt', CheckboxType::class, ['label' => 'EVPT', 'required' => false])
+            ->add('evpt', null, ['label' => 'EVPT', 'required' => false])
             ->add('votes')
             ->add('description');
     }

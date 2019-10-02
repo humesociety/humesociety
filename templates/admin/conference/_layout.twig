@@ -14,13 +14,17 @@
       <span class="icon"><i class="far fa-envelope"></i></span>
       <span class="link-text">Emails</span>
     </a>
+    <a href="{{ path('admin_conference_submission_index') }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-word"></i></span>
+      <span class="link-text">Submissions</span>
+    </a>
     <a href="{{ path('admin_conference_volunteer_index') }}"{% if subarea == 'volunteer' %} class="is-active"{% endif %}>
       <span class="icon"><i class="fas fa-hands-helping"></i></span>
       <span class="link-text">Volunteers</span>
     </a>
-    <a href="{{ path('admin_conference_submission_index') }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>
-      <span class="icon"><i class="far fa-file-word"></i></span>
-      <span class="link-text">Submissions</span>
+    <a href="{{ path('admin_conference_reviewer_index') }}"{% if subarea == 'reviewer' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-gavel"></i></span>
+      <span class="link-text">Reviewers</span>
     </a>
   </div>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Reviewers{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Reviewers{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_conference_reviewer_create') }}" class="button create"><i class="fas fa-plus"></i> Create Reviewer</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% if reviewers|length > 0 %}
+        {% include 'admin/_include/reviewer/list.twig' %}
+      {% else %}
+        <p>There are no reviewers in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

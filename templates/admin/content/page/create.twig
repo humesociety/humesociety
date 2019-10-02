@@ -1,10 +1,10 @@
 {% extends 'admin/content/_layout.twig' %}
 
-{% block title %}New Page{% endblock %}
+{% block title %}Create Page{% endblock %}
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-{% block title %}Create Page{% endblock %}
+    {% block title %}Create Page{% endblock %}
     {% block header_right %}
       <div class="input">
         <a href="{{ path('admin_content_page_view') }}" class="button" data-menu="page_section"><i class="fas fa-chevron-left"></i> Back to Page List</a>
