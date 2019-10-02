@@ -417,7 +417,8 @@ class User implements UserInterface
     {
         $currentMonth = (int) date('m');
         $currentYear = date('Y');
-        $this->dues = ($currentMonth <= 6)
+        $lastYear = (string) ((int) $currentYear - 1);
+        $this->dues = ($currentMonth > 6)
             ? new \DateTime($currentYear.'-06-30')
             : new \DateTime($currentYear.'-12-31');
 
