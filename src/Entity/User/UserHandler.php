@@ -148,21 +148,23 @@ class UserHandler
         switch ($sender) {
             case 'vicepresident':
                 $evpt = $this->repository->findVicePresident();
-                $name = $evpt ? $evpt : 'Executive Vice-President Treasurer';
+                $name = $evpt ? $evpt->getFirstname().' '.$evpt->getLastname() : 'Executive Vice-President Treasurer';
                 return ['vicepresident@humesociety.org' => $name];
 
             case 'conference':
                 $organisers = $this->repository->findConferenceOrganisers();
                 $name = 'Conference Organisers';
                 if (sizeof($organisers) > 0) {
-                    $name = implode(', ', $organisers);
+                    $name = implode(', ', array_map(function ($organiser) {
+                        return $organiser->getFirstname().' '.$organiser->getLastname();
+                    }, $organisers));
                 }
                 return ['conference@humesociety.org' => $name];
 
             case 'web': // fallthrough
             default: // also make this the default, to ensure this function always returns something
                 $tech = $this->repository->findTechnicalDirector();
-                $name = $tech ? $tech : 'Technical Director';
+                $name = $tech ? $tech->getFirstname().' '.$tech->getLastname() : 'Technical Director';
                 return ['web@humesociety.org' => $name];
         }
     }
@@ -177,15 +179,17 @@ class UserHandler
     {
         $evpt = $this->getVicePresident();
         $evptDisplay = $evpt
-            ? $evpt.' <vicepresident@humesociety.org>'
+            ? $evpt->getFirstname().' '.$evpt->getLastname().' <vicepresident@humesociety.org>'
             : 'Executive Vice-President Treasrer <vicepresident@humesociety.org>';
         $tech = $this->getTechnicalDirector();
         $techDisplay = $tech
-            ? $tech.' <web@humesociety.org>'
+            ? $tech->getFirstname().' '.$tech->getLastname().' <web@humesociety.org>'
             : 'Technical Director <vicepresident@humesociety.org>';
         $organisers = $this->getConferenceOrganisers();
         $organisersDisplay = (sizeof($organisers) > 0)
-            ? implode(', ', $organisers).' <conference@humesociety.org>'
+            ? implode(', ', array_map(function ($organiser) {
+                return $organiser->getFirstname().' '.$organiser->getLastname();
+            }, $organisers)).' <conference@humesociety.org>'
             : 'Conference Organisers <vicepresident@humesociety.org>';
         return [
             $evptDisplay => 'vicepresident',
