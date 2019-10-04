@@ -5,7 +5,11 @@ namespace App\Entity\Email;
 use App\Entity\User\UserHandler;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+
 
 /**
  * The email form type.
@@ -40,15 +44,15 @@ class EmailType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('current', null, [
+            ->add('current', CheckboxType::class, [
                 'label' => 'Members in Good Standing',
                 'required' => false
             ])
-            ->add('lapsed', null, [
+            ->add('lapsed', CheckboxType::class, [
                 'label' => 'Members in Arrears',
                 'required' => false
             ])
-            ->add('declining', null, [
+            ->add('declining', CheckboxType::class, [
                 'label' => 'Include Members Declining General Emails',
                 'required' => false
             ])
@@ -57,7 +61,7 @@ class EmailType extends AbstractType
                 'label' => 'From'
             ])
             ->add('subject')
-            ->add('attachment', null, ['required' => false])
-            ->add('content');
+            ->add('attachment', FileType::class, ['required' => false])
+            ->add('content', TextareaType::class);
     }
 }
