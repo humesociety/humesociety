@@ -7,7 +7,5 @@ twig:
         sections: '%sections%'
         categories: '%news_categories%'
         society_email_templates: '%society_email_templates%'
-        conference_email_templates: '%conference_email_templates%'
-        conference_texts: '%conference_texts%'
         countries: '%countries%'
         paypal_client_id: '%env(PAYPAL_CLIENT_ID)%'

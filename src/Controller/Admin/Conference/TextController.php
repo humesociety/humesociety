@@ -2,10 +2,9 @@
 
 namespace App\Controller\Admin\Conference;
 
-use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Text\Text;
-use App\Entity\Text\TextHandler;
 use App\Entity\Text\TextType;
+use App\Service\TextManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,82 +20,58 @@ use Symfony\Component\Routing\Annotation\Route;
 class TextController extends AbstractController
 {
     /**
-     * Get a text's title.
+     * Route for viewing conference text variables.
      *
-     * @param Text The text.
-     * @return string
-     */
-    private function textTitle(Text $text): string
-    {
-        return $this->getParameter('conference_texts')[$text->getLabel()]['title'];
-    }
-
-    /**
-     * The conference texts index page.
-     *
+     * @param TextManager The text manager.
      * @return Response
      * @Route("/", name="index")
      */
-    public function index() : Response
+    public function index(TextManager $texts): Response
     {
-        return $this->redirectToRoute('admin_conference_text_view');
-    }
-
-    /**
-     * The page for viewing all texts.
-     *
-     * @return Response
-     * @Route("/view", name="view")
-     */
-    public function view(): Response
-    {
-        return $this->render('admin/conference/text/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'conference',
-            'subarea' => 'text'
-        ]);
+            'subarea' => 'text',
+            'conferenceTexts' => $texts->getConferenceTexts()
+        ];
+
+        // render and return the page
+        return $this->render('admin/conference/text/view.twig', $twigs);
     }
 
     /**
-     * The page for editing some text.
+     * Route for editing a conference text variable.
      *
      * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param TextHandler The text handler.
+     * @param TextManager The text manager.
      * @param string The text's label.
      * @return Response
      * @Route("/edit/{label}", name="edit", requirements={"label": "%conference_text_ids%"})
      */
-    public function edit(
-        Request $request,
-        ConferenceHandler $conferenceHandler,
-        TextHandler $textHandler,
-        string $label
-    ): Response {
-        // look for the text
-        $text = $textHandler->getTextByLabel($label);
+    public function edit(Request $request, TextManager $texts, string $label): Response
+    {
+        // get the text variable
+        $text = $texts->getTextByLabel($label);
 
-        // create a new one if it doesn't exist
-        if (!$text) {
-            $text = new Text();
-            $text->setLabel($label);
-        }
-
-        // text form
-        $form = $this->createForm(TextType::class, $text);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $textHandler->saveText($text);
-            $this->addFlash('notice', $this->textTitle($text).' text has been updated.');
-            return $this->redirectToRoute('admin_conference_text_view');
-        }
-
-        // return the response
-        return $this->render('admin/conference/text/edit.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'conference',
             'subarea' => 'text',
             'text' => $text,
-            'textForm' => $form->createView()
-        ]);
+        ];
+
+        // create and handle the text edit form
+        $textForm = $this->createForm(TextType::class, $text);
+        $twigs['textForm'] = $textForm->createView();
+        $twigs['formName'] = $textForm->getName(); // for the preview
+        $textForm->handleRequest($request);
+        if ($textForm->isSubmitted() && $textForm->isValid()) {
+            $texts->saveText($text);
+            $this->addFlash('notice', $text.' text has been updated.');
+            return $this->redirectToRoute('admin_conference_text_index');
+        }
+
+        // render and return the page
+        return $this->render('admin/conference/text/edit.twig', $twigs);
     }
 }

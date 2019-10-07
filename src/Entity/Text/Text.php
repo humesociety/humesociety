@@ -6,7 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Text objects are small bits of customizable text used in the web site.
+ * Text objects are small bits of variable text used in the web site, whose content is stored in the database.
+ *
+ * Text variables need to be "declared" in the `services.yml` file, which defines a human-readable title
+ * and description alongside the label.
  *
  * @ORM\Entity(repositoryClass="App\Entity\Text\TextRepository")
  * @UniqueEntity(
@@ -43,11 +46,25 @@ class Text
     private $content;
 
     /**
+     * The text's title. This is not stored in the database, but in the `services.yml` file.
+     *
+     * @var string
+     */
+    private $title;
+
+    /**
+     * The text's description. This is not stored in the database, but in the `services.yml` file.
+     *
+     * @var string
+     */
+    private $description;
+
+    /**
      * ToString function.
      */
     public function __toString(): string
     {
-        return $this->content;
+        return $this->title ? $this->title : 'unintialised text object';
     }
 
     /**
@@ -79,7 +96,6 @@ class Text
     public function setLabel(string $label): self
     {
         $this->label = $label;
-
         return $this;
     }
 
@@ -102,7 +118,50 @@ class Text
     public function setContent(string $content): self
     {
         $this->content = $content;
+        return $this;
+    }
 
+    /**
+     * Get the text's title (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set the text's title.
+     *
+     * @param string The text's title.
+     * @return self
+     */
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Get the text's description (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set the text's description.
+     *
+     * @param string The text's description.
+     * @return self
+     */
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
         return $this;
     }
 }

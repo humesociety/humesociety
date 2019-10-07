@@ -4,10 +4,10 @@
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Edit {{ conference_texts[text.label].title }} Text{% endblock %}
+    {% block title %}Edit {{ text }} Text{% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_conference_text_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Custom Text</a>
+        <a href="{{ path('admin_conference_text_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Custom Text List</a>
       </div>
     {% endblock %}
     {% block body %}

@@ -2,7 +2,8 @@
 
 namespace App\Controller\Admin\Conference;
 
-use App\Entity\Conference\Conference;
+use App\Service\ConferenceManager;
+
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Conference\ConferenceType;
 use App\Entity\Email\EmailHandler;
@@ -31,44 +32,35 @@ use Symfony\Component\Routing\Annotation\Route;
 class SubmissionController extends AbstractController
 {
     /**
-     * The submissions index page.
+     * Route for viewing all submissions to the current conference.
      *
+     * @param ConferenceManager The conference manager.
      * @return Response
      * @Route("/", name="index")
      */
-    public function index() : Response
+    public function index(ConferenceManager $conferences): Response
     {
-        return $this->redirectToRoute('admin_conference_submission_view');
-    }
+        // initialise twig variables
+        $twigs = [
+            'area' => 'conference',
+            'subarea' => 'submission',
+            'title' => 'Conference Submissions'
+        ];
 
-    /**
-     * The page for viewing all submissions.
-     *
-     * @param ConferenceHandler The conference handler.
-     * @return Response
-     * @Route("/view", name="view")
-     */
-    public function view(ConferenceHandler $conferenceHandler): Response
-    {
         // look for the current conference
-        $conference = $conferenceHandler->getCurrentConference();
+        $conference = $conferences->getCurrentConference();
 
         // return a basic page if there isn't one
         if (!$conference) {
-            return $this->render('admin/conference/no-current-conference.twig', [
-                'area' => 'conference',
-                'subarea' => 'submission',
-                'title' => 'Conference Submissions'
-            ]);
+            return $this->render('admin/conference/no-current-conference.twig', $twigs);
         }
 
-        // return the response
-        return $this->render('admin/conference/submission/view.twig', [
-            'area' => 'conference',
-            'subarea' => 'submission',
-            'conference' => $conference,
-            'keywords' => $conferenceHandler->getSubmissionKeywords($conference)
-        ]);
+        // add the conference and its submission keywords to the twig variables
+        $twigs['conference'] = $conference;
+        $twigs['keywords'] = $conferences->getSubmissionKeywords($conference);
+
+        // render and return the page
+        return $this->render('admin/conference/submission/view.twig', $twigs);
     }
 
     /**
@@ -141,7 +133,7 @@ class SubmissionController extends AbstractController
     }
 
     /**
-     * Update the keywords for a submission.
+     * Route for updating the keywords for a submission.
      *
      * @param SubmissionHandler The submission handler.
      * @param Submission The submission to edit.

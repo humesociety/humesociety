@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Email;
+namespace App\Entity\EmailTemplate;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;

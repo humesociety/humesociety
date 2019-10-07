@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Email;
+namespace App\Entity\EmailTemplate;
 
 use App\Entity\User\UserHandler;
 use Symfony\Component\Form\AbstractType;

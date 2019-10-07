@@ -17,10 +17,15 @@
       align-items: baseline;
       h5 {
         flex: 1;
+        margin-bottom: 0;
       }
       p {
         padding: 0 .5em;
+        margin-bottom: 0;
       }
+    }
+    .authors {
+      margin-bottom: .5em;
     }
     .keywords {
       input {

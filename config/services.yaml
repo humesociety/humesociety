@@ -7,6 +7,13 @@ parameters:
     locale: 'en'
 
     uploads_directory: '%kernel.project_dir%/uploads/'
+    subdirectories:
+        attachments: attachments/
+        conferences: conferences/
+        images: images/
+        issues: issues/
+        reports: reports/
+        submissions: submissions/
 
     section_ids: about|conferences|hs|scholarship|members
     sections:
@@ -66,6 +73,7 @@ parameters:
         members: Members News
         conferences: Other Conferences
         fellowships: Fellowships and Awards
+        jobs: Job Advertisements
 
     conference_text_ids: submission
     conference_texts:

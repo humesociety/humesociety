@@ -799,6 +799,16 @@ class User implements UserInterface
     }
 
     /**
+     * Get the user's full name (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFullname(): ?string
+    {
+        return $this->firstname.' '.$this->lastname;
+    }
+
+    /**
      * Get the user's department.
      *
      * @return string|null

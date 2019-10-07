@@ -6,6 +6,7 @@
         <h5><a href="{{ path('admin_conference_submission_details', { submission: submission.id }) }}">{{ submission.title }}</a></h5>
         <p>{{ submission.status }}</p>
       </div>
+      <div class="authors">{{ submission.authors }} (submitted by {{ submission.user.fullname }})</div>
       <div class="keywords">
         <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
       </div>
