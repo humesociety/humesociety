@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Conference\Conference;
+use App\Entity\Review\Review;
+use App\Entity\Submission\Submission;
 use App\Entity\Upload\Upload;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -16,14 +18,7 @@ class ConferenceManager
      *
      * @var EntityManagerInterface
      */
-    private $manager;
-
-    /**
-     * The conference repository.
-     *
-     * @var ConferenceRepository
-     */
-    private $repository;
+    private $em;
 
     /**
      * The upload manager.
@@ -39,10 +34,9 @@ class ConferenceManager
      * @param UploadManager The upload manager.
      * @return void
      */
-    public function __construct(EntityManagerInterface $manager, UploadManager $uploads)
+    public function __construct(EntityManagerInterface $em, UploadManager $uploads)
     {
-        $this->manager = $manager;
-        $this->repository = $manager->getRepository(Conference::class);
+        $this->em = $em;
         $this->uploads = $uploads;
     }
 
@@ -52,7 +46,7 @@ class ConferenceManager
      * @param Conference|null
      * @return Conference|null
      */
-    public function enrich(?Conference $conference): ?Conference
+    public function enrichConference(?Conference $conference): ?Conference
     {
         if ($conference) {
             $conference->setUploads($this->uploads->getConferenceUploads($conference));
@@ -63,13 +57,25 @@ class ConferenceManager
     /**
      * Refresh a conference.
      *
-     * @param Conference
-     * @return void
+     * @param Conference The conference to refresh.
+     * @return Conference
      */
-    public function refresh(Conference $conference)
+    public function refreshConference(Conference $conference)
     {
-        $this->manager->refresh($conference);
-        $this->enrich($conference);
+        $this->em->refresh($conference);
+        return $this->enrichConference($conference);
+    }
+
+    /**
+     * Refresh a submission.
+     *
+     * @param Submission The submission to refresh.
+     * @return Submission
+     */
+    public function refreshSubmission(Submission $submission)
+    {
+        $this->em->refresh($submission);
+        return $submission;
     }
 
     /**
@@ -80,8 +86,8 @@ class ConferenceManager
     public function getConferences(): array
     {
         return array_map(function ($x) {
-            return $this->enrich($x);
-        }, $this->repository->findAll());
+            return $this->enrichConference($x);
+        }, $this->em->getRepository(Conference::class)->findAll());
     }
 
     /**
@@ -93,7 +99,7 @@ class ConferenceManager
     {
         // the repository function returns conferences for the current year and later ...
         // (that's the best we can do, since forthcoming conferences may not have a specific date)
-        $forthcoming = $this->repository->findConferencesForThisYearAndLater();
+        $forthcoming = $this->em->getRepository(Conference::class)->findConferencesForThisYearAndLater();
 
         // ... so now we may need to remove this year's conference if it's past
         if (sizeof($forthcoming) > 0
@@ -105,7 +111,7 @@ class ConferenceManager
 
         // and return what's left
         return array_map(function ($x) {
-            return $this->enrich($x);
+            return $this->enrichConference($x);
         }, $forthcoming);
     }
 
@@ -127,7 +133,7 @@ class ConferenceManager
      */
     public function getNextNumber(): int
     {
-        return $this->repository->findLatestNumber() + 1;
+        return $this->em->getRepository(Conference::class)->findLatestNumber() + 1;
     }
 
     /**
@@ -137,7 +143,7 @@ class ConferenceManager
      */
     public function getNextYear(): int
     {
-        return $this->repository->findLatestYear() + 1;
+        return $this->em->getRepository(Conference::class)->findLatestYear() + 1;
     }
 
     /**
@@ -147,7 +153,7 @@ class ConferenceManager
      */
     public function getDecades(): array
     {
-        return $this->repository->findDecades();
+        return $this->em->getRepository(Conference::class)->findDecades();
     }
 
     /**
@@ -171,6 +177,16 @@ class ConferenceManager
     }
 
     /**
+     * Get all reviewers.
+     *
+     * @return Reviewer[]
+     */
+    public function getReviewers(): array
+    {
+        return $this->em->getRepository(Reviewer::class)->findAll();
+    }
+
+    /**
      * Create a conference file.
      *
      * @param Conference The conference to link to the file.
@@ -185,7 +201,7 @@ class ConferenceManager
     /**
      * Save/upload a conference file.
      *
-     * @param Upload The upload.
+     * @param Upload The upload to save.
      * @param Conference The conference.
      */
     public function saveConferenceFile(Upload $upload)
@@ -196,7 +212,7 @@ class ConferenceManager
     /**
      * Delete a conference file.
      *
-     * @param string The name of the conference file.
+     * @param string The name of the conference file to delete.
      * @param Conference The conference.
      */
     public function deleteConferenceFile(string $filename, Conference $conference)
@@ -208,26 +224,49 @@ class ConferenceManager
     /**
      * Save/update a conference in the database.
      *
-     * @param Conference The conference to be saved/updated.
+     * @param Conference The conference to save/update.
      */
     public function saveConference(Conference $conference)
     {
-        $this->manager->persist($conference);
-        $this->manager->flush();
+        $this->em->persist($conference);
+        $this->em->flush();
     }
 
     /**
      * Delete a conference from the database.
      *
-     * @param Conference The conference to be deleted.
+     * @param Conference The conference to delete.
      */
     public function deleteConference(Conference $conference)
     {
-        $conference = $this->enrich($conference);
+        $conference = $this->enrichConference($conference);
         foreach ($conference->getUploads() as $upload) {
             $uploadHandler->deleteConferenceFile($upload);
         }
-        $this->manager->remove($conference);
-        $this->manager->flush();
+        $this->em->remove($conference);
+        $this->em->flush();
+    }
+
+    /**
+     * Save/update a submission.
+     *
+     * @param Submission The submission to save/update.
+     */
+    public function saveSubmission(Submission $submission)
+    {
+        $this->em->persist($submission);
+        $this->em->flush();
+    }
+
+    /**
+     * Save/update a review.
+     *
+     * @param Review The submission to save/update.
+     */
+    public function saveReview(Review $review)
+    {
+        $this->em->persist($review);
+        $this->em->flush();
+        $this->refreshSubmission($review->getSubmission());
     }
 }

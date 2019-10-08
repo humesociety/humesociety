@@ -10,8 +10,8 @@
     {% block body %}
       <h4><a href="{{ path('admin_society_email_send') }}">Send Membership Email</a></h4>
       <p>Create and send one-off emails to all members in good standing and/or in arrears.</p>
-      {% for id, template in society_email_templates %}
-        <h4><a href="{{ path('admin_society_email_edit', { type: id }) }}">Edit {{ template.title }} Email</a></h4>
+      {% for template in emailTemplates %}
+        <h4><a href="{{ path('admin_society_email_edit', { label: template.label }) }}">Edit {{ template.title }} Email</a></h4>
         <p>{{ template.description }}</p>
       {% endfor %}
     {% endblock %}

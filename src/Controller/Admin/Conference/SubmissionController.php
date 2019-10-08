@@ -2,20 +2,10 @@
 
 namespace App\Controller\Admin\Conference;
 
-use App\Service\ConferenceManager;
-
-use App\Entity\Conference\ConferenceHandler;
-use App\Entity\Conference\ConferenceType;
-use App\Entity\Email\EmailHandler;
-use App\Entity\Review\Review;
 use App\Entity\Review\ReviewInvitationType;
-use App\Entity\Review\ReviewHandler;
-use App\Entity\Reviewer\ReviewerHandler;
 use App\Entity\Submission\Submission;
-use App\Entity\Submission\SubmissionHandler;
-use App\Entity\Upload\Upload;
-use App\Entity\Upload\UploadHandler;
-use App\Entity\Upload\UploadType;
+use App\Service\ConferenceManager;
+use App\Service\Emailer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,40 +54,36 @@ class SubmissionController extends AbstractController
     }
 
     /**
-     * @Route(
-     *     "/details/{submission}/{tab}",
-     *     name="details",
-     *     requirements={"tab": "submission|reviews|decision"}
-     * )
+     * @Route("/details/{submission}/{tab}", name="details", requirements={"tab": "submission|reviews|decision"})
      *
      * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param EmailHandler The email handler.
-     * @param ReviewHandler The review handler.
-     * @param SubmissionHandler The submission handler.
+     * @param ConferenceManager The conference manager.
+     * @param Emailer The emailer service.
+     * @param Submission The submission.
      * @param string The initially visible tab.
      * @return Response
      */
     public function details(
         Request $request,
-        ConferenceHandler $conferenceHandler,
-        EmailHandler $emailHandler,
-        ReviewHandler $reviewHandler,
-        ReviewerHandler $reviewerHandler,
-        SubmissionHandler $submissionHandler,
+        ConferenceManager $conferences,
+        Emailer $emailer,
         Submission $submission,
         string $tab = 'submission'
     ): Response {
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'conference',
+            'subarea' => 'submission',
+            'title' => 'Conference Submissions',
+            'tab' => $tab
+        ];
+
         // look for the current conference
-        $conference = $conferenceHandler->getCurrentConference();
+        $conference = $conferences->getCurrentConference();
 
         // return a basic page if there isn't one
         if (!$conference) {
-            return $this->render('admin/conference/no-current-conference.twig', [
-                'area' => 'conference',
-                'subarea' => 'submission',
-                'title' => 'Conference Submissions'
-            ]);
+            return $this->render('admin/conference/no-current-conference.twig', $twigs);
         }
 
         // only allow access to submissions to the current conference
@@ -105,31 +91,27 @@ class SubmissionController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // the review invitation form
+        // add the current conference and reviewers to the twig variables
+        $twigs['conference'] = $conference;
+        $twigs['reviewers'] = $conferences->getReviewers();
+
+        // create and handle the review invitation form
         $review = new Review();
         $review->setSubmission($submission);
         $reviewInvitationForm = $this->createForm(ReviewInvitationType::class, $review);
+        $twigs['reviewInvitationForm'] = $reviewInvitationForm->createView();
         $reviewInvitationForm->handleRequest($request);
         if ($reviewInvitationForm->isSubmitted()) {
             $tab = 'reviews';
             if ($reviewInvitationForm->isValid()) {
-                $reviewHandler->saveReview($review);
-                $emailHandler->sendReviewEmail($review, 'review');
-                $submissionHandler->refreshSubmission($submission);
+                $conferences->saveReview($review);
+                $emailer->sendReviewEmail($review, 'review');
                 $this->addFlash('notice', 'A review invitation email has been sent to '.$review->getReviewer().'.');
             }
         }
 
-        // return the response
-        return $this->render('admin/conference/submission/details.twig', [
-            'area' => 'conference',
-            'subarea' => 'submission',
-            'conference' => $conference,
-            'submission' => $submission,
-            'tab' => $tab,
-            'reviewers' => $reviewerHandler->getReviewers(),
-            'reviewInvitationForm' => $reviewInvitationForm->createView()
-        ]);
+        // render and return the page
+        return $this->render('admin/conference/submission/details.twig', $twigs);
     }
 
     /**
@@ -141,13 +123,10 @@ class SubmissionController extends AbstractController
      * @return JsonResponse
      * @Route("/keywords/{submission}/{keywords}", name="keywords")
      */
-    public function keywords(
-        SubmissionHandler $submissionHandler,
-        Submission $submission,
-        string $keywords
-    ): JsonResponse {
+    public function updateKeywords(ConferenceManager $conferences, Submission $submission, string $keywords): JsonResponse
+    {
         $submission->setKeywords($keywords);
-        $submissionHandler->saveSubmission($submission);
+        $conferences->saveSubmission($submission);
         return $this->json(['ok' => true]);
     }
 }
