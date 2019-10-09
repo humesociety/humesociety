@@ -2,7 +2,7 @@
 
 namespace App\Entity\Email;
 
-use App\Entity\User\UserHandler;
+use App\Service\UserManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -10,11 +10,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
-
 /**
- * The email form type.
+ * The membership email form type.
  */
-class EmailType extends AbstractType
+class EmailTypeMembership extends AbstractType
 {
     /**
      * An associative array of senders.
@@ -29,9 +28,9 @@ class EmailType extends AbstractType
      * @param UserHandler
      * @return void
      */
-    public function __construct(UserHandler $userHandler)
+    public function __construct(UserManager $users)
     {
-        $this->senders = $userHandler->getOfficialEmails();
+        $this->senders = $users->getOfficialEmails();
     }
 
     /**
@@ -44,21 +43,24 @@ class EmailType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('sender', ChoiceType::class, [
+                'choices' => $this->senders,
+                'label' => 'From'
+            ])
             ->add('current', CheckboxType::class, [
+                'mapped' => false,
                 'label' => 'Members in Good Standing',
                 'required' => false
             ])
             ->add('lapsed', CheckboxType::class, [
+                'mapped' => false,
                 'label' => 'Members in Arrears',
                 'required' => false
             ])
             ->add('declining', CheckboxType::class, [
+                'mapped' => false,
                 'label' => 'Include Members Declining General Emails',
                 'required' => false
-            ])
-            ->add('sender', ChoiceType::class, [
-                'choices' => $this->senders,
-                'label' => 'From'
             ])
             ->add('subject')
             ->add('attachment', FileType::class, ['required' => false])

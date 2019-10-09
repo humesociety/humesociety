@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * A submission for the Hume Conference.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Submission\SubmissionRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"user", "conference"},
  *     errorPath="conference",
@@ -39,7 +39,11 @@ class Submission
      * The user who submitted the paper.
      *
      * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\Entity\User\User",
+     *     inversedBy="submissions",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -48,7 +52,11 @@ class Submission
      * The conference the paper is submitted to.
      *
      * @var Conference
-     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\Entity\Conference\Conference",
+     *     inversedBy="submissions",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $conference;
@@ -62,10 +70,14 @@ class Submission
     private $dateSubmitted;
 
     /**
-     * The reviews of this submission.
+     * The reviews of the submission.
      *
      * @var Review[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="submission", cascade={"persist", "remove"})
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Review\Review",
+     *     mappedBy="submission",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $reviews;
@@ -111,12 +123,12 @@ class Submission
     private $filename;
 
     /**
-     * The status of the submission (submitted|accepted|rejected).
+     * Whether the submission is accepted (null means decision pending; false means rejected).
      *
-     * @var string
-     * @ORM\Column(type="string", length=16)
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
      */
-    private $status;
+    private $accepted;
 
     /**
      * The uploaded submission file (used temporarily when uploading the file).
@@ -143,7 +155,6 @@ class Submission
     {
         $this->dateSubmitted = new \DateTime();
         $this->reviews = new ArrayCollection();
-        $this->status = 'submitted';
     }
 
     /**
@@ -185,7 +196,6 @@ class Submission
     public function setUser(User $user): self
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -208,7 +218,6 @@ class Submission
     public function setConference(Conference $conference): self
     {
         $this->conference = $conference;
-
         return $this;
     }
 
@@ -251,7 +260,6 @@ class Submission
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -274,7 +282,6 @@ class Submission
     public function setAuthors(string $authors): self
     {
         $this->authors = $authors;
-
         return $this;
     }
 
@@ -297,7 +304,6 @@ class Submission
     public function setAbstract(string $abstract): self
     {
         $this->abstract = $abstract;
-
         return $this;
     }
 
@@ -321,7 +327,6 @@ class Submission
     {
         // enforce regular comma-separated format
         $this->keywords = implode(', ', array_map('trim', explode(',', $keywords)));
-
         return $this;
     }
 
@@ -336,27 +341,24 @@ class Submission
     }
 
     /**
-     * Get the status of the submission (null when the object is first created).
+     * Get whether the submission is accepted.
      *
-     * @return string|null
+     * @return bool|null
      */
-    public function getStatus(): ?string
+    public function isAccepted(): ?bool
     {
-        return $this->status;
+        return $this->accepted;
     }
 
     /**
-     * Set the status of the submission.
+     * Set whether the submission is accepted.
      *
-     * @param string The status of the submission.
+     * @param bool|null Whether the submission is accepted.
      * @return self
      */
-    public function setStatus(string $status): self
+    public function setAccepted(?bool $accepted): self
     {
-        if (in_array($status, ['submitted', 'accepted', 'rejected'])) {
-            $this->status = $status;
-        }
-
+        $this->accepted = $accepted;
         return $this;
     }
 
@@ -381,9 +383,7 @@ class Submission
         if ($file !== null) {
             $this->filename = $file->getClientOriginalName();
         }
-
         $this->file = $file;
-
         return $this;
     }
 
@@ -394,26 +394,58 @@ class Submission
      */
     public function getPath(): string
     {
-        return 'user'.$this->getUser()->getId().'/'.$this->getConference()->getNumber().'/';
+        return 'submissions/user'.$this->getUser()->getId().'/'.$this->getConference()->getNumber().'/';
+    }
+
+    /**
+     * Get the status of the submission.
+     *
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        switch ($this->accepted) {
+            case true:
+                return 'accepted';
+            case false:
+                return 'rejected';
+            default: // i.e. null
+                return 'submitted';
+        }
     }
 
     /**
      * Get whether the given user has permission to view this submission.
      *
+     * @param User|null The currently logged in user (if any).
+     * @param string|null The secret provided (if any).
      * @return bool
      */
-    public function userCanView(User $user): bool
+    public function userCanView(?User $user, ?string $secret): bool
     {
-        if ($this->user == $user) {
-            return true;
+        if ($user) {
+            // anyone can view their own submissions
+            if ($this->user == $user) {
+                return true;
+            }
+            // the conference organisers can view any submission
+            if (in_array('ROLE_ORGANISER', $user->getRoles())) {
+                return true;
+            }
+            // the technical director can view any submission
+            if (in_array('ROLE_TECH', $user->getRoles())) {
+                return true;
+            }
         }
-        if (in_array('ROLE_ORGANISER', $user->getRoles())) {
-            return true;
+        if ($secret) {
+            foreach ($this->reviews as $review) {
+                // the secret from any accepted review is ok
+                if ($review->getSecret() == $secret && $review->isAccepted()) {
+                    return true;
+                }
+            }
         }
-        if (in_array('ROLE_TECH', $user->getRoles())) {
-            return true;
-        }
-        // TODO: allow access to reviewers
+        // otherwise no
         return false;
     }
 }

@@ -2,11 +2,12 @@
 
 namespace App\Entity\Conference;
 
+use App\Entity\Upload\Upload;
 use App\Entity\Upload\UploadHandler;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * The conference handler contains the main business logic for reading and writing conference data.
+ * The conference hander contains the main business logic for reading and writing conference data.
  */
 class ConferenceHandler
 {
@@ -29,7 +30,7 @@ class ConferenceHandler
      *
      * @var UploadHandler
      */
-    private $uploadHandler;
+    private $uploads;
 
     /**
      * Constructor function.
@@ -38,11 +39,11 @@ class ConferenceHandler
      * @param UploadHandler The upload handler.
      * @return void
      */
-    public function __construct(EntityManagerInterface $manager, UploadHandler $uploadHandler)
+    public function __construct(EntityManagerInterface $manager, UploadHandler $uploads)
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Conference::class);
-        $this->uploadHandler = $uploadHandler;
+        $this->uploads = $uploads;
     }
 
     /**
@@ -51,13 +52,24 @@ class ConferenceHandler
      * @param Conference|null
      * @return Conference|null
      */
-    public function enrich(?Conference $conference): ?Conference
+    public function enrichConference(?Conference $conference): ?Conference
     {
         if ($conference) {
-            $conference->setUploads($this->uploadHandler->getConferenceUploads($conference));
+            $conference->setUploads($this->uploads->getConferenceUploads($conference));
         }
-
         return $conference;
+    }
+
+    /**
+     * Refresh a conference.
+     *
+     * @param Conference The conference to refresh.
+     * @return Conference
+     */
+    public function refreshConference(Conference $conference)
+    {
+        $this->manager->refresh($conference);
+        return $this->enrichConference($conference);
     }
 
     /**
@@ -67,9 +79,11 @@ class ConferenceHandler
      */
     public function getConferences(): array
     {
-        return array_map(function ($x) {
-            return $this->enrich($x);
-        }, $this->repository->findAll());
+        $conferences = $this->repository->createQueryBuilder('c')
+            ->orderBy('c.year', 'DESC')
+            ->getQuery()
+            ->getResult();
+        return array_map('self::enrichConference', $conferences);
     }
 
     /**
@@ -79,21 +93,21 @@ class ConferenceHandler
      */
     public function getForthcomingConferences(): array
     {
-        // the repository function returns conferences for the current year and later ...
-        // (that's the best we can do, since forthcoming conferences may not have a specific date)
-        $forthcoming = $this->repository->findConferencesForThisYearAndLater();
-
-        // ... so now we may need to remove this year's conference if it's past
+        // first get conferences for the current year and later ...
+        $forthcoming = $this->repository->createQueryBuilder('c')
+            ->where('c.year >= :thisYear')
+            ->setParameter('thisYear', idate('Y'))
+            ->orderBy('c.year', 'ASC')
+            ->getQuery()
+            ->getResult();
+        // now we may need to remove this year's conference if it's past
         if (sizeof($forthcoming) > 0
             && $forthcoming[0]->getEndDate()
             && $forthcoming[0]->getEndDate() < new \DateTime()
         ) {
             array_shift($forthcoming);
         }
-
-        return array_map(function ($x) {
-            return $this->enrich($x);
-        }, $forthcoming);
+        return array_map('self::enrichConference', $forthcoming);
     }
 
     /**
@@ -108,23 +122,16 @@ class ConferenceHandler
     }
 
     /**
-     * Get the number of the next conference not in the database.
+     * Find how many conferences there are in the database.
      *
      * @return int
      */
-    public function getNextNumber(): int
+    private function countConferences(): int
     {
-        return $this->repository->findLatestNumber() + 1;
-    }
-
-    /**
-     * Get the year of the next conference not in the database.
-     *
-     * @return int
-     */
-    public function getNextYear(): int
-    {
-        return $this->repository->findLatestYear() + 1;
+        return $this->repository->createQueryBuilder('c')
+            ->select('count(c.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**
@@ -134,7 +141,15 @@ class ConferenceHandler
      */
     public function getDecades(): array
     {
-        return $this->repository->findDecades();
+        if ($this->countConferences() == 0) {
+            return [];
+        }
+        $decades = $this->createQueryBuilder('c')
+            ->select('DISTINCT (c.year - MOD(c.year, 10)) AS decade')
+            ->orderBy('decade', 'DESC')
+            ->getQuery()
+            ->getScalarResult();
+        return array_map('current', $decades);
     }
 
     /**
@@ -158,29 +173,95 @@ class ConferenceHandler
     }
 
     /**
-     * Save/update a conference in the database.
+     * Create the next conference.
      *
-     * @param Conference The conference to be saved/updated.
+     * @return Conference
      */
-    public function saveConference(Conference $conference)
+    public function createNextConference(): Conference
     {
-        $this->manager->persist($conference);
-        $this->manager->flush();
+        if ($this->countConferences() == 0) {
+            $nextNumber = 1;
+            $nextYear = date('Y');
+        } else {
+            $nextNumber = $this->repository->createQueryBuilder('c')
+                ->select('MAX(c.number)')
+                ->getQuery()
+                ->getSingleScalarResult() + 1;
+            $nextYear = $this->repository->createQueryBuilder('c')
+                ->select('MAX(c.year)')
+                ->getQuery()
+                ->getSingleScalarResult() + 1;
+        }
+        $conference = new Conference();
+        $conference->setNumber($nextNumber)->setYear($nextYear);
+        return $conference;
     }
 
     /**
-     * Delete a conference from the database.
+     * Create a conference file.
      *
-     * @param Conference The conference to be deleted.
+     * @param Conference The conference to link to the file.
+     */
+    public function createConferenceFile(Conference $conference)
+    {
+        $upload = new Upload();
+        $upload->setPath($conference->getPath());
+        return $upload;
+    }
+
+    /**
+     * Save/update a conference.
+     *
+     * @param Conference The conference to save/update.
+     * @param int The conference's old path (in case it has changed).
+     */
+    public function saveConference(Conference $conference, string $oldPath)
+    {
+        $this->manager->persist($conference);
+        $this->manager->flush();
+        if ($conference->getPath() !== $oldPath) {
+            $this->uploads->moveFiles($oldPath, $conference->getPath());
+        }
+        $this->refreshConference($conference);
+    }
+
+    /**
+     * Save/upload a conference file.
+     *
+     * @param Upload The upload to save.
+     * @param Conference The conference.
+     */
+    public function saveConferenceFile(Upload $upload, Conference $conference)
+    {
+        $this->uploads->saveUpload($upload);
+        $this->refreshConference($conference);
+    }
+
+    /**
+     * Delete a conference.
+     *
+     * @param Conference The conference to delete.
      */
     public function deleteConference(Conference $conference)
     {
         $conference = $this->enrich($conference);
         foreach ($conference->getUploads() as $upload) {
-            $uploadHandler->deleteConferenceFile($upload);
+            $this->uploads->deleteUpload($upload);
         }
-
         $this->manager->remove($conference);
         $this->manager->flush();
+    }
+
+    /**
+     * Delete a conference file.
+     *
+     * @param string The name of the conference file to delete.
+     * @param Conference The conference.
+     */
+    public function deleteConferenceFile(string $filename, Conference $conference)
+    {
+        $upload = new Upload($conference->getPath(), $filename);
+        $this->uploads->deleteUpload($upload);
+        $this->refreshConference($conference);
     }
 }

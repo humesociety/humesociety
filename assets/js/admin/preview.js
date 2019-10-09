@@ -5,7 +5,7 @@ const previews = Array.from(document.querySelectorAll('[data-preview]'))
 
 const prepare = (html, type) => {
   if (type === 'email') {
-    html = html.replace(/{{ ?(firstname|lastname|email|username|title|abstract|ordinal|town|country) ?}}/g, '<span class="variable">{{ $1 }}</span>')
+    html = html.replace(/{{ ?(firstname|lastname|email|username|title|abstract|ordinal|town|country|link) ?}}/g, '<span class="variable">{{ $1 }}</span>')
   }
   return html
 }

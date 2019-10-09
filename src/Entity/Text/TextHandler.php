@@ -4,7 +4,6 @@ namespace App\Entity\Text;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * The text handler contains the main business logic for reading and writing text data.
@@ -26,39 +25,63 @@ class TextHandler
     private $repository;
 
     /**
+     * The conference texts (from `services.yml`).
+     *
+     * @var Object
+     */
+    private $conferenceTexts;
+
+    /**
      * Constructor function.
      *
      * @param EntityManagerInterface The Doctrine entity manager.
+     * @param ParameterBagInterface Symfony's parameter bag interface.
      * @return void
      */
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Text::class);
+        $this->conferenceTexts = $params->get('conference_texts');
     }
 
     /**
-     * Get some text from its label.
+     * Enrich a text object with its title and description from the `services.yml` file.
      *
-     * @param string The label.
-     * @return Text|null
+     * @param Text The text object to enrich.
+     * @return Text
      */
-    public function getTextByLabel(string $label): ?Text
+    private function enrichText(Text $text): Text
     {
-        return $this->repository->findOneByLabel($label);
+        $text->setTitle($this->conferenceTexts[$text->getLabel()]['title']);
+        $text->setDescription($this->conferenceTexts[$text->getLabel()]['description']);
+        return $text;
     }
 
     /**
-     * Get some text content from its label.
+     * Get a text variable from its label. Create it if it doesn't already exist.
      *
      * @param string The label.
-     * @return string|null
+     * @return Text
      */
-    public function getTextContentByLabel(string $label): ?string
+    public function getTextByLabel(string $label): Text
     {
         $text = $this->repository->findOneByLabel($label);
+        if (!$text) {
+            $text = new Text();
+            $text->setLabel($label);
+        }
+        return $this->enrichText($text);
+    }
 
-        return $text ? $text->getContent() : null;
+    /**
+     * Get conference text variables.
+     *
+     * @return Text[]
+     */
+    public function getConferenceTexts(): array
+    {
+        return array_map('self::getTextByLabel', array_keys($this->conferenceTexts));
     }
 
     /**
@@ -69,17 +92,6 @@ class TextHandler
     public function saveText(Text $text)
     {
         $this->manager->persist($text);
-        $this->manager->flush();
-    }
-
-    /**
-     * Delete some text from the database.
-     *
-     * @param Text The text to delete.
-     */
-    public function deleteText(Text $text)
-    {
-        $this->manager->remove($text);
         $this->manager->flush();
     }
 }

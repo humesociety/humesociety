@@ -6,7 +6,7 @@
   {% embed 'admin/_embed/box.twig' %}
     {% block title %}Custom Text{% endblock %}
     {% block body %}
-      {% for text in conferenceTexts %}
+      {% for text in texts %}
         <h4><a href="{{ path('admin_conference_text_edit', { label: text.label }) }}">Edit {{ text.title }} Text</a></h4>
         <p>{{ text.description }}</p>
       {% endfor %}

@@ -88,18 +88,6 @@ class CandidateHandler
     }
 
     /**
-     * Unlink a user from a candidate.
-     *
-     * @param Candidate The candidate to unlink.
-     */
-    public function unlinkUser(Candidate $candidate)
-    {
-        $candidate->setUser(null);
-        $this->manager->remove($candidate);
-        $this->manager->flush();
-    }
-
-    /**
      * Delete a candidate from the database.
      *
      * @param Candidate The candidate to delete.

@@ -2,18 +2,16 @@
 
 namespace App\Entity\Review;
 
-use App\Entity\Reviewer\Reviewer;
-use App\Entity\Reviewer\ReviewerRepository;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * The form type for a review invitation.
+ * The form type for a review.
  */
-class ReviewInvitationType extends AbstractType
+class ReviewType extends AbstractType
 {
    /**
     * Build the form.
@@ -25,9 +23,8 @@ class ReviewInvitationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('reviewer', EntityType::class, [
-                'class' => Reviewer::class
-            ]);
+            ->add('grade', ChoiceType::class, ['choices' => ['A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D']])
+            ->add('comments', TextareaType::class);
     }
 
     /**

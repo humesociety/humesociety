@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Entity\Upload;
+namespace App\Entity\Conference;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 /**
- * The report upload form type.
+ * The form type for setting the deadline of a conference.
  */
-class UploadReportType extends AbstractType
+class ConferenceTypeDeadline extends AbstractType
 {
     /**
      * Build the form.
@@ -22,9 +20,7 @@ class UploadReportType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('year', IntegerType::class, ['mapped' => false])
-            ->add('file', FileType::class);
+        $builder->add('deadline', null, ['widget' => 'single_text', 'required' => false]);
     }
 
     /**
@@ -35,6 +31,6 @@ class UploadReportType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => Upload::class]);
+        $resolver->setDefaults(['data_class' => Conference::class]);
     }
 }

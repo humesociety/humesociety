@@ -2,10 +2,10 @@
 
 namespace App\Controller\Admin\Conference;
 
+use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Conference\ConferenceType;
-use App\Entity\Conference\ConferenceDeadlineType;
+use App\Entity\Conference\ConferenceTypeDeadline;
 use App\Entity\Upload\UploadType;
-use App\Service\ConferenceManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +24,12 @@ class DetailsController extends AbstractController
      * Route for viewing and editing details of the current conference.
      *
      * @param Request Symfony's request object.
-     * @param ConferenceManager The conference manager.
+     * @param ConferenceHandler The conference handler.
      * @param string The initially visible tab.
      * @return Response
      * @Route("/{tab}", name="index", requirements={"tab": "details|files|deadline"})
      */
-    public function index(Request $request, ConferenceManager $conferences, string $tab = 'details'): Response
+    public function index(Request $request, ConferenceHandler $conferences, string $tab = 'details'): Response
     {
         // initialise twig variables
         $twigs = [
@@ -47,35 +47,29 @@ class DetailsController extends AbstractController
             return $this->render('admin/conference/no-current-conference.twig', $twigs);
         }
 
-        // add the conference to the twig variables
-        $twigs['conference'] = $conference;
-
         // create and handle the conference details form
+        $oldPath = $conference->getPath();
         $conferenceForm = $this->createForm(ConferenceType::class, $conference);
-        $twigs['conferenceForm'] = $conferenceForm->createView();
         $conferenceForm->handleRequest($request);
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
-            $conferences->saveConference($conference);
+            $conferences->saveConference($conference, $oldPath);
             $this->addFlash('notice', 'Details for the '.$conference.' have been updated.');
         }
 
         // create and handle the new conference file upload form
         $upload = $conferences->createConferenceFile($conference);
         $uploadForm = $this->createForm(UploadType::class, $upload);
-        $twigs['uploadForm'] = $uploadForm->createView();
         $uploadForm->handleRequest($request);
         if ($uploadForm->isSubmitted()) {
             $twigs['tab'] = 'files';
             if ($uploadForm->isValid()) {
-                $conferences->saveConferenceFile($upload);
-                $conferences->refresh($conference);
+                $conferences->saveConferenceFile($upload, $conference);
                 $this->addFlash('notice', 'File "'.$upload.'" has been uploaded.');
             }
         }
 
         // create and handle the conference deadline form
-        $conferenceDeadlineForm = $this->createForm(ConferenceDeadlineType::class, $conference);
-        $twigs['conferenceDeadlineForm'] = $conferenceDeadlineForm->createView();
+        $conferenceDeadlineForm = $this->createForm(ConferenceTypeDeadline::class, $conference);
         $conferenceDeadlineForm->handleRequest($request);
         if ($conferenceDeadlineForm->isSubmitted()) {
             $twigs['tab'] = 'deadline';
@@ -84,6 +78,12 @@ class DetailsController extends AbstractController
                 $this->addFlash('notice', 'The deadline for the '.$conference.' has been updated.');
             }
         }
+
+        // add additional twig variables
+        $twigs['conference'] = $conference;
+        $twigs['conferenceForm'] = $conferenceForm->createView();
+        $twigs['uploadForm'] = $uploadForm->createView();
+        $twigs['conferenceDeadlineForm'] = $conferenceDeadlineForm->createView();
 
         // render and return the page
         return $this->render('admin/conference/details/edit.twig', $twigs);
@@ -98,7 +98,7 @@ class DetailsController extends AbstractController
      * @return Response
      * @Route("/delete/{filename}", name="delete_upload")
      */
-    public function deleteUpload(Request $request, ConferenceManager $conferences, string $filename): Response
+    public function deleteUpload(Request $request, ConferenceHandler $conferences, string $filename): Response
     {
         // look for the current conference (and assume we find one, otherwise we wouldn't be here)
         $conference = $conferences->getCurrentConference();
@@ -113,13 +113,15 @@ class DetailsController extends AbstractController
 
         // create and handle the delete file form
         $uploadForm = $this->createFormBuilder()->getForm();
-        $twigs['uploadForm'] = $uploadForm->createView();
         $uploadForm->handleRequest($request);
         if ($uploadForm->isSubmitted() && $uploadForm->isValid()) {
             $conferences->deleteConferenceFile($filename, $conference);
             $this->addFlash('notice', 'File "'.$filename.'" has been deleted.');
             return $this->redirectToRoute('admin_conference_details_index', ['tab' => 'files']);
         }
+
+        // add additional twig variables
+        $twigs['uploadForm'] = $uploadForm->createView();
 
         // render and return the page
         return $this->render('admin/conference/details/delete-upload.twig', $twigs);

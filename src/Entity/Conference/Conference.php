@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * separate year field is not redundant; the year may be known before the precise dates are set, and
  * consequently the start and end date fields are nullable.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Conference\ConferenceRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields="number",
  *     message="There is already a conference with this number in the database."
@@ -137,7 +137,10 @@ class Conference
      * The submissions to this conference.
      *
      * @var Submission[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference", cascade={"persist", "remove"})
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Submission\Submission",
+     *     mappedBy="conference",
+     *     cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $submissions;
@@ -160,9 +163,7 @@ class Conference
      */
     public function __construct()
     {
-        // initialise the uploads as an array
         $this->uploads = [];
-        // initialise the submissions as a Symfony ArrayCollection
         $this->submissions = new ArrayCollection();
     }
 
@@ -205,7 +206,6 @@ class Conference
     public function setNumber(int $number): self
     {
         $this->number = $number;
-
         return $this;
     }
 
@@ -219,7 +219,6 @@ class Conference
         if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
             return $this->number.'th';
         }
-
         $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
         return $this->number.$ends[$this->number % 10];
     }
@@ -243,7 +242,6 @@ class Conference
     public function setYear(int $year): self
     {
         $this->year = $year;
-
         return $this;
     }
 
@@ -276,7 +274,6 @@ class Conference
     public function setStartDate(?\DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
-
         return $this;
     }
 
@@ -299,7 +296,6 @@ class Conference
     public function setEndDate(?\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
-
         return $this;
     }
 
@@ -313,7 +309,6 @@ class Conference
         if ($this->startDate && $this->endDate) {
             return date_format($this->startDate, 'F j').' - '.date_format($this->endDate, 'F j').', '.$this->year;
         }
-
         return $this->year;
     }
 
@@ -336,7 +331,6 @@ class Conference
     public function setInstitution(string $institution): self
     {
         $this->institution = $institution;
-
         return $this;
     }
 
@@ -359,7 +353,6 @@ class Conference
     public function setTown(string $town): self
     {
         $this->town = $town;
-
         return $this;
     }
 
@@ -383,7 +376,6 @@ class Conference
     public function setCountry(string $country): self
     {
         $this->country = $country;
-
         return $this;
     }
 
@@ -406,7 +398,6 @@ class Conference
     public function setWebsite(?string $website): self
     {
         $this->website = $website;
-
         return $this;
     }
 
@@ -429,7 +420,6 @@ class Conference
     public function setDeadline(?\DateTimeInterface $deadline): self
     {
         $this->deadline = $deadline;
-
         return $this;
     }
 
@@ -482,7 +472,6 @@ class Conference
     public function setUploads(array $uploads): self
     {
         $this->uploads = $uploads;
-
         return $this;
     }
 
@@ -508,7 +497,6 @@ class Conference
                 return $upload;
             }
         }
-
         return null;
     }
 
@@ -524,7 +512,6 @@ class Conference
                 return $upload;
             }
         }
-
         return null;
     }
 
@@ -540,7 +527,6 @@ class Conference
                 return $upload;
             }
         }
-
         return null;
     }
 
@@ -556,7 +542,6 @@ class Conference
                 return $upload;
             }
         }
-
         return null;
     }
 }

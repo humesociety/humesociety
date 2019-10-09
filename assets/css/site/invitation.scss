@@ -1,0 +1,8 @@
+.invitation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+  .button:not(:last-child) {
+    margin-right: 1em;
+  }
+}

@@ -3,7 +3,7 @@
 namespace App\Entity\Candidate;
 
 use App\Entity\User\User;
-use App\Entity\User\UserRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -30,8 +30,12 @@ class CandidateType extends AbstractType
                 'placeholder' => '[none]',
                 'label' => 'Linked User',
                 'class' => User::class,
-                'query_builder' => function (UserRepository $userRepository) {
-                    return $userRepository->findElectableMembers();
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                        ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
+                        ->andWhere('u.dues > :now')
+                        ->setParameter('now', new \DateTime())
+                        ->orderBy('u.lastname, u.firstname', 'ASC');
                 },
                 'attr' => [
                     'data-action' => 'fill-user-details',

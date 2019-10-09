@@ -4,10 +4,10 @@
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Edit {{ society_email_templates[emailTemplate.type].title }} Email{% endblock %}
+    {% block title %}Edit {{ emailTemplate }} Email{% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_society_email_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
+        <a href="{{ path('admin_society_email_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
       </div>
     {% endblock %}
     {% block body %}

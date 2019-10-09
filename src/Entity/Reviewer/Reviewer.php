@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * A review for a submission for the Hume Conference.
+ * A reviewer for the Hume Conference.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Reviewer\ReviewerRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"user"},
  *     message="This user is already registered as a reviewer."
@@ -38,7 +38,11 @@ class Reviewer
      * The linked user.
      *
      * @var User|null
-     * @ORM\OneToOne(targetEntity="App\Entity\User\User", inversedBy="reviewer", cascade={"persist", "remove"})
+     * @ORM\OneToOne(
+     *     targetEntity="App\Entity\User\User",
+     *     inversedBy="reviewer",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=true)
      */
     private $user;
@@ -47,7 +51,11 @@ class Reviewer
      * The reviewer's reviews.
      *
      * @var Review[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Review\Review", mappedBy="reviewer", cascade={"persist", "remove"})
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Review\Review",
+     *     mappedBy="reviewer",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $reviews;
@@ -149,15 +157,12 @@ class Reviewer
         if ($this->user) {
             $this->user->setReviewer(null);
         }
-
         // add reviewer association of the new linked user
         if ($user) {
             $user->setReviewer($this);
         }
-
         // set the linked user
         $this->user = $user;
-
         return $this;
     }
 
@@ -204,7 +209,6 @@ class Reviewer
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -230,7 +234,6 @@ class Reviewer
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
-
         return $this;
     }
 
@@ -256,8 +259,17 @@ class Reviewer
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
-
         return $this;
+    }
+
+    /**
+     * Get the reviewer's full name (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFullname(): ?string
+    {
+        return $this->getFirstname().' '.$this->getLastname();
     }
 
     /**
@@ -282,7 +294,6 @@ class Reviewer
     public function setKeywords(?string $keywords): self
     {
         $this->keywords = $keywords;
-
         return $this;
     }
 
@@ -307,7 +318,7 @@ class Reviewer
     }
 
     /**
-     * Set user-related properties base on those of the linked user.
+     * Set user-related properties based on those of the linked user.
      *
      * @return void
      */

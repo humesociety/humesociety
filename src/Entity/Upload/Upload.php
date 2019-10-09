@@ -86,7 +86,6 @@ class Upload
     public function setPath(string $path): self
     {
         $this->path = $path;
-
         return $this;
     }
 
@@ -109,7 +108,6 @@ class Upload
     public function setFilename(string $filename): self
     {
         $this->filename = $filename;
-
         return $this;
     }
 
@@ -145,7 +143,6 @@ class Upload
     {
         $this->file = $file;
         $this->filename = $file->getClientOriginalName();
-
         return $this;
     }
 
@@ -156,7 +153,7 @@ class Upload
      */
     public function getUrl(): string
     {
-        return '/uploads/'.$this->getPath().$this->getFilename();
+        return "/uploads/{$this->getPath()}{$this->getFilename()}";
     }
 
     /**

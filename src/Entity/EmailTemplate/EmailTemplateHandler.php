@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Service;
+namespace App\Entity\EmailTemplate;
 
-use App\Entity\EmailTemplate\EmailTemplate;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
- * The email template manager contains the main business logig for reading and writing email tempate data.
+ * The email template handler contains the main business logig for reading and writing email tempate data.
  */
-class EmailTemplateManager
+class EmailTemplateHandler
 {
     /**
      * The Doctrine entity manager.
@@ -68,7 +67,7 @@ class EmailTemplateManager
      * @param EmailTemplate The email template to enrich.
      * @return EmailTemplate
      */
-    private function enrich(EmailTemplate $emailTemplate): EmailTemplate
+    private function enrichEmailTemplate(EmailTemplate $emailTemplate): EmailTemplate
     {
         $emailTemplate->setTitle($this->emailTemplates[$emailTemplate->getLabel()]['title']);
         $emailTemplate->setDescription($this->emailTemplates[$emailTemplate->getLabel()]['description']);
@@ -86,9 +85,14 @@ class EmailTemplateManager
         $emailTemplate = $this->repository->findOneByLabel($label);
         if (!$emailTemplate) {
             $emailTemplate = new EmailTemplate();
-            $emailTemplate->setLabel($label)->setSender('conference');
+            $emailTemplate->setLabel($label);
+            if (in_array($label, array_keys($this->societyEmailTemplates))) {
+                $emailTemplate->setSender('vicepresident');
+            } elseif (in_array($label, array_keys($this->conferenceEmailTemplates))) {
+                $emailTemplate->setSender('conference');
+            }
         }
-        return $this->enrich($emailTemplate);
+        return $this->enrichEmailTemplate($emailTemplate);
     }
 
     /**

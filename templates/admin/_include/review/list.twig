@@ -4,6 +4,7 @@
       <div class="heading">
         <h5>{{ review.reviewer }}</h5>
         <p>{{ review.status }}</p>
+        {% if review.status == 'pending' or review.status == 'accepted' %}<a href="{{ path('admin_conference_submission_remind', { review: review.id }) }}" class="button create">email reminder</a>{% endif %}
       </div>
       {% if review.submitted %}
         <div class="feedback">

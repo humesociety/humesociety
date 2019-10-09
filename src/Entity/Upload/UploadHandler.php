@@ -25,22 +25,6 @@ class UploadHandler
     private $uploadsDirectory;
 
     /**
-     * The images subdirectory.
-     */
-    private $imagesDirectory;
-
-    /**
-     * The reports subdirectory.
-     */
-
-    private $reportsDirectory;
-    /**
-     * The conferences subdirectory.
-     */
-
-    private $conferencesDirectory;
-
-    /**
      * Constructor function.
      *
      * @param ParamaterBagInterface Symfony's paramater bag interface.
@@ -49,9 +33,6 @@ class UploadHandler
     public function __construct(ParameterBagInterface $params)
     {
         $this->uploadsDirectory = $params->get('uploads_directory');
-        $this->imagesDirectory = 'images/';
-        $this->reportsDirectory = 'reports/';
-        $this->conferencesDirectory = 'conferences/';
     }
 
     /**
@@ -76,7 +57,7 @@ class UploadHandler
      */
     public function getImages(): array
     {
-        return $this->getUploadsFromDirectory($this->imagesDirectory);
+        return $this->getUploadsFromDirectory('images/');
     }
 
     /**
@@ -86,8 +67,7 @@ class UploadHandler
      */
     public function getReportYears(): array
     {
-        $paths = glob($this->uploadsDirectory.$this->reportsDirectory.'*');
-
+        $paths = glob("{$this->uploadsDirectory}reports/*");
         return array_map(function ($path) {
             $bits = explode('/', $path);
             return intval($bits[count($bits) - 1]);
@@ -102,7 +82,7 @@ class UploadHandler
      */
     public function getReportsByYear(int $year): array
     {
-        return $this->getUploadsFromDirectory($this->reportsDirectory.$year.'/');
+        return $this->getUploadsFromDirectory("reports/{$year}/");
     }
 
     /**
@@ -127,15 +107,15 @@ class UploadHandler
      */
     public function getConferenceUploads(Conference $conference): array
     {
-        return $this->getUploadsFromDirectory($this->conferencesDirectory.$conference->getNumber().'/');
+        return $this->getUploadsFromDirectory($conference->getPath());
     }
 
     /**
      * Save an upload to disk.
      *
-     * @param Upload The upload to save.
+     * @param Article|Submission|Upload The upload to save.
      */
-    private function saveUpload(Upload $upload)
+    public function saveUpload($upload)
     {
         $upload->getFile()->move($this->uploadsDirectory.$upload->getPath(), $upload->getFilename());
     }
@@ -147,7 +127,7 @@ class UploadHandler
      */
     public function saveImage(Upload $upload)
     {
-        $upload->setPath($this->imagesDirectory);
+        $upload->setPath('images/');
         $this->saveUpload($upload);
     }
 
@@ -158,27 +138,16 @@ class UploadHandler
      */
     public function saveReport(Upload $upload, int $year)
     {
-        $upload->setPath($this->reportsDirectory.$year.'/');
-        $this->saveUpload($upload);
-    }
-
-    /**
-     * Save a conference file.
-     *
-     * @param Upload The conference file to save.
-     */
-    public function saveConferenceFile(Upload $upload, Conference $conference)
-    {
-        $upload->setPath($conference->getPath());
+        $upload->setPath("reports/{$year}/");
         $this->saveUpload($upload);
     }
 
     /**
      * Delete an uploaded file from the disk.
      *
-     * @param Upload The uploaded file to delete.
+     * @param Article|Submission|Upload The entity with a file to delete.
      */
-    private function deleteUpload(Upload $upload)
+    public function deleteUpload(Upload $upload)
     {
         $fullpath = $this->uploadsDirectory.$upload->getPath().$upload->getFilename();
         if (file_exists($fullpath)) {
@@ -194,19 +163,7 @@ class UploadHandler
      */
     public function deleteImage(string $filename)
     {
-        $upload = new Upload($this->imagesDirectory, $filename);
-        $this->deleteUpload($upload);
-    }
-
-    /**
-     * Delete a conference file.
-     *
-     * @param string The name of the conference file.
-     * @param Conference The conference.
-     */
-    public function deleteConferenceFile(string $filename, Conference $conference)
-    {
-        $upload = new Upload($conference->getPath(), $filename);
+        $upload = new Upload('images/', $filename);
         $this->deleteUpload($upload);
     }
 
@@ -218,7 +175,39 @@ class UploadHandler
      */
     public function deleteReport(string $filename, string $year)
     {
-        $upload = new Upload($this->reportsDirectory.$year.'/', $filename);
+        $upload = new Upload("reports/{$year}/", $filename);
         $this->deleteUpload($upload);
+    }
+
+    /**
+     * Recursively delete a directory and its contents.
+     *
+     * @param string The path to the directory/file.
+     * @return void
+     */
+    private function deletePath(string $path)
+    {
+        if (is_dir($path)) {
+            $subpaths = glob($path.'*', GLOB_MARK);
+            foreach ($subpaths as $subpath) {
+                $this->deletePath($subpath);
+            }
+            rmdir($path);
+        } elseif (is_file($path)) {
+            unlink($path);
+        }
+    }
+
+    /**
+     * Move all uploads from one directory to another.
+     *
+     * @param string The old directory.
+     * @param string The new directory.
+     * @return void
+     */
+    public function moveFiles($oldPath, $newPath)
+    {
+        $this->deletePath($this->uploadsDirectory.$newPath);
+        rename($this->uploadsDirectory.$oldPath, $this->uploadsDirectory.$newPath);
     }
 }

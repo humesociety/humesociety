@@ -37,6 +37,27 @@ class ReviewHandler
     }
 
     /**
+     * Get all reviewers.
+     *
+     * @return Reviewer[]
+     */
+    public function getReviewers(): array
+    {
+        return $this->repository->findAll();
+    }
+
+    /**
+     * Get a review from its secret.
+     *
+     * @param string The review secret.
+     * @return Review|null
+     */
+    public function getReviewBySecret(string $secret): ?Review
+    {
+        return $this->repository->findOneBySecret($secret);
+    }
+
+    /**
      * Save/update a review in the database.
      *
      * @param Review The review to save/update.
@@ -44,17 +65,6 @@ class ReviewHandler
     public function saveReview(Review $review)
     {
         $this->manager->persist($review);
-        $this->manager->flush();
-    }
-
-    /**
-     * Delete a review from the database.
-     *
-     * @param Review The review to delete.
-     */
-    public function deleteReview(Review $review)
-    {
-        $this->manager->remove($review);
         $this->manager->flush();
     }
 }

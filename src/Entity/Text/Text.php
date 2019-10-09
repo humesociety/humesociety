@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Text variables need to be "declared" in the `services.yml` file, which defines a human-readable title
  * and description alongside the label.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Text\TextRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields="label",
  *     message="There is already a text variable with this label in the database."

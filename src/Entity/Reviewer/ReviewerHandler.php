@@ -43,7 +43,7 @@ class ReviewerHandler
      */
     public function getReviewers(): array
     {
-        return $this->repository->findAll();
+        return $this->repository->findBy([], ['lastname, firstname' => 'ASC']);
     }
 
     /**

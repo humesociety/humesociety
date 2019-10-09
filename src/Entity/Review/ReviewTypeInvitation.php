@@ -1,15 +1,19 @@
 <?php
 
-namespace App\Entity\Submission;
+namespace App\Entity\Review;
 
+use App\Entity\Reviewer\Reviewer;
+use App\Entity\Reviewer\ReviewerRepository;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * The form type for a submission to the Hume Conference.
+ * The form type for a review invitation.
  */
-class SubmissionType extends AbstractType
+class ReviewTypeInvitation extends AbstractType
 {
    /**
     * Build the form.
@@ -20,12 +24,7 @@ class SubmissionType extends AbstractType
     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('title')
-            ->add('authors')
-            ->add('abstract')
-            ->add('keywords')
-            ->add('file');
+        $builder->add('reviewer', EntityType::class, ['class' => Reviewer::class]);
     }
 
     /**
@@ -36,9 +35,6 @@ class SubmissionType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => Submission::class,
-            'validation_groups' => ['Default', 'create']
-        ]);
+        $resolver->setDefaults(['data_class' => Review::class]);
     }
 }

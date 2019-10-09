@@ -1,0 +1,14 @@
+{% extends 'site/review/_layout.twig' %}
+
+{% block main %}
+  <h1>Review for “{{ review.submission }}”</h1>
+  <p>Download the paper: <a href="{{ path('uploads_submission', { submission: review.submission.id, secret: review.secret }) }}">{{ review.submission.filename }}</a></p>
+  {{ reviewInstructions.content|raw }}
+  {{ form_start(reviewForm) }}
+    {{ form_row(reviewForm.grade) }}
+    {{ form_row(reviewForm.comments) }}
+    <div class="buttons">
+      <button type="submit">Submit Review</button>
+    </div>
+  {{ form_end(reviewForm) }}
+{% endblock %}

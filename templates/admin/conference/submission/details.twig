@@ -7,7 +7,7 @@
     {% block title %}{{ submission }}{% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_conference_submission_view') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Submissions</a>
+        <a href="{{ path('admin_conference_submission_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Submissions</a>
       </div>
     {% endblock %}
     {% block body %}
@@ -28,7 +28,7 @@
         {% if submission.reviews|length > 0 %}
           {% include 'admin/_include/review/list.twig' %}
         {% else %}
-          <p>None.</p>
+          <p>There are no reviews for this submission. Use the form above to invite someone to review.</p>
         {% endif %}
       </div>
       <div class="tab-pane{% if tab == 'decision' %} is-active{% endif %}" id="decision">

@@ -140,10 +140,11 @@ class UploadsController extends AbstractController
      * Show conference submission file.
      *
      * @param Submission The submission to download.
+     * @param string A secret to allow downloading the file.
      * @return Response
-     * @Route("/submissions/{submission}", name="submission")
+     * @Route("/submissions/{submission}/{secret}", name="submission")
      */
-    public function submission(Submission $submission): Response
+    public function submission(Submission $submission, string $secret = null): Response
     {
         // look for the file
         $path = $this->container->get('parameter_bag')->get('uploads_directory');
@@ -153,7 +154,7 @@ class UploadsController extends AbstractController
         }
 
         // check the user is allowed to view the file
-        if (!$submission->userCanView($this->getUser())) {
+        if (!$submission->userCanView($this->getUser(), $secret)) {
             throw new AccessDeniedException('You do not have permission to download this file.');
         }
 

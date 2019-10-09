@@ -22,72 +22,39 @@ use Symfony\Component\Routing\Annotation\Route;
 class VolunteerController extends AbstractController
 {
     /**
-     * The volunteers index page.
-     *
-     * @return Response
-     * @Route("/", name="index")
-     */
-    public function index() : Response
-    {
-        return $this->redirectToRoute('admin_conference_volunteer_view');
-    }
-
-    /**
-     * The page for viewing all volunteers.
+     * Route for viewing all volunteers.
      *
      * @param ConferenceHandler The conference handler.
      * @param UserHandler The user handler.
      * @param string The initially visible tab.
      * @return Response
-     * @Route("/view/{tab}", name="view", requirements={"tab": "review|comment|chair"})
+     * @Route("/{tab}", name="index", requirements={"tab": "review|comment|chair"})
      */
-    public function view(
-        ConferenceHandler $conferenceHandler,
-        UserHandler $userHandler,
-        $tab = 'review'
-    ): Response {
+    public function index(ConferenceHandler $conferences, UserHandler $users, $tab = 'review'): Response
+    {
+        // initialise twig variables
+        $twigs = [
+            'area' => 'conference',
+            'subarea' => 'volunteer',
+            'title' => 'Conference Volunteers',
+            'tab' => $tab
+        ];
+
         // look for the current conference
-        $conference = $conferenceHandler->getCurrentConference();
+        $conference = $conferences->getCurrentConference();
 
         // return a basic page if there isn't one
         if (!$conference) {
-            return $this->render('admin/conference/no-current-conference.twig', [
-                'area' => 'conference',
-                'subarea' => 'volunteers',
-                'title' => 'Conference Volunteers'
-            ]);
+            return $this->render('admin/conference/no-current-conference.twig', $twigs);
         }
 
-        // return the response
-        return $this->render('admin/conference/volunteer/view.twig', [
-            'area' => 'conference',
-            'subarea' => 'volunteer',
-            'tab' => $tab,
-            'conference' => $conference,
-            'reviewers' => $userHandler->getReviewVolunteers(),
-            'commentators' => $userHandler->getCommentVolunteers(),
-            'chairs' => $userHandler->getChairVolunteers()
-        ]);
-    }
+        // add additional twig variables
+        $twigs['conference'] = $conference;
+        $twigs['reviewers'] = $users->getReviewVolunteers();
+        $twigs['commentators'] = $users->getCommentVolunteers();
+        $twigs['chairs'] = $users->getChairVolunteers();
 
-    /**
-     * The page for creating a reviewer account for the given user.
-     *
-     * @param User The user.
-     * @return Response
-     * @Route("/create-reviewer/{user}", name="create_reviewer")
-     */
-    public function createReviewer(User $user, ReviewerHandler $reviewerHandler): Response
-    {
-        if ($user->getReviewer()) {
-            $this->addFlash('notice', $user.' is already registered as a reviewer.');
-        } else {
-            $reviewer = new Reviewer();
-            $reviewer->setUser($user);
-            $reviewer->setPropertiesFromUser();
-            $reviewerHandler->saveReviewer($reviewer);
-            $this->addFlash('notice', 'A reviewer record has been created for '.$user);
-        }
-        return $this->redirectToRoute('admin_conference_volunteer_view');
+        // render and return the page
+        return $this->render('admin/conference/volunteer/view.twig', $twigs);
     }
 }

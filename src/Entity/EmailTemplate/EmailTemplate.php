@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * An email template.
  *
- * @ORM\Entity(repositoryClass="App\Entity\EmailTemplate\EmailTemplateRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"label"},
  *     message="There is already an email template with this label in the database."
@@ -166,7 +166,7 @@ class EmailTemplate
      */
     public function setSender(string $sender): self
     {
-        if (in_array($sender, ['president', 'web', 'conference'])) {
+        if (in_array($sender, ['vicepresident', 'web', 'conference'])) {
             $this->sender = $sender;
         }
         return $this;
@@ -223,6 +223,6 @@ class EmailTemplate
      */
     public function __toString(): string
     {
-        return $this->title ? $this->title : 'unitialised email template';
+        return $this->title ? $this->title : 'uninitialised email template';
     }
 }

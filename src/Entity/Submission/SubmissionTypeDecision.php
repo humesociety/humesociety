@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * The form type for a submission to the Hume Conference.
  */
-class SubmissionType extends AbstractType
+class SubmissionTypeDecision extends AbstractType
 {
    /**
     * Build the form.
@@ -20,12 +20,7 @@ class SubmissionType extends AbstractType
     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('title')
-            ->add('authors')
-            ->add('abstract')
-            ->add('keywords')
-            ->add('file');
+        $builder->add('accepted');
     }
 
     /**
@@ -38,7 +33,7 @@ class SubmissionType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Submission::class,
-            'validation_groups' => ['Default', 'create']
+            'validation_groups' => ['Default']
         ]);
     }
 }

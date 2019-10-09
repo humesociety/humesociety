@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * is greater than today's date represent members in good standing. The members section of the web
  * site is restricted to members in good standing.
  *
- * @ORM\Entity(repositoryClass="App\Entity\User\UserRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"username"},
  *     message="There is already an account with this username."

@@ -12,60 +12,84 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for managing user data.
+ *
  * @Route("/admin/user/account", name="admin_user_account_")
  * @IsGranted("ROLE_TECH")
  */
 class AccountController extends AbstractController
 {
     /**
+     * Route for viewing all users.
+     *
+     * @param UserHandler The user handler.
+     * @return Response
      * @Route("/", name="index")
      */
-    public function index(UserHandler $userHandler): Response
+    public function index(UserHandler $users): Response
     {
-        return $this->redirectToRoute('admin_user_account_view');
-    }
-
-    /**
-     * @Route("/view", name="view")
-     */
-    public function view(UserHandler $userHandler): Response
-    {
-        return $this->render('admin/user/account/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'user',
             'subarea' => 'account',
-            'users' => $userHandler->getUsers()
-        ]);
+            'users' => $users->getUsers()
+        ];
+
+        // render and return the page
+        return $this->render('admin/user/account/view.twig', $twigs);
     }
 
     /**
+     * Route for adding a role to a user.
+     *
+     * @param UserHandler The user handler.
+     * @param User The user.
+     * @param string The role to add.
+     * @return JsonResponse
      * @Route("/role/{id}/add/{role}", name="add_role")
      */
-    public function addRole(User $user, string $role, UserHandler $userHandler, Request $request): Response
+    public function addRole(UserHandler $users, User $user, string $role): JsonResponse
     {
         $user->addRole($role);
-        $userHandler->saveUser($user);
-        return new JsonResponse(['success' => true]);
+        $users->saveUser($user);
+        return $this->json(['success' => true]);
     }
 
     /**
+     * Route for removing a role from a user.
+     *
+     * @param UserHandler The user handler.
+     * @param User The user.
+     * @param string The role to remove.
+     * @return JsonResponse
      * @Route("/role/{id}/remove/{role}", name="remove_role")
      */
-    public function removeRole(User $user, string $role, UserHandler $userHandler, Request $request): Response
+    public function removeRole(UserHandler $users, User $user, string $role): JsonResponse
     {
         $user->removeRole($role);
-        $userHandler->saveUser($user);
-        return new JsonResponse(['success' => true]);
+        $users->saveUser($user);
+        return $this->json(['success' => true]);
     }
 
     /**
+     * Route for viewing/editing user details.
+     *
+     * @param Request Symfony's request object.
+     * @param UserHandler The user handler.
+     * @param User The user.
+     * @return Response
      * @Route("/edit/{id}", name="edit")
      */
-    public function edit(User $user, UserHandler $userHandler, Request $request): Response
+    public function edit(Request $request, UserHandler $users, User $user): Response
     {
-        return $this->render('admin/user/account/edit.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'user',
             'subarea' => 'account',
             'user' => $user
-        ]);
+        ];
+
+        // render and return the page
+        return $this->render('admin/user/account/edit.twig', $twigs);
     }
 }

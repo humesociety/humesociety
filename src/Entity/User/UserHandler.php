@@ -3,6 +3,7 @@
 namespace App\Entity\User;
 
 use App\Entity\DuesPayment\DuesPayment;
+use App\Entity\Submission\SubmissionHandler;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -11,18 +12,25 @@ use Doctrine\ORM\EntityManagerInterface;
 class UserHandler
 {
     /**
-     * The Doctrine entity manager (dependency injection).
+     * The Doctrine entity manager.
      *
      * @var EntityManagerInterface
      */
     private $manager;
 
     /**
-     * The user repository (dependency injection).
+     * The user repository.
      *
      * @var UserRepository
      */
     private $repository;
+
+    /**
+     * The submission handler.
+     *
+     * @var SubmissionHandler
+     */
+    private $submissions;
 
     /**
      * Constructor function.
@@ -30,10 +38,11 @@ class UserHandler
      * @param EntityManagerInterface The Doctrine entity manager.
      * @return void
      */
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, SubmissionHandler $submissions)
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(User::class);
+        $this->submissions = $submissions;
     }
 
     /**
@@ -43,7 +52,7 @@ class UserHandler
      */
     public function getUsers(): array
     {
-        return $this->repository->findAll();
+        return $this->repository->findBy([], ['lastname, firstname' => 'ASC']);
     }
 
     /**
@@ -53,7 +62,11 @@ class UserHandler
      */
     public function getMembers(): array
     {
-        return $this->repository->findMembers();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -63,7 +76,13 @@ class UserHandler
      */
     public function getMembersInGoodStanding(): array
     {
-        return $this->repository->findMembersInGoodStanding();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
+            ->andWhere('u.lifetimeMember = true OR u.dues >= :now')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -73,7 +92,13 @@ class UserHandler
      */
     public function getMembersInArrears(): array
     {
-        return $this->repository->findMembersInArrears();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
+            ->andWhere('u.lifetimeMember = false AND u.dues < :now')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -84,7 +109,13 @@ class UserHandler
     public function getMembersExpiringThisMonth(): array
     {
         $endOfThisMonth = new \DateTime(date('Y-m-t'));
-        return $this->repository->findMembersExpiringByDate($endOfThisMonth);
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
+            ->andWhere('u.lifetimeMember = false AND u.dues = :date')
+            ->setParameter('date', $endOfThisMonth)
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -94,7 +125,14 @@ class UserHandler
      */
     public function getMembersReceivingHumeStudies(): array
     {
-        return $this->repository->findMembersReceivingHumeStudies();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
+            ->andWhere('u.receiveHumeStudies = true')
+            ->andWhere('u.dues >= :now')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -104,7 +142,10 @@ class UserHandler
      */
     public function getVicePresident(): ?User
     {
-        return $this->repository->findVicePresident();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_EVPT%\'')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
@@ -114,7 +155,10 @@ class UserHandler
      */
     public function getTechnicalDirector(): ?User
     {
-        return $this->repository->findTechnicalDirector();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_TECH%\'')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
@@ -124,7 +168,11 @@ class UserHandler
      */
     public function getConferenceOrganisers(): array
     {
-        return $this->repository->findConferenceOrganisers();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_ORGANISER%\'')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -134,7 +182,11 @@ class UserHandler
      */
     public function getJournalEditors(): array
     {
-        return $this->repository->findJournalEditors();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_EDITOR%\'')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -147,24 +199,24 @@ class UserHandler
     {
         switch ($sender) {
             case 'vicepresident':
-                $evpt = $this->repository->findVicePresident();
-                $name = $evpt ? $evpt->getFirstname().' '.$evpt->getLastname() : 'Executive Vice-President Treasurer';
+                $evpt = $this->getVicePresident();
+                $name = $evpt ? $evpt->getFullname() : 'Executive Vice-President Treasurer';
                 return ['vicepresident@humesociety.org' => $name];
 
             case 'conference':
-                $organisers = $this->repository->findConferenceOrganisers();
+                $organisers = $this->getConferenceOrganisers();
                 $name = 'Conference Organisers';
                 if (sizeof($organisers) > 0) {
                     $name = implode(', ', array_map(function ($organiser) {
-                        return $organiser->getFirstname().' '.$organiser->getLastname();
+                        return $organiser->getFullname();
                     }, $organisers));
                 }
                 return ['conference@humesociety.org' => $name];
 
             case 'web': // fallthrough
             default: // also make this the default, to ensure this function always returns something
-                $tech = $this->repository->findTechnicalDirector();
-                $name = $tech ? $tech->getFirstname().' '.$tech->getLastname() : 'Technical Director';
+                $tech = $this->getTechnicalDirector();
+                $name = $tech ? $tech->getFullname() : 'Technical Director';
                 return ['web@humesociety.org' => $name];
         }
     }
@@ -179,16 +231,16 @@ class UserHandler
     {
         $evpt = $this->getVicePresident();
         $evptDisplay = $evpt
-            ? $evpt->getFirstname().' '.$evpt->getLastname().' <vicepresident@humesociety.org>'
+            ? $evpt->getFullname().' <vicepresident@humesociety.org>'
             : 'Executive Vice-President Treasrer <vicepresident@humesociety.org>';
         $tech = $this->getTechnicalDirector();
         $techDisplay = $tech
-            ? $tech->getFirstname().' '.$tech->getLastname().' <web@humesociety.org>'
+            ? $tech->getFullname().' <web@humesociety.org>'
             : 'Technical Director <vicepresident@humesociety.org>';
         $organisers = $this->getConferenceOrganisers();
         $organisersDisplay = (sizeof($organisers) > 0)
             ? implode(', ', array_map(function ($organiser) {
-                return $organiser->getFirstname().' '.$organiser->getLastname();
+                return $organiser->getFullname();
             }, $organisers)).' <conference@humesociety.org>'
             : 'Conference Organisers <vicepresident@humesociety.org>';
         return [
@@ -225,7 +277,11 @@ class UserHandler
      */
     public function getReviewVolunteers(): array
     {
-        return $this->repository->findReviewVolunteers();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToReview = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -235,7 +291,11 @@ class UserHandler
      */
     public function getCommentVolunteers(): array
     {
-        return $this->repository->findCommentVolunteers();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToComment = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -245,7 +305,11 @@ class UserHandler
      */
     public function getChairVolunteers(): array
     {
-        return $this->repository->findChairVolunteers();
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToChair = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -282,16 +346,17 @@ class UserHandler
         foreach ($user->getCandidacies() as $candidate) {
             // keep a record of their candidacy (for the society's records), but remove the explicit
             // user association
-            $this->candidateHandler->unlinkUser($candidate);
+            $candidate->setUser(null);
+            $this->manager->persist($candidate);
         }
         foreach ($user->getSubmissions() as $submission) {
             // delete the user's submissions
-            $this->submissionHandler->deleteSubmission($submission);
+            $this->submissions->deleteSubmission($submission);
         }
-        foreach ($user->getReviews() as $review) {
-            // keep the review (in case the person reviewed wants to see it), but remove the
-            // explicit user association
-            $this->reviewHandler->unlinkUser($review);
+        if ($user->getReviewer()) {
+            // keep the reviewer (to preserve their reviews), but remove the explicit user association
+            $user->getReviewer()->setUser(null);
+            $this->manager->persist($user->getReviewer());
         }
         $this->manager->remove($user);
         $this->manager->flush();
@@ -331,9 +396,7 @@ class UserHandler
                 $user->setDues(5);
                 break;
         }
-
         $user->addRole('ROLE_MEMBER');
-
         $this->manager->persist($user);
         $this->manager->flush();
     }

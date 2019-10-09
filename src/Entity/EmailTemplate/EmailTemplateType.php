@@ -26,9 +26,9 @@ class EmailTemplateType extends AbstractType
      * @param UserHandler
      * @return void
      */
-    public function __construct(UserHandler $userHandler)
+    public function __construct(UserHandler $users)
     {
-        $this->senders = $userHandler->getOfficialEmails();
+        $this->senders = $users->getOfficialEmails();
     }
 
     /**

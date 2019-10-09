@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * A review for a submission for the Hume Conference.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Review\ReviewRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"reviewer", "submission"},
  *     errorPath="reviewer",
@@ -35,7 +35,11 @@ class Review
      * The reviewer.
      *
      * @var Reviewer
-     * @ORM\ManyToOne(targetEntity="App\Entity\Reviewer\Reviewer", inversedBy="reviews", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\Entity\Reviewer\Reviewer",
+     *     inversedBy="reviews",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $reviewer;
@@ -44,7 +48,11 @@ class Review
      * The submission.
      *
      * @var Submission
-     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="reviews", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\Entity\Submission\Submission",
+     *     inversedBy="reviews",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $submission;
@@ -60,8 +68,8 @@ class Review
     /**
      * Whether the reviewer accepts the invitation to review.
      *
-     * @var bool
-     * @ORM\Column(type="boolean", options={"default"=false})
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $accepted;
 
@@ -79,7 +87,7 @@ class Review
      * @var string|null
      * @ORM\Column(type="string", length=1, nullable=true)
      */
-    private $grade; // A, B, C, or D
+    private $grade;
 
     /**
      * The reviewer's comments.
@@ -96,7 +104,6 @@ class Review
      */
     public function __construct()
     {
-        $this->accepted = false;
         $this->secret = '';
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         for ($i = 0; $i < 8; $i++) {
@@ -111,7 +118,7 @@ class Review
      */
     public function __toString(): string
     {
-        return 'Review for "'.$this->submission->getTitle().'"';
+        return 'Review for “'.$this->submission->getTitle().'”';
     }
 
     /**
@@ -143,7 +150,6 @@ class Review
     public function setReviewer(Reviewer $reviewer): self
     {
         $this->reviewer = $reviewer;
-
         return $this;
     }
 
@@ -166,16 +172,25 @@ class Review
     public function setSubmission(Submission $submission): self
     {
         $this->submission = $submission;
-
         return $this;
+    }
+
+    /**
+     * Get the review's secret.
+     *
+     * @return string
+     */
+    public function getSecret(): string
+    {
+        return $this->secret;
     }
 
     /**
      * Get whether the reviewer accepts the invitation to review.
      *
-     * @return bool
+     * @return bool|null
      */
-    public function isAccepted(): bool
+    public function isAccepted(): ?bool
     {
         return $this->accepted;
     }
@@ -210,7 +225,6 @@ class Review
     public function setDateSubmitted(\DateTimeInterface $dateSubmitted): self
     {
         $this->dateSubmitted = $dateSubmitted;
-
         return $this;
     }
 
@@ -233,7 +247,6 @@ class Review
     public function setGrade(string $grade)
     {
         $this->grade = $grade;
-
         return $this;
     }
 
@@ -256,7 +269,6 @@ class Review
     public function setComments(string $comments)
     {
         $this->comments = $comments;
-
         return $this;
     }
 
@@ -277,13 +289,14 @@ class Review
      */
     public function getStatus(): string
     {
-        if ($this->accepted) {
-            if ($this->dateSubmitted) {
-                return 'submitted';
-            }
-            return 'accepted';
+        switch ($this->accepted) {
+            case true:
+                return $this->dateSubmitted ? 'submitted' : 'accepted';
+            case false:
+                return 'declined';
+            default: // i.e. null
+                return 'pending';
         }
-        return 'pending';
     }
 
     /**
@@ -293,6 +306,6 @@ class Review
      */
     public function getLink(): string
     {
-        return 'https://www.humesociety.org/review/'.$this->getReviewer()->getSecret().'/'.$this->secret;
+        return $this->getReviewer()->getSecret().'/'.$this->secret;
     }
 }

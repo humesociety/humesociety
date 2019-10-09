@@ -49,7 +49,7 @@ parameters:
             title: Dues Reminder
             description: The dues reminder email is sent out to every member at the start of the month when their subscription is due (i.e. 1st June or 1st December).
 
-    conference_email_template_ids: submission|review|thanks|accept|reject
+    conference_email_template_ids: submission|review|pending-reminder|accepted-reminder|accept|reject
     conference_email_templates:
         submission:
             title: Submission Acknowledgement
@@ -57,9 +57,12 @@ parameters:
         review:
             title: Review Invitation
             description: The review invitation email is sent out to someone you invite to review a paper.
-        thanks:
-            title: Review Acknowledgement
-            description: The review acknowledgement email is sent out to a reviewer when they have submitted their review.
+        pending-reminder:
+            title: Review Invitation Reminder
+            description: The review invitation reminder email can be sent out at any time to reviewers who have not yet responded to an invitation to review a paper.
+        accepted-reminder:
+            title: Review Submission Reminder
+            description: The review submission email can be sent out at any time to reviewers who have accepted an invitation to review, but not yet submitted the review itself.
         accept:
             title: Submission Acceptance
             description: The acceptance email is sent out to a user when you accept their paper.
@@ -75,11 +78,17 @@ parameters:
         fellowships: Fellowships and Awards
         jobs: Job Advertisements
 
-    conference_text_ids: submission
+    conference_text_ids: submission|review|thanks
     conference_texts:
         submission:
             title: Submission Guidance
             description: The submission guidance text is shown directly above the submission form.
+        review:
+            title: Review Guidance
+            description: The review guidance text is shown directly above the review form.
+        thanks:
+            title: Review Acknowledgement
+            description: The review acknowledgement text is shown to each reviewer after they have submitted their review.
 
     countries:
         AFG: Afghanistan
