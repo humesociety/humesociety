@@ -13,25 +13,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for editing society committee members and candidates.
+ *
  * @Route("/admin/society/candidate", name="admin_society_candidate_")
  * @IsGranted("ROLE_EVPT")
- *
- * This is the controller for editing society committee members and candidates.
  */
 class CandidateController extends AbstractController
 {
     /**
      * @Route("/", name="index")
      */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_society_candidate_view');
-    }
-
-    /**
-     * @Route("/view", name="view")
-     */
-    public function view(CandidateHandler $candidateHandler): Response
+    public function index(CandidateHandler $candidateHandler): Response
     {
         return $this->render('admin/society/candidate/view.twig', [
             'area' => 'society',
@@ -53,7 +45,7 @@ class CandidateController extends AbstractController
         if ($candidateForm->isSubmitted() && $candidateForm->isValid()) {
             $candidateHandler->saveCandidate($candidate);
             $this->addFlash('notice', 'Record for '.$candidate.' has been updated.');
-            return $this->redirectToRoute('admin_society_candidate_view');
+            return $this->redirectToRoute('admin_society_candidate_index');
         }
 
         return $this->render('admin/society/candidate/edit.twig', [
@@ -108,7 +100,7 @@ class CandidateController extends AbstractController
         if ($candidateForm->isSubmitted() && $form->isValid()) {
             $candidateHandler->deleteCandidate($candidate);
             $this->addFlash('notice', 'Record for '.$candidate.' has been deleted.');
-            return $this->redirectToRoute('admin_society_candidate_view');
+            return $this->redirectToRoute('admin_society_candidate_index');
         }
 
         return $this->render('admin/society/candidate/delete.twig', [
@@ -132,7 +124,7 @@ class CandidateController extends AbstractController
         if ($candidateForm->isSubmitted() && $candidateForm->isValid()) {
             $candidateHandler->saveCandidate($candidate);
             $this->addFlash('notice', 'Record for '.$candidate.' has been created.');
-            return $this->redirectToRoute('admin_society_candidate_view');
+            return $this->redirectToRoute('admin_society_candidate_index');
         }
 
         return $this->render('admin/society/candidate/create.twig', [

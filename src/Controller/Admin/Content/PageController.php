@@ -21,17 +21,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/{section}", name="index", requirements={"section": "%section_ids%"})
      */
-    public function index(PageHandler $pageHandler): Response
-    {
-        return $this->redirectToRoute('admin_content_page_view');
-    }
-
-    /**
-     * @Route("/view/{section}", name="view")
-     */
-    public function view(PageHandler $pageHandler, $section = 'about'): Response
+    public function index(PageHandler $pageHandler, $section = 'about'): Response
     {
         return $this->render('admin/content/page/view.twig', [
             'area' => 'content',
@@ -48,7 +40,7 @@ class PageController extends AbstractController
     {
         $pageHandler->movePageUp($page);
         $this->addFlash('notice', 'Page "'.$page.'" has been moved up.');
-        return $this->redirectToRoute('admin_content_page_view', ['section' => $page->getSection()]);
+        return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
     }
 
     /**
@@ -58,7 +50,7 @@ class PageController extends AbstractController
     {
         $pageHandler->movePageDown($page);
         $this->addFlash('notice', 'Page "'.$page.'" has been moved down.');
-        return $this->redirectToRoute('admin_content_page_view', ['section' => $page->getSection()]);
+        return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
     }
 
     /**
@@ -77,7 +69,7 @@ class PageController extends AbstractController
             } else {
                 $pageHandler->savePage($page);
                 $this->addFlash('notice', 'Page "'.$page.'" has been updated.');
-                return $this->redirectToRoute('admin_content_page_view', ['section' => $page->getSection()]);
+                return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
             }
         }
 
@@ -105,7 +97,7 @@ class PageController extends AbstractController
         if ($form->isSubmitted()) {
             $pageHandler->deletePage($page);
             $this->addFlash('notice', 'Page "'.$page.'" has been deleted.');
-            return $this->redirectToRoute('admin_content_page_view', ['section' => $page->getSection()]);
+            return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
         }
 
         return $this->render('admin/content/page/delete.twig', [
@@ -130,7 +122,7 @@ class PageController extends AbstractController
             $page->setPosition($pageHandler->getNextPagePosition($page->getSection()));
             $pageHandler->savePage($page);
             $this->addFlash('notice', 'Page "'.$page.'" has been created.');
-            return $this->redirectToRoute('admin_content_page_view', ['section' => $page->getSection()]);
+            return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
         }
 
         return $this->render('admin/content/page/create.twig', [

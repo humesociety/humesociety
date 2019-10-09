@@ -75,6 +75,18 @@ class TextHandler
     }
 
     /**
+     * Get the content of a text variable from its label.
+     *
+     * @param string The label.
+     * @return string|null
+     */
+    public function getTextContentByLabel(string $label): ?string
+    {
+        $text = $this->repository->findOneByLabel($label);
+        return $text ? $text->getContent() : null;
+    }
+
+    /**
      * Get conference text variables.
      *
      * @return Text[]

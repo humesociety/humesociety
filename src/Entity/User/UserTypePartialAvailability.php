@@ -4,14 +4,17 @@ namespace App\Entity\User;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * The form type for editinf a user's membership preferences.
+ * The form type for setting a user's availability to review.
+ *
+ * This form type should only be used if there is no current conference in the database. Otherwise
+ * the UserFullAvailabilityType should be used instead.
  */
-class UserSettingsType extends AbstractType
+class UserTypePartialAvailability extends AbstractType
 {
     /**
      * Build the form.
@@ -23,17 +26,12 @@ class UserSettingsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('receiveEmail', CheckboxType::class, [
-                'label' => 'Receive Email',
+            ->add('willingToReview', CheckboxType::class, [
+                'label' => 'I am willing to review papers for Hume Studies or the Hume Conference',
                 'required' => false
             ])
-            ->add('receiveHumeStudies', CheckboxType::class, [
-                'label' => 'Receive Hume Studies',
-                'required' => false
-            ])
-            ->add('mailingAddress', TextareaType::class, [
-                'label' => 'Mailing Address (for Hume Studies)',
-                'required' => false
+            ->add('keywords', TextType::class, [
+                'label' => 'Areas of expertise (comma-separated)'
             ]);
     }
 

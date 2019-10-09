@@ -2,13 +2,13 @@
 
 namespace App\Tests\Entity;
 
-use App\Entity\Email\Email;
+use App\Entity\EmailTemplate\EmailTemplate;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * Tests for the email entity.
+ * Tests for the email template entity.
  */
-class EmailTest extends WebTestCase
+class EmailTemplateTest extends WebTestCase
 {
     public function testGettersAndSetters()
     {

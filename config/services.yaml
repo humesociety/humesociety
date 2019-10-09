@@ -23,7 +23,7 @@ parameters:
         scholarship: Scholarship
         members: Members
 
-    page_template_ids: default|society-governance|conferences-forthcoming|conferences-all|hs-issues-archive|parallel-references|news-members|news-conferences|news-fellowships|news-archived|membership-stats|membership-list|minutes-reports|committee-voting
+    page_template_ids: default|society-governance|conferences-forthcoming|conferences-all|hs-issues-archive|parallel-references|news-members|news-conferences|news-fellowships|news-jobs|news-archived|membership-stats|membership-list|minutes-reports|committee-voting
     page_templates:
         default: Default
         society-governance: Society Governance
@@ -32,8 +32,9 @@ parameters:
         hs-issues-archive: Hume Studies Issues Archive
         parallel-references: Parallel References Guide
         news-members: Members News
-        news-conferences: Conference News
-        news-fellowships: Fellowships and Awards News
+        news-conferences: Conference Announcements
+        news-fellowships: Fellowships and Awards
+        news-jobs: Job Advertisements
         news-archived: Archived News
         membership-stats: Membership Statistics
         membership-list: List of Current Members
@@ -74,7 +75,7 @@ parameters:
     news_categories:
         society: Society News
         members: Members News
-        conferences: Other Conferences
+        conferences: Conference Announcements
         fellowships: Fellowships and Awards
         jobs: Job Advertisements
 

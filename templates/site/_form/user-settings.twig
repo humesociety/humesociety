@@ -1,16 +1,16 @@
 <p>Use the checkboxes below to specify whether you wish to receive occasional emails from the Hume Society with news we think will be of interest, and whether you wish to receieve a print copy of <i>Hume Studies</i>. In the latter case, please include the mailing address where you would like your copy of the journal to be sent.</p>
-{{ form_start(userSettingsForm) }}
+{{ form_start(settingsForm) }}
   <div class="columns has-checkboxes">
     <div class="column has-checkbox">
-      {{ form_row(userSettingsForm.receiveEmail) }}
+      {{ form_row(settingsForm.receiveEmail) }}
     </div>
     <div class="column has-checkbox">
-      {{ form_row(userSettingsForm.receiveHumeStudies) }}
+      {{ form_row(settingsForm.receiveHumeStudies) }}
     </div>
   </div>
-  {{ form_row(userSettingsForm.mailingAddress) }}
-  {{ form_row(userSettingsForm._token) }}
+  {{ form_row(settingsForm.mailingAddress) }}
+  {{ form_row(settingsForm._token) }}
   <div class="buttons">
     <button type="submit" class="button is-success">Update Settings</button>
   </div>
-{{ form_end(userSettingsForm) }}
+{{ form_end(settingsForm) }}

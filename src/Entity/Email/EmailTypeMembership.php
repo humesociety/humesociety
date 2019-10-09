@@ -2,7 +2,7 @@
 
 namespace App\Entity\Email;
 
-use App\Service\UserManager;
+use App\Entity\User\UserHandler;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -28,7 +28,7 @@ class EmailTypeMembership extends AbstractType
      * @param UserHandler
      * @return void
      */
-    public function __construct(UserManager $users)
+    public function __construct(UserHandler $users)
     {
         $this->senders = $users->getOfficialEmails();
     }

@@ -12,23 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for managing Hume Studies issues.
+ *
  * @Route("/admin/journal/issue", name="admin_journal_issue_")
  * @IsGranted("ROLE_EDITOR")
- *
- * This is the controller for managing Hume Studies issues.
  */
 class IssueController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
-     */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_journal_issue_view');
-    }
-
-    /**
-     * @Route("/view/{decade}", name="view")
+     * @Route("/{decade}", name="index", requirements={"decade": "\d{4}"})
      */
     public function view(IssueHandler $issueHandler, $decade = null): Response
     {
@@ -58,7 +50,7 @@ class IssueController extends AbstractController
             if ($issueForm->isValid()) {
                 $issueHandler->saveIssue($issue);
                 $this->addFlash('notice', 'Issue '.$issue.' has been updated.');
-                return $this->redirectToRoute('admin_journal_issue_view', ['decade' => $issue->getDecade()]);
+                return $this->redirectToRoute('admin_journal_issue_index', ['decade' => $issue->getDecade()]);
             }
         }
 
@@ -82,7 +74,7 @@ class IssueController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $issueHandler->deleteIssue($issue);
             $this->addFlash('notice', 'Issue '.$issue.' has been deleted.');
-            return $this->redirectToRoute('admin_journal_issue_view');
+            return $this->redirectToRoute('admin_journal_issue_index');
         }
 
         return $this->render('admin/journal/issue/delete.twig', [
@@ -107,7 +99,7 @@ class IssueController extends AbstractController
         if ($issueForm->isSubmitted() && $issueForm->isValid()) {
             $issueHandler->saveIssue($issue);
             $this->addFlash('notice', 'Issue '.$issue.' has been created.');
-            return $this->redirectToRoute('admin_journal_issue_view', ['decade' => $issue->getDecade()]);
+            return $this->redirectToRoute('admin_journal_issue_index', ['decade' => $issue->getDecade()]);
         }
 
         return $this->render('admin/journal/issue/create.twig', [

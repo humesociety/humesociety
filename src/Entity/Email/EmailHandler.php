@@ -385,18 +385,18 @@ class EmailHandler
     }
 
     /**
-     * Send password reset email.
+     * Send forgotten credentials email.
      *
      * @param User The recipient of the email.
      * @return void
      */
-    public function sendResetPasswordEmail(User $user)
+    public function sendForgotCredentialsEmail(User $user)
     {
         $email = new Email();
-        $email->setSubject('Hume Society Password Reset')
+        $email->setSubject('Hume Society Login Credentials')
             ->setSender('web')
             ->setRecipient($user)
-            ->setTemplate('reset-password')
+            ->setTemplate('forgot-credentials')
             ->addTwig('user', $user);
         $this->sendEmail($email);
     }

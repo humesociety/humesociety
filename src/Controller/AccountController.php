@@ -12,114 +12,122 @@ use App\Entity\Submission\SubmissionType;
 use App\Entity\Text\TextHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
-use App\Entity\User\UserDetailsType;
-use App\Entity\User\UserChangePasswordType;
-use App\Entity\User\UserFullAvailabilityType;
-use App\Entity\User\UserPartialAvailabilityType;
-use App\Entity\User\UserSettingsType;
-use App\Entity\User\UserVolunteerType;
+use App\Entity\User\UserTypeDetails;
+use App\Entity\User\UserTypeChangePassword;
+use App\Entity\User\UserTypeFullAvailability;
+use App\Entity\User\UserTypePartialAvailability;
+use App\Entity\User\UserTypeSettings;
+use App\Entity\User\UserTypeVolunteer;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
- * The controller for the user account area of the site.
+ * Controller for the user account area of the site.
  *
  * @Route("/account", name="account_")
  */
 class AccountController extends AbstractController
 {
     /**
-     * The index page; for editing basic account details.
+     * Route for editing basic account details.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param UserHandler The user handler.
      * @param string The initially visible tab.
      * @return Response
      * @Route("/{tab}", name="index", requirements={"tab": "details|settings"})
      * @IsGranted("ROLE_USER")
      */
-    public function index(
-        Request $request,
-        UserHandler $userHandler,
-        $tab = 'details'
-    ): Response {
-        // contact details form
-        $detailsForm = $this->createForm(UserDetailsType::class, $this->getUser());
-        $detailsForm->handleRequest($request);
+    public function index(Request $request, UserHandler $users, string $tab = 'details'): Response
+    {
+        // initialise the twig variables
+        $twigs = [
+            'page' => ['id' => 'details', 'section' => 'account'],
+            'tab' => $tab
+        ];
 
+        // create and handle the contact details form
+        $detailsForm = $this->createForm(UserTypeDetails::class, $this->getUser());
+        $detailsForm->handleRequest($request);
         if ($detailsForm->isSubmitted() && $detailsForm->isValid()) {
-            $userHandler->saveUser($this->getUser());
+            $users->saveUser($this->getUser());
             $this->addFlash('success', 'Your contact details have been updated.');
         }
 
-        // membership settings form
-        $settingsForm = $this->createForm(UserSettingsType::class, $this->getUser());
+        // create and handle the membership settings form
+        $settingsForm = $this->createForm(UserTypeSettings::class, $this->getUser());
         $settingsForm->handleRequest($request);
-
         if ($settingsForm->isSubmitted()) {
             $tab = 'settings';
             if ($settingsForm->isValid()) {
-                $userHandler->saveUser($this->getUser());
+                $users->saveUser($this->getUser());
                 $this->addFlash('success', 'Your membership settings have been updated.');
             }
         }
 
-        // return the response
-        return $this->render('site/account/index.twig', [
-            'page' => ['id' => 'details', 'section' => 'account'],
-            'tab' => $tab,
-            'userDetailsForm' => $detailsForm->createView(),
-            'userSettingsForm' => $settingsForm->createView()
-        ]);
+        // add additional twig variables
+        $twigs['detailsForm'] = $detailsForm->createView();
+        $twigs['settingsForm'] = $settingsForm->createView();
+
+        // render and return the page
+        return $this->render('site/account/index.twig', $twigs);
     }
 
     /**
-     * The page for changing the account password.
+     * Route for changing the account password.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param UserHandler The user handler.
-     * @param UserPasswordEncoderInterface The Symfony password encoder.
+     * @param UserPasswordEncoderInterface Symfony's password encoder.
      * @return Response
      * @Route("/password", name="password")
      * @IsGranted("ROLE_USER")
      */
     public function password(
         Request $request,
-        UserHandler $userHandler,
+        UserHandler $users,
         UserPasswordEncoderInterface $passwordEncoder
     ): Response {
-        // change password form
-        $form = $this->createForm(UserChangePasswordType::class);
-        $form->handleRequest($request);
+        // initialise the twig variables
+        $twigs = [
+            'page' => ['id' => 'password', 'section' => 'account']
+        ];
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('new_password')->getData();
+        // create and handle the change password form
+        $changePasswordForm = $this->createForm(UserTypeChangePassword::class);
+        $changePasswordForm->handleRequest($request);
+        if ($changePasswordForm->isSubmitted() && $changePasswordForm->isValid()) {
+            $plainPassword = $changePasswordForm->get('new_password')->getData();
             $encodedPassword = $passwordEncoder->encodePassword($this->getUser(), $plainPassword);
             $this->getUser()->setPassword($encodedPassword);
-            $userHandler->saveUser($this->getUser());
+            $users->saveUser($this->getUser());
             $this->addFlash('success', 'Your password has been changed.');
         }
 
-        // return the response
-        return $this->render('site/account/password.twig', [
-            'page' => ['id' => 'password', 'section' => 'account'],
-            'userChangePasswordForm' => $form->createView()
-        ]);
+        // add additional twig variables
+        $twigs['changePasswordForm'] = $changePasswordForm->createView();
+
+        // render and return the page
+        return $this->render('site/account/password.twig', $twigs);
     }
 
     /**
-     * The page for submitting/viewing papers and reviews.
+     * Route for submitting/viewing papers and reviews.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param ConferenceHandler The conference handler.
+     * @param EmailHandler The email handler.
+     * @param SubmissionHandler The submission handler.
+     * @param TextHandler The text handler.
      * @param UserHandler The user handler.
      * @param string The initially visible tab.
      * @return Response
@@ -128,82 +136,83 @@ class AccountController extends AbstractController
      */
     public function research(
         Request $request,
-        ConferenceHandler $conferenceHandler,
-        EmailHandler $emailHandler,
-        SubmissionHandler $submissionHandler,
-        TextHandler $textHandler,
-        UserHandler $userHandler,
-        $tab = 'availability'
+        ConferenceHandler $conferences,
+        EmailHandler $emails,
+        SubmissionHandler $submissions,
+        TextHandler $texts,
+        UserHandler $users,
+        string $tab = 'availability'
     ): Response {
+        // initialise the twig variables
+        $twigs = [
+            'page' => ['id' => 'research', 'section' => 'account'],
+            'tab' => $tab
+        ];
+
         // look for the current conference (possibly null)
-        $conference = $conferenceHandler->getCurrentConference();
+        $conference = $conferences->getCurrentConference();
 
-        // research availability form
-        $availabilityForm = $conference
-            ? $this->createForm(UserFullAvailabilityType::class, $this->getUser())
-            : $this->createForm(UserPartialAvailabilityType::class, $this->getUser());
-        $availabilityForm->handleRequest($request);
+        // now do things a little differently depending on whether or not there's a current conference
+        if ($conference) {
+            // create the FULL research availability form
+            $availabilityForm = $this->createForm(UserTypeFullAvailability::class, $this->getUser());
+            $availabilityForm->handleRequest($request);
 
-        if ($availabilityForm->isSubmitted() && $availabilityForm->isValid()) {
-            $userHandler->saveUser($this->getUser());
-            $this->addFlash('success', 'Your availability has been updated.');
-            return $this->redirectToRoute('account_research');
-        }
-
-        // conference submission form
-        $submissionForm = null;
-        $userCanSubmitToConference = false;
-        if ($conference && $conference->isOpen()) {
-            if (sizeof($this->getUser()->getSubmissions($conference)) == 0) {
-                $userCanSubmitToConference = true;
-                $submission = new Submission();
-                $submission->setUser($this->getUser());
-                $submission->setConference($conference);
-                $submissionForm = $this->createForm(SubmissionType::class, $submission);
-                $submissionForm->handleRequest($request);
-
-                if ($submissionForm->isSubmitted()) {
-                    $tab = 'submissions';
-                    if ($submissionForm->isValid()) {
-                        $submissionHandler->saveSubmission($submission);
-                        $userHandler->refreshUser($this->getUser());
-                        $userCanSubmitToConference = false;
-                        $emailHandler->sendSubmissionEmail($submission, 'submission');
-                        $emailHandler->sendSubmissionNotification($submission);
-                        $message = 'Your paper has been submitted. A confirmation email has been '
-                                 . 'sent to '.$this->getUser()->getEmail();
-                        $this->addFlash('success', $message);
-                    }
+            // create and handle the submission form
+            $submission = new Submission();
+            $submission->setUser($this->getUser())->setConference($conference);
+            $submissionForm = $this->createForm(SubmissionType::class, $submission);
+            $submissionForm->handleRequest($request);
+            if ($submissionForm->isSubmitted() && $conference->isOpen()) {
+                $tab = 'submissions';
+                if ($submissionForm->isValid()) {
+                    $submissions->saveSubmission($submission);
+                    $users->refreshUser($this->getUser());
+                    $emails->sendSubmissionEmail($submission, 'submission');
+                    $emails->sendSubmissionNotification($submission);
+                    $message = 'Your paper has been submitted. A confirmation email has been '
+                             . 'sent to '.$this->getUser()->getEmail();
+                    $this->addFlash('success', $message);
                 }
+            } elseif ($submissionForm->isSubmitted() && $conference->isClosed()) {
+                $submissionForm->get('title')->addError(new FormError('The submissions deadline has now passed.'));
             }
+
+            // add additional twig variables
+            $twigs['conference'] = $conference;
+            $twigs['submissionForm'] = $submissionForm->createView();
+            $twigs['guidanceText'] = $texts->getTextContentByLabel('submission');
+        } else {
+            // create the PARTIAL research availability form
+            $availabilityForm = $this->createForm(UserTypeFullAvailability::class, $this->getUser());
+            $availabilityForm->handleRequest($request);
         }
 
-        // TODO: review forms ...
+        // handle the research availability form
+        $availabilityForm->handleRequest($request);
+        if ($availabilityForm->isSubmitted() && $availabilityForm->isValid()) {
+            $users->saveUser($this->getUser());
+            $this->addFlash('success', 'Your availability has been updated.');
+        }
+
+        // add additional twig variables
+        $twigs['availabilityForm'] = $availabilityForm->createView();
 
         // return the response
-        return $this->render('site/account/research.twig', [
-            'page' => ['id' => 'research', 'section' => 'account'],
-            'tab' => $tab,
-            'conference' => $conference,
-            'userCanSubmitToConference' => $userCanSubmitToConference,
-            'userAvailabilityForm' => $availabilityForm->createView(),
-            'submissionForm' => $submissionForm ? $submissionForm->createView() : null,
-            'submissions' => $this->getUser()->getSubmissions($conference),
-            'guidanceText' => $textHandler->getTextContentByLabel('submission')
-        ]);
+        return $this->render('site/account/research.twig', $twigs);
     }
 
     /**
-     * The page for paying dues.
+     * Route for paying dues.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @return Response
      * @Route("/pay", name="pay")
      * @IsGranted("ROLE_USER")
      */
     public function pay(Request $request): Response
     {
-        // check if the user can (and needs to) pay their dues
+        // determine whether the user can (and needs to) pay their dues
         if ($this->getUser()->getLifetimeMember() === true) {
             $payable = false;
         } elseif ($this->getUser()->isMember()) {
@@ -213,17 +222,20 @@ class AccountController extends AbstractController
             $payable = true;
         }
 
-        // return the response
-        return $this->render('site/account/pay.twig', [
+        // initialise the twig variables
+        $twigs = [
             'page' => ['id' => 'pay', 'section' => 'account'],
             'payable' => $payable
-        ]);
+        ];
+
+        // render and return the page
+        return $this->render('site/account/pay.twig', $twigs);
     }
 
     /**
-     * The page PayPal send the user to after payment is completed.
+     * Route PayPal sends the user to after payment is completed.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param DuesPaymentHandler The dues payment handler.
      * @param EmailHandler The email handler.
      * @param UserHandler The user handler.
@@ -233,9 +245,9 @@ class AccountController extends AbstractController
      */
     public function paid(
         Request $request,
-        DuesPaymentHandler $duesPaymentHandler,
-        EmailHandler $emailHandler,
-        UserHandler $userHandler,
+        DuesPaymentHandler $duesPayments,
+        EmailHandler $emails,
+        UserHandler $users,
         string $orderId
     ): Response {
         // create the PayPal environment
@@ -260,10 +272,10 @@ class AccountController extends AbstractController
                 $duesPayment->setUser($this->getUser());
                 $duesPayment->setAmount($result->purchase_units[0]->amount->value);
                 $duesPayment->setDescription($result->purchase_units[0]->description);
-                $duesPaymentHandler->saveDuesPayment($duesPayment);
-                $userHandler->updateDues($this->getUser(), $duesPayment);
+                $duesPayments->saveDuesPayment($duesPayment);
+                $users->updateDues($this->getUser(), $duesPayment);
                 if ($newMember) {
-                    $emailHandler->sendSocietyEmail($this->getUser(), 'welcome');
+                    $emails->sendSocietyEmail($this->getUser(), 'welcome');
                 }
             }
         }

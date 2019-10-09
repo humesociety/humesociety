@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class DataController extends AbstractController
 {
     /**
-     * Details of the current user.
+     * Details of a user (the current user by default).
      *
      * @param SerializerInterface Symfony's serializer.
      * @return Response
@@ -45,10 +45,9 @@ class DataController extends AbstractController
      * @Route("/users", name="users")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function users(SerializerInterface $serializer, UserHandler $userHandler): Response
+    public function users(SerializerInterface $serializer, UserHandler $users): Response
     {
-        $users = $userHandler->getUsers();
-        return new Response($serializer->serialize($users, 'json', ['groups' => 'json']));
+        return new Response($serializer->serialize($users->getUsers(), 'json', ['groups' => 'json']));
     }
 
     /**
@@ -60,12 +59,12 @@ class DataController extends AbstractController
      * @Route("/members", name="members")
      * @IsGranted("ROLE_MEMBER")
      */
-    public function members(SerializerInterface $serializer, UserHandler $userHandler): Response
+    public function members(SerializerInterface $serializer, UserHandler $users): Response
     {
         if (!$this->getUser()->isMemberInGoodStanding()) {
             throw new AccessDeniedException();
         }
-        $members = $userHandler->getMembersInGoodStanding();
+        $members = $users->getMembersInGoodStanding();
         return new Response($serializer->serialize($members, 'json', ['groups' => 'json']));
     }
 
@@ -77,10 +76,9 @@ class DataController extends AbstractController
      * @return Response
      * @Route("/issues", name="issues")
      */
-    public function issues(SerializerInterface $serializer, IssueHandler $issueHandler): Response
+    public function issues(SerializerInterface $serializer, IssueHandler $issues): Response
     {
-        $issues = $issueHandler->getIssues();
-        return new Response($serializer->serialize($issues, 'json', ['groups' => 'json']));
+        return new Response($serializer->serialize($issues->getIssues(), 'json', ['groups' => 'json']));
     }
 
     /**
@@ -91,11 +89,9 @@ class DataController extends AbstractController
      * @return Response
      * @Route("/conference", name="conference")
      */
-    public function conference(
-        SerializerInterface $serializer,
-        ConferenceHandler $conferenceHandler
-    ): Response {
-        $conference = $conferenceHandler->getCurrentConference();
+    public function conference(SerializerInterface $serializer, ConferenceHandler $conferences): Response
+    {
+        $conference = $conferences->getCurrentConference();
         if ($conference) {
             return new Response($serializer->serialize($conference, 'json', ['groups' => 'json']));
         }
@@ -110,13 +106,11 @@ class DataController extends AbstractController
      * @return Response
      * @Route("/conference/keywords", name="conference_keywords")
      */
-    public function conferenceKeywords(
-        SerializerInterface $serializer,
-        ConferenceHandler $conferenceHandler
-    ): Response {
-        $conference = $conferenceHandler->getCurrentConference();
+    public function conferenceKeywords(SerializerInterface $serializer, ConferenceHandler $conferences): Response
+    {
+        $conference = $conferences->getCurrentConference();
         if ($conference) {
-            return new JsonResponse($conferenceHandler->getSubmissionKeywords($conference));
+            return new JsonResponse($conferences->getSubmissionKeywords($conference));
         }
         return new JsonResponse(null);
     }

@@ -1,5 +1,5 @@
 {% extends 'site/review/_layout.twig' %}
 
 {% block main %}
-  {{ reviewThanks.content|raw }}
+  {% if reviewThanks is defined %}{{ reviewThanks|raw }}{% endif %}
 {% endblock %}

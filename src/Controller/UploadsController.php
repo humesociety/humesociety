@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * The controller for retrieving uploaded files.
+ * Controller for retrieving uploaded files.
  *
  * @Route("/uploads", name="uploads_")
  */

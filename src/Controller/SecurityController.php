@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Entity\Email\EmailHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
-use App\Entity\User\UserRegistrationType;
-use App\Entity\User\UserForgotPasswordType;
-use App\Entity\User\UserResetPasswordType;
+use App\Entity\User\UserTypeRegistration;
+use App\Entity\User\UserTypeForgotCredentials;
+use App\Entity\User\UserTypeResetPassword;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -19,40 +19,35 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
- * The controller for logging in and out, registering, and resetting forgotten passwords.
+ * Controller for logging in and out, registering, and resetting forgotten passwords.
  *
  * @Route("/", name="security_")
  */
 class SecurityController extends AbstractController
 {
     /**
-     * The page for logging in to the site.
+     * Route for logging in to the site.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param AuthenticationUtils Symfony's authentication utilities.
      * @return Response
      * @Route("/login", name="login")
      */
-    public function login(
-        Request $request,
-        AuthenticationUtils $authenticationUtils
-    ): Response {
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        // return the response
-        return $this->render('site/security/login.twig', [
+    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
+    {
+        // initialise the twig variables
+        $twigs = [
             'page' => ['id' => 'login', 'section' => 'security'],
-            'last_username' => $lastUsername,
-            'error' => $error
-        ]);
+            'last_username' => $authenticationUtils->getLastUsername(),
+            'error' => $authenticationUtils->getLastAuthenticationError()
+        ];
+
+        // render and return the page
+        return $this->render('site/security/login.twig', $twigs);
     }
 
     /**
-     * The route for logging out.
+     * Route for logging out.
      *
      * @return Response
      * @Route("/logout", name="logout")
@@ -63,9 +58,9 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * The page for creating an account on the site.
+     * Route for creating an account on the site.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param UserPasswordEncoderInterface Symfony's password encoder.
      * @param GuardAuthenticationHandler Symfony's authentication handler.
      * @param LoginFormAuthenticator The login form authenticator.
@@ -78,79 +73,73 @@ class SecurityController extends AbstractController
         UserPasswordEncoderInterface $passwordEncoder,
         GuardAuthenticatorHandler $guardHandler,
         LoginFormAuthenticator $authenticator,
-        UserHandler $userHandler
+        UserHandler $users
     ) : Response {
-        // create the registration form
-        $user = new User();
-        $form = $this->createForm(UserRegistrationType::class, $user);
-        $form->handleRequest($request);
+        // initialise the twig variables
+        $twigs = ['page' => ['id' => 'register', 'section' => 'security']];
 
-        // handle the registration form
-        if ($form->isSubmitted() && $form->isValid()) {
+        // create and handle the registration form
+        $user = new User();
+        $registrationForm = $this->createForm(UserTypeRegistration::class, $user);
+        $registrationForm->handleRequest($request);
+        if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
             $plainPassword = $form->get('password')->getData();
             $encodedPassword = $passwordEncoder->encodePassword($user, $plainPassword);
             $user->setPassword($encodedPassword);
-            $userHandler->saveUser($user);
-            return $guardHandler->authenticateUserAndHandleSuccess(
-                $user,
-                $request,
-                $authenticator,
-                'main' // firewall name in security.yaml
-            );
+            $users->saveUser($user);
+            return $guardHandler->authenticateUserAndHandleSuccess($user, $request, $authenticator, 'main');
         }
 
+        // add additional twig variables
+        $twigs['registrationForm'] = $registrationForm->createView();
+
         // return the response
-        return $this->render('site/security/register.twig', [
-            'page' => ['id' => 'register', 'section' => 'security'],
-            'registrationForm' => $form->createView()
-        ]);
+        return $this->render('site/security/register.twig', $twigs);
     }
 
     /**
-     * The page for requesting a forgotten username and password reset link.
+     * Route for requesting a forgotten username and password reset link.
      *
-     * @param Request The Symfony HTTP request object.
+     * @param Request Symfony's request object.
      * @param EmailHandler The email handler.
      * @param UserHandler The user handler.
      * @return Response
      * @Route("/forgot", name="forgot")
      */
-    public function forgot(
-        Request $request,
-        EmailHandler $emailHandler,
-        UserHandler $userHandler
-    ) : Response {
-        // create the forgot details form
-        $form = $this->createForm(UserForgotPasswordType::class);
-        $form->handleRequest($request);
+    public function forgot(Request $request, EmailHandler $emails, UserHandler $users) : Response
+    {
+        // initialise the twig variables
+        $twigs = ['page' => ['id' => 'forgot', 'section' => 'security']];
 
-        // handle the forgot details form
-        if ($form->isSubmitted() && $form->isValid()) {
-            $email = $form->get('email')->getData();
-            $user = $userHandler->getUserByEmail($email);
+        // create and handle the forgot details form
+        $forgotCredentialsForm = $this->createForm(UserTypeForgotCredentials::class);
+        $forgotCredentialsForm->handleRequest($request);
+        if ($forgotCredentialsForm->isSubmitted() && $forgotCredentialsForm->isValid()) {
+            $email = $forgotCredentialsForm->get('email')->getData();
+            $user = $users->getUserByEmail($email);
             if (!$user) {
-                $form->get('email')->addError(new FormError('Email address not found'));
+                $forgotCredentialsForm->get('email')->addError(new FormError('Email address not found'));
             } else {
                 $user->setPasswordResetSecret();
-                $userHandler->saveUser($user);
-                $emailHandler->sendResetPasswordEmail($user);
+                $users->saveUser($user);
+                $emails->sendForgotCredentialsEmail($user);
                 $this->addFlash('success', 'An email has been sent to '.$email.' with further instructions.');
             }
         }
 
+        // add additional twig variables
+        $twigs['forgotCredentialsForm'] = $forgotCredentialsForm->createView();
+
         // return the response
-        return $this->render('site/security/forgot.twig', [
-            'page' => ['id' => 'forgot', 'section' => 'security'],
-            'userForgotPasswordForm' => $form->createView()
-        ]);
+        return $this->render('site/security/forgot.twig', $twigs);
     }
 
     /**
-     * The page for resetting a forgotten password.
+     * Route for resetting a forgotten password.
      *
-     * @param Request The Symfony HTTP request object.
-     * @param UserHandler The user handler.
+     * @param Request Symfony's request object.
      * @param UserPasswordEncoderInterface Symfony's password encoder.
+     * @param UserHandler The user handler.
      * @param string The user's username.
      * @param string The user's reset password secret.
      * @return Response
@@ -158,40 +147,44 @@ class SecurityController extends AbstractController
      */
     public function reset(
         Request $request,
-        UserHandler $userHandler,
+        UserHandler $users,
         UserPasswordEncoderInterface $passwordEncoder,
         string $username,
         string $secret
     ) : Response {
         // look for the user
-        $user = $userHandler->getUserByUsername($username);
+        $user = $users->getUserByUsername($username);
+
+        // throw 404 error if the user isn't found
         if (!$user) {
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // check the reset password secret
+        // throw 404 error if the secret is wrong or has expired
         if ($user->getPasswordResetSecret() != $secret || new \DateTime() > $user->getPasswordResetSecretExpires()) {
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // the reset password form
-        $form = $this->createForm(UserResetPasswordType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('password')->getData();
+        // create and handle the reset password form
+        $resetPasswordForm = $this->createForm(UserTypeResetPassword::class);
+        $resetPasswordForm->handleRequest($request);
+        if ($resetPasswordForm->isSubmitted() && $resetPasswordForm->isValid()) {
+            $plainPassword = $resetPasswordForm->get('password')->getData();
             $encodedPassword = $passwordEncoder->encodePassword($user, $plainPassword);
             $user->setPassword($encodedPassword);
-            $userHandler->saveUser($user);
+            $users->saveUser($user);
             $this->addFlash('success', 'Your password has been reset. You can now log in with your new password.');
             return $this->redirectToRoute('security_login');
         }
 
-        // return the response
-        return $this->render('site/security/reset.twig', [
+        // initialise the twig variables
+        $twigs = [
             'page' => ['id' => 'forgot', 'section' => 'security'],
             'user' => $user,
-            'userResetPasswordForm' => $form->createView()
-        ]);
+            'resetPasswordForm' => $resetPasswordForm->createView()
+        ];
+
+        // render and return the page
+        return $this->render('site/security/reset.twig', $twigs);
     }
 }

@@ -1,8 +1,8 @@
-{{ form_start(userAvailabilityForm )}}
+{{ form_start(availabilityForm )}}
   <p>Please indicate below whether you are happy to recieve requests to review submissions for <i>Hume Studies</i> or the annual Hume Conference.</p>
   <div class="columns has-checkboxes">
     <div class="column has-checkbox">
-      {{ form_row(userAvailabilityForm.willingToReview) }}
+      {{ form_row(availabilityForm.willingToReview) }}
     </div>
   </div>
   {% if conference %}
@@ -10,20 +10,20 @@
     <p>Please indicate below if you would like to volunteer to comment on a paper or chair a session at the {{ conference.ordinal }} Hume Conference in {{ conference.town }}.</p>
     <div class="columns has-checkboxes">
       <div class="column has-checkbox">
-        {{ form_row(userAvailabilityForm.willingToComment) }}
+        {{ form_row(availabilityForm.willingToComment) }}
       </div>
     </div>
     <div class="columns has-checkboxes">
       <div class="column has-checkbox">
-        {{ form_row(userAvailabilityForm.willingToChair) }}
+        {{ form_row(availabilityForm.willingToChair) }}
       </div>
     </div>
   {% endif %}
   <br>
   <p>If you have indicated a willingness to help, please also provide a comma-separated list of keywords indicating your areas of expertise.</p>
-  {{ form_row(userAvailabilityForm.keywords) }}
-  {{ form_row(userAvailabilityForm._token) }}
+  {{ form_row(availabilityForm.keywords) }}
+  {{ form_row(availabilityForm._token) }}
   <div class="buttons">
     <button type="submit" class="button is-success">Update Availability</button>
   </div>
-{{ form_end(userAvailabilityForm) }}
+{{ form_end(availabilityForm) }}

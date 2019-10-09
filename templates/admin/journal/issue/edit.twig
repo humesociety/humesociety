@@ -7,7 +7,7 @@
     {% block title %}Edit Issue {{ issue }}{% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_journal_issue_view', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
+        <a href="{{ path('admin_journal_issue_index', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
       </div>
     {% endblock %}
     {% block body %}

@@ -1,42 +1,36 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Controller\Admin\Conference;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class AccountControllerTest extends WebTestCase
+class TextControllerTest extends WebTestCase
 {
     private $client;
 
     public function setUp()
     {
         $this->client = static::createClient([], [
-            'PHP_AUTH_USER' => 'member',
+            'PHP_AUTH_USER' => 'organiser',
             'PHP_AUTH_PW' => 'password'
         ]);
     }
 
     public function testIndex()
     {
-        $this->client->request('GET', '/account');
+        $this->client->request('GET', '/admin/conference/text/');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testPassword()
+    public function testEdit()
     {
-        $this->client->request('GET', '/account/password');
+        $this->client->request('GET', '/admin/conference/text/edit/submission');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-    }
 
-    public function testResearch()
-    {
-        $this->client->request('GET', '/account/research');
+        $this->client->request('GET', '/admin/conference/text/edit/review');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-    }
 
-    public function testPay()
-    {
-        $this->client->request('GET', '/account/pay');
+        $this->client->request('GET', '/admin/conference/text/edit/thanks');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 }

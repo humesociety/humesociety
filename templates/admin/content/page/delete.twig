@@ -7,7 +7,7 @@
     {% block title %}Delete Page: {{ page }}{% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_content_page_view', { section: page.section }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Page List</a>
+        <a href="{{ path('admin_content_page_index', { section: page.section }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Page List</a>
       </div>
     {% endblock %}
     {% block body %}

@@ -24,7 +24,7 @@ class ReviewController extends AbstractController
      * Route for handling a review.
      *
      * @param Request Symfony's request object.
-     * @param ConferenceManager The conference manager.
+     * @param ConferenceHandler The conference handler.
      * @param EmailHandler The email handler.
      * @param ReviewHandler The review handler.
      * @param string The reviewer's secret.
@@ -34,7 +34,7 @@ class ReviewController extends AbstractController
      */
     public function index(
         Request $request,
-        ConferenceManager $conferences,
+        ConferenceHandler $conferences,
         EmailHandler $emails,
         ReviewHandler $reviews,
         string $reviewerSecret,
@@ -78,7 +78,7 @@ class ReviewController extends AbstractController
                 }
 
                 // add the review instructions to the twig variables
-                $twigs['reviewInstructions'] = $conferences->getTextByLabel('review');
+                $twigs['reviewInstructions'] = $conferences->getTextContentByLabel('review');
 
                 // render and return the page
                 return $this->render('site/review/submit.twig', $twigs);
@@ -89,7 +89,7 @@ class ReviewController extends AbstractController
 
             case 'submitted':
                 // add the thank you message to the twig variables
-                $twigs['reviewThanks'] = $conferences->getTextByLabel('thanks');
+                $twigs['reviewThanks'] = $conferences->getTextContentByLabel('thanks');
 
                 // render and return the page
                 return $this->render('site/review/submitted.twig', $twigs);

@@ -52,7 +52,7 @@ class UserHandler
      */
     public function getUsers(): array
     {
-        return $this->repository->findBy([], ['lastname, firstname' => 'ASC']);
+        return $this->repository->findBy([], ['lastname' => 'ASC', 'firstname' => 'ASC']);
     }
 
     /**

@@ -7,7 +7,7 @@
     {% block title %}Election Candidates for {{ election.year }}{% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_society_election_view', { decade: election.decade }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
+        <a href="{{ path('admin_society_election_index', { decade: election.decade }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
       </div>
     {% endblock %}
     {% block body %}

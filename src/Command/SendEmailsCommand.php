@@ -27,10 +27,10 @@ class SendEmailsCommand extends Command
      * @param UserHandler The user handler.
      * @return void
      */
-    public function __construct(EmailHandler $emailHandler, UserHandler $userHandler)
+    public function __construct(EmailHandler $emails, UserHandler $users)
     {
-        $this->emailHandler = $emailHandler;
-        $this->userHandler = $userHandler;
+        $this->emails = $emails;
+        $this->users = $users;
 
         parent::__construct();
     }
@@ -58,10 +58,10 @@ class SendEmailsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $users = $this->userHandler->getMembersExpiringThisMonth();
+        $users = $this->users->getMembersExpiringThisMonth();
         $count = 0;
         foreach ($users as $user) {
-            $this->emailHandler->sendSocietyEmail($user, 'reminder');
+            $this->emails->sendSocietyEmail($user, 'reminder');
             $count += 1;
         }
         $output->writeln(sizeof($users).' member(s) will lapse at the end of this month.');

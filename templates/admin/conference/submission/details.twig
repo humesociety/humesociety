@@ -23,7 +23,7 @@
         {% if reviewers|length > 0 %}
           {% include 'admin/_include/review/create.twig' %}
         {% else %}
-          <p>There are no active reviewers in the database. Please visit the <a href="{{ path('admin_conference_reviewer_view') }}">Reviewers</a> section to create some before coming back here.</p>
+          <p>There are no active reviewers in the database. Please visit the <a href="{{ path('admin_conference_reviewer_index') }}">Reviewers</a> section to create some before coming back here.</p>
         {% endif %}
         {% if submission.reviews|length > 0 %}
           {% include 'admin/_include/review/list.twig' %}

@@ -144,7 +144,7 @@ class ConferenceHandler
         if ($this->countConferences() == 0) {
             return [];
         }
-        $decades = $this->createQueryBuilder('c')
+        $decades = $this->repository->createQueryBuilder('c')
             ->select('DISTINCT (c.year - MOD(c.year, 10)) AS decade')
             ->orderBy('decade', 'DESC')
             ->getQuery()

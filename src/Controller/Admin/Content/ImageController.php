@@ -13,25 +13,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for uploading and deleting images for displaying on the main web site.
+ *
  * @Route("/admin/content/image", name="admin_content_image_")
  * @IsGranted("ROLE_EVPT")
- *
- * This is the controller for uploading and deleting images for displaying on the main web site.
  */
 class ImageController extends AbstractController
 {
     /**
      * @Route("/", name="index")
      */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_content_image_view');
-    }
-
-    /**
-     * @Route("/view", name="view")
-     */
-    public function view(UploadHandler $uploadHandler, Request $request): Response
+    public function index(UploadHandler $uploadHandler, Request $request): Response
     {
         $upload = new Upload();
         $uploadForm = $this->createForm(UploadType::class, $upload);
@@ -61,7 +53,7 @@ class ImageController extends AbstractController
         if ($form->isSubmitted()) {
             $uploadHandler->deleteImage($filename);
             $this->addFlash('notice', 'File "'.$filename.'" has been deleted.');
-            return $this->redirectToRoute('admin_content_image_view');
+            return $this->redirectToRoute('admin_content_image_index');
         }
 
         return $this->render('admin/content/image/delete.twig', [

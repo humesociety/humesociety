@@ -13,25 +13,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for editing society elections.
+ *
  * @Route("/admin/society/election", name="admin_society_election_")
  * @IsGranted("ROLE_EVPT")
- *
- * This is the controller for editing society elections.
  */
 class ElectionController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/{decade}", name="index", requirements={"deacde": "\d{4}"})
      */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_society_election_view');
-    }
-
-    /**
-     * @Route("/view/{decade}", name="view", requirements={"deacde": "\d+"})
-     */
-    public function view(ElectionHandler $electionHandler, int $decade = null): Response
+    public function index(ElectionHandler $electionHandler, string $decade = null): Response
     {
         return $this->render('admin/society/election/view.twig', [
             'area' => 'society',
@@ -50,7 +42,7 @@ class ElectionController extends AbstractController
         $election->setOpen(true);
         $electionHandler->saveElection($election);
         $this->addFlash('notice', 'Election for '.$election.' has been opened. Editing of this election has been disabled.');
-        return $this->redirectToRoute('admin_society_election_view', ['decade' => $election->getDecade()]);
+        return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
     }
 
     /**
@@ -61,7 +53,7 @@ class ElectionController extends AbstractController
         $election->setOpen(false);
         $electionHandler->saveElection($election);
         $this->addFlash('notice', 'Election for '.$election.' has been closed. Editing of this election is now possible.');
-        return $this->redirectToRoute('admin_society_election_view', ['decade' => $election->getDecade()]);
+        return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
     }
 
     /**
@@ -79,7 +71,7 @@ class ElectionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $electionHandler->saveElection($election);
             $this->addFlash('notice', 'Election for '.$election.' has been updated.');
-            return $this->redirectToRoute('admin_society_election_view', ['decade' => $election->getDecade()]);
+            return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
         }
 
         return $this->render('admin/society/election/edit.twig', [
@@ -115,7 +107,7 @@ class ElectionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $electionHandler->deleteElection($election);
             $this->addFlash('notice', 'Election for '.$election.' has been deleted.');
-            return $this->redirectToRoute('admin_society_election_view', ['decade' => $election->getDecade()]);
+            return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
         }
 
         return $this->render('admin/society/election/delete.twig', [
@@ -139,7 +131,7 @@ class ElectionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $electionHandler->saveElection($election);
             $this->addFlash('notice', 'Election for '.$election.' has been created.');
-            return $this->redirectToRoute('admin_society_election_view', ['decade' => $election->getDecade()]);
+            return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
         }
 
         return $this->render('admin/society/election/create.twig', [

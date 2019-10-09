@@ -3,13 +3,11 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Article\Article;
-use App\Entity\Article\ArticleHandler;
 use App\Entity\Issue\Issue;
-use App\Entity\Issue\IssueHandler;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * Tests for the article entity and related services.
+ * Tests for the article entity.
  */
 class ArticleTest extends WebTestCase
 {

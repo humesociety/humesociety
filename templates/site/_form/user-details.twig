@@ -1,49 +1,49 @@
 <p>Please provide the Hume Society with an up to date record of your contact details. We will not share this information with anyone else.</p>
-{{ form_start(userDetailsForm) }}
-  {{ form_row(userDetailsForm.email) }}
+{{ form_start(detailsForm) }}
+  {{ form_row(detailsForm.email) }}
   <div class="columns">
     <div class="column">
-      {{ form_row(userDetailsForm.firstname) }}
+      {{ form_row(detailsForm.firstname) }}
     </div>
     <div class="column">
-      {{ form_row(userDetailsForm.lastname) }}
+      {{ form_row(detailsForm.lastname) }}
     </div>
   </div>
   <div class="columns">
     <div class="column">
-      {{ form_row(userDetailsForm.department) }}
+      {{ form_row(detailsForm.department) }}
     </div>
     <div class="column">
-      {{ form_row(userDetailsForm.institution) }}
+      {{ form_row(detailsForm.institution) }}
     </div>
   </div>
   <div class="columns">
     <div class="column">
-      {{ form_row(userDetailsForm.city) }}
+      {{ form_row(detailsForm.city) }}
     </div>
     <div class="column">
-      {{ form_row(userDetailsForm.state) }}
+      {{ form_row(detailsForm.state) }}
     </div>
   </div>
-  {{ form_row(userDetailsForm.country) }}
+  {{ form_row(detailsForm.country) }}
   <div class="columns">
     <div class="column">
-      {{ form_row(userDetailsForm.officePhone) }}
+      {{ form_row(detailsForm.officePhone) }}
     </div>
     <div class="column">
-      {{ form_row(userDetailsForm.homePhone) }}
+      {{ form_row(detailsForm.homePhone) }}
     </div>
   </div>
   <div class="columns">
     <div class="column">
-      {{ form_row(userDetailsForm.fax) }}
+      {{ form_row(detailsForm.fax) }}
     </div>
     <div class="column">
-      {{ form_row(userDetailsForm.webpage) }}
+      {{ form_row(detailsForm.webpage) }}
     </div>
   </div>
-  {{ form_row(userDetailsForm._token) }}
+  {{ form_row(detailsForm._token) }}
   <div class="buttons">
     <button type="submit" class="button is-success">Update Details</button>
   </div>
-{{ form_end(userDetailsForm) }}
+{{ form_end(detailsForm) }}

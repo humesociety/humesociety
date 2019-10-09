@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 /**
  * The form type for requesting a password reset email.
  */
-class UserForgotPasswordType extends AbstractType
+class UserTypeForgotCredentials extends AbstractType
 {
     /**
      * Build the form.

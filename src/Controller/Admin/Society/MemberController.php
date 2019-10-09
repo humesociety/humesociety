@@ -11,25 +11,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for viewing membership details.
+ *
  * @Route("/admin/society/member", name="admin_society_member_")
  * @IsGranted("ROLE_EVPT")
- *
- * This is the controller for viewing membership details.
  */
 class MemberController extends AbstractController
 {
     /**
      * @Route("/", name="index")
      */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_society_member_view');
-    }
-
-    /**
-     * @Route("/view", name="view")
-     */
-    public function view(UserHandler $userHandler): Response
+    public function index(UserHandler $userHandler): Response
     {
         return $this->render('admin/society/member/view.twig', [
             'area' => 'society',

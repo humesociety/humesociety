@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for viewing the Hume Studies mailing list.
+ *
  * @Route("/admin/journal/mailing", name="admin_journal_mailing_")
  * @IsGranted("ROLE_EDITOR")
- *
- * This is the controller for viewing the Hume Studies mailing list.
  */
 class MailingController extends AbstractController
 {

@@ -16,10 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for managing Hume Studies articles.
+ *
  * @Route("/admin/journal/article", name="admin_journal_article_")
  * @IsGranted("ROLE_EDITOR")
- *
- * This is the controller for managing Hume Studies articles.
  */
 class ArticleController extends AbstractController
 {

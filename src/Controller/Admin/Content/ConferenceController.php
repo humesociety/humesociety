@@ -15,25 +15,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for editing conference data.
+ *
  * @Route("/admin/content/conference", name="admin_content_conference_")
  * @IsGranted("ROLE_EVPT")
- *
- * Controller for editing basic conference data.
  */
 class ConferenceController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/{decade}", name="index", requirements={"decade": "\d{4}"})
      */
-    public function index() : Response
-    {
-        return $this->redirectToRoute('admin_content_conference_view');
-    }
-
-    /**
-     * @Route("/view/{decade}", name="view")
-     */
-    public function view(ConferenceHandler $conferenceHandler, $decade = null): Response
+    public function index(ConferenceHandler $conferenceHandler, $decade = null): Response
     {
         return $this->render('admin/content/conference/view.twig', [
             'area' => 'content',
@@ -62,7 +54,7 @@ class ConferenceController extends AbstractController
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
             $conferenceHandler->saveConference($conference);
             $this->addFlash('notice', 'Details for the '.$conference.' have been updated.');
-            return $this->redirectToRoute('admin_content_conference_view', [
+            return $this->redirectToRoute('admin_content_conference_index', [
                 'decade' => $conference->getDecade()
             ]);
         }
@@ -109,7 +101,7 @@ class ConferenceController extends AbstractController
         if ($form->isSubmitted()) {
             $conferenceHandler->deleteConference($conference);
             $this->addFlash('notice', 'The record for the '.$conference.' has been deleted.');
-            return $this->redirectToRoute('admin_content_conference_view');
+            return $this->redirectToRoute('admin_content_conference_index');
         }
 
         return $this->render('admin/content/conference/delete.twig', [
@@ -166,7 +158,7 @@ class ConferenceController extends AbstractController
         if ($conferenceForm->isSubmitted() && $conferenceForm->isValid()) {
             $conferenceHandler->saveConference($conference);
             $this->addFlash('notice', 'A record for the '.$conference.' has been created.');
-            return $this->redirectToRoute('admin_content_conference_view', [
+            return $this->redirectToRoute('admin_content_conference_index', [
                 'decade' => $conference->getDecade()
             ]);
         }

@@ -12,25 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for managing society minutes and reports.
+ *
  * @Route("/admin/society/report", name="admin_society_report_")
  * @IsGranted("ROLE_EVPT")
- *
- * This is the controller for managing society minutes and reports.
  */
 class ReportController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/{year}", name="index", requirements={"year": "\d{4}"})
      */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_society_report_view');
-    }
-
-    /**
-     * @Route("/view/{year}", name="view", requirements={"year": "\d{4}"})
-     */
-    public function view(UploadHandler $uploadHandler, string $year = null): Response
+    public function index(UploadHandler $uploadHandler, string $year = null): Response
     {
         return $this->render('admin/society/report/view.twig', [
             'area' => 'society',
@@ -56,7 +48,7 @@ class ReportController extends AbstractController
         if ($reportForm->isSubmitted()) {
             $uploadHandler->deleteReport($filename, $year);
             $this->addFlash('notice', 'Report "'.$filename.'" has been deleted.');
-            return $this->redirectToRoute('admin_society_report_view');
+            return $this->redirectToRoute('admin_society_report_index');
         }
 
         return $this->render('admin/society/report/delete.twig', [
@@ -82,7 +74,7 @@ class ReportController extends AbstractController
             $year = $reportForm['year']->getData();
             $uploadHandler->saveReport($report, $year);
             $this->addFlash('notice', 'Report "'.$report.'" has been uploaded.');
-            return $this->redirectToRoute('admin_society_report_view', ['year' => $year]);
+            return $this->redirectToRoute('admin_society_report_index', ['year' => $year]);
         }
 
         return $this->render('admin/society/report/upload.twig', [

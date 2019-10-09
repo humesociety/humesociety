@@ -12,9 +12,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
- * The form type for resetting a user's password.
+ * The form type for changing a user's password.
  */
-class UserResetPasswordType extends AbstractType
+class UserTypeChangePassword extends AbstractType
 {
     /**
      * Build the form.
@@ -26,7 +26,13 @@ class UserResetPasswordType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('password', RepeatedType::class, [
+            ->add('old_password', PasswordType::class, [
+                'constraints' => new UserPassword([
+                    'message' => 'Wrong value for your current password'
+                ]),
+                'label' => 'Current Password'
+            ])
+            ->add('new_password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
                 'first_options'  => ['label' => 'New Password'],

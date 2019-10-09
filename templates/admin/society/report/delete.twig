@@ -7,7 +7,7 @@
     {% block title %}Delete Report: {{ filename }} ({{ year }}){% endblock %}
     {% block header_right %}
       <div class="input">
-        <a href="{{ path('admin_society_report_view', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
+        <a href="{{ path('admin_society_report_index', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
       </div>
     {% endblock %}
     {% block body %}

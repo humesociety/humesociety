@@ -12,25 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller for editing society and membership news items.
+ *
  * @Route("/admin/content/news-item", name="admin_content_news-item_")
  * @IsGranted("ROLE_EVPT")
- *
- * This is the controller for editing society and membership news items.
  */
 class NewsItemController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/{category}", name="index", requirements={"category": "%news_category_ids%"})
      */
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_content_news-item_view');
-    }
-
-    /**
-     * @Route("/view/{category}", name="view")
-     */
-    public function view(NewsItemHandler $newsItemHandler, $category = 'society'): Response
+    public function index(NewsItemHandler $newsItemHandler, $category = 'society'): Response
     {
         return $this->render('admin/content/news-item/view.twig', [
             'area' => 'content',
@@ -51,7 +43,7 @@ class NewsItemController extends AbstractController
         if ($newsItemForm->isSubmitted() && $newsItemForm->isValid()) {
             $newsItemHandler->saveNewsItem($newsItem);
             $this->addFlash('notice', 'News item "'.$newsItem.'" has been updated.');
-            return $this->redirectToRoute('admin_content_news-item_view', ['category' => $newsItem->getCategory()]);
+            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
         }
 
         return $this->render('admin/content/news-item/edit.twig', [
@@ -73,7 +65,7 @@ class NewsItemController extends AbstractController
         if ($form->isSubmitted()) {
             $newsItemHandler->deleteNewsItem($newsItem);
             $this->addFlash('notice', 'News item "'.$newsItem.' has been deleted.');
-            return $this->redirectToRoute('admin_content_news-item_view', ['category' => $newsItem->getCategory()]);
+            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
         }
 
         return $this->render('admin/content/news-item/delete.twig', [
@@ -85,7 +77,7 @@ class NewsItemController extends AbstractController
     }
 
     /**
-     * @Route("/create/{category}", name="create")
+     * @Route("/create/{category}", name="create", requirements={"category": "%news_category_ids%"})
      */
     public function create(NewsItemHandler $newsItemHandler, Request $request, $category = 'society') : Response
     {
@@ -98,7 +90,7 @@ class NewsItemController extends AbstractController
         if ($newsItemForm->isSubmitted() && $newsItemForm->isValid()) {
             $newsItemHandler->saveNewsItem($newsItem);
             $this->addFlash('notice', 'News item "'.$newsItem.'" has been created.');
-            return $this->redirectToRoute('admin_content_news-item_view', ['category' => $newsItem->getCategory()]);
+            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
         }
 
         return $this->render('admin/content/news-item/create.twig', [

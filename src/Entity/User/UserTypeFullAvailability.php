@@ -15,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * This form type should only be used if there is a current conference in the database. Otherwise
  * the UserPartialAvailabilityType should be used instead.
  */
-class UserFullAvailabilityType extends AbstractType
+class UserTypeFullAvailability extends AbstractType
 {
     /**
      * A string describing the current conference (null if there isn't one).

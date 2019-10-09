@@ -33,86 +33,73 @@ class DefaultController extends AbstractController
      * @return Response
      * @Route("/", name="society_index")
      */
-    public function index(
-        ConferenceHandler $conferenceHandler,
-        NewsItemHandler $newsItemHandler
-    ): Response {
-        return $this->render('site/home/index.twig', [
+    public function index(ConferenceHandler $conferences, NewsItemHandler $newsItems): Response
+    {
+        // initialise the twig variables
+        $twigs = [
             'page' => ['id' => 'home', 'section' => 'home'],
-            'newsItems' => $newsItemHandler->getCurrentNewsItems('society'),
-            'conference' => $conferenceHandler->getCurrentConference()
-        ]);
+            'newsItems' => $newsItems->getCurrentNewsItems('society'),
+            'conference' => $conferences->getCurrentConference()
+        ];
+
+        // render and return the page
+        return $this->render('site/home/index.twig', $twigs);
     }
 
     /**
      * Any other page from the database.
      *
+     * @param Request Symfony's request object.
      * @param CandidateHandler The candidate handler.
      * @param ConferenceHandler The conference handler.
-     * @param ElectionHandler The election handler.
      * @param NewsItemHandler The news item handler.
      * @param PageHandler The page handler.
      * @param UploadHandler The upload handler.
-     * @param UserHandler The user handler.
-     * @param Request The Symfony HTTP request object.
      * @param string The section of the site.
      * @param string The page within the section.
      * @return Response
      * @Route("/{section}/{slug}", name="society_page", requirements={"section": "%section_ids%"})
      */
     public function page(
-        CandidateHandler $candidateHandler,
-        ConferenceHandler $conferenceHandler,
-        NewsItemHandler $newsItemHandler,
-        PageHandler $pageHandler,
-        UploadHandler $uploadHandler,
         Request $request,
+        CandidateHandler $candidates,
+        ConferenceHandler $conferences,
+        NewsItemHandler $newsItems,
+        PageHandler $pages,
+        UploadHandler $uploads,
         string $section,
         string $slug = 'index'
     ): Response {
         // look for the page (and its siblings for the side menu)
-        $page = $pageHandler->getPage($section, $slug);
-        $siblings = $pageHandler->getSectionPages($section);
+        $page = $pages->getPage($section, $slug);
+        $siblings = $pages->getSectionPages($section);
 
         // 404 error if the page doesn't exist
         if (!$page) {
             throw $this->createNotFoundException('Page not found.');
         }
 
+        // initialise the twig variables
+        $twigs = ['page' => $page, 'siblings' => $siblings];
+
         // security check for members area
         if ($section == 'members') {
             // not logged in; show page inviting to join or log in
             if (!$this->getUser()) {
-                return $this->render('site/templates/members-not-logged-in.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings
-                ]);
+                return $this->render('site/templates/members-not-logged-in.twig', $twigs);
             }
             // logged in but not a member; show page inviting to join
             if (!$this->getUser()->isMember()) {
-                return $this->render('site/templates/members-not-a-member.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings
-                ]);
+                return $this->render('site/templates/members-not-a-member.twig', $twigs);
             }
             // member, but not in good standing; show page asking to pay dues
             if (!$this->getUser()->isMemberInGoodStanding()) {
-                return $this->render('site/templates/members-lapsed.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings
-                ]);
+                return $this->render('site/templates/members-lapsed.twig', $twigs);
             }
         }
 
-        // render the page
-        return $this->renderPage(
-            $page,
-            $siblings,
-            $candidateHandler,
-            $conferenceHandler,
-            $newsItemHandler,
-            $uploadHandler
-        );
+        // render and return the page
+        return $this->renderPage($page, $siblings, $candidates, $conferences, $newsItems, $uploads);
     }
 
     /**
@@ -132,10 +119,10 @@ class DefaultController extends AbstractController
      * )
      */
     public function template(
-        CandidateHandler $candidateHandler,
-        ConferenceHandler $conferenceHandler,
-        NewsItemHandler $newsItemHandler,
-        UploadHandler $uploadHandler,
+        CandidateHandler $candidates,
+        ConferenceHandler $conferences,
+        NewsItemHandler $newsItems,
+        UploadHandler $uploads,
         string $template
     ): Response {
           // create a dummy page with the given template
@@ -147,15 +134,8 @@ class DefaultController extends AbstractController
               ->setTemplate($template)
               ->setContent('<p>Example of this template.</p>');
 
-          // return the response
-          return $this->renderPage(
-              $page,
-              [$page],
-              $candidateHandler,
-              $conferenceHandler,
-              $newsItemHandler,
-              $uploadHandler
-          );
+          // render and return the response
+          return $this->renderPage($page, [$page], $candidates, $conferences, $newsItems, $uploads);
     }
 
     /**
@@ -172,77 +152,56 @@ class DefaultController extends AbstractController
     private function renderPage(
         Page $page,
         array $siblings,
-        CandidateHandler $candidateHandler,
-        ConferenceHandler $conferenceHandler,
-        NewsItemHandler $newsItemHandler,
-        UploadHandler $uploadHandler
+        CandidateHandler $candidates,
+        ConferenceHandler $conferences,
+        NewsItemHandler $newsItems,
+        UploadHandler $uploads
     ): Response {
+        // initialise the twig variables
+        $twigs = ['page' => $page, 'siblings' => $siblings];
         switch ($page->getTemplate()) {
             case 'society-governance':
-                return $this->render('site/templates/society-governance.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings,
-                    'years' => $candidateHandler->getYears(),
-                    'evpts' => $candidateHandler->getEVPTs(),
-                    'execs' => $candidateHandler->getExecs()
-                ]);
+                $twigs['years'] = $candidates->getYears();
+                $twigs['evpts'] = $candidates->getEVPTs();
+                $twigs['execs'] = $candidates->getExecs();
+                return $this->render('site/templates/society-governance.twig', $twigs);
 
             case 'conferences-forthcoming':
-                return $this->render('site/templates/conferences-forthcoming.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings,
-                    'conferences' => $conferenceHandler->getForthcomingConferences()
-                ]);
+                $twigs['conferences'] = $conferences->getForthcomingConferences();
+                return $this->render('site/templates/conferences-forthcoming.twig', $twigs);
 
             case 'conferences-all':
-                return $this->render('site/templates/conferences-all.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings,
-                    'decades' => $conferenceHandler->getDecades(),
-                    'conferences' => $conferenceHandler->getConferences()
-                ]);
+                $twigs['decades'] = $conferences->getDecades();
+                $twigs['conferences'] = $conferences->getConferences();
+                return $this->render('site/templates/conferences-all.twig', $twigs);
 
             case 'news-members': // fallthrough
             case 'news-conferences': // fallthrough
-            case 'news-fellowships':
-                $category = explode('-', $page->getTemplate())[1];
-                return $this->render('site/templates/news-current.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings,
-                    'category' => $category,
-                    'newsItems' => $newsItemHandler->getCurrentNewsItems($category)
-                ]);
+            case 'news-fellowships': // fallthrough
+            case 'news-jobs':
+                $twigs['category'] = explode('-', $page->getTemplate())[1];
+                $twigs['newsItems'] = $newsItems->getCurrentNewsItems($twigs['category']);
+                return $this->render('site/templates/news-current.twig', $twigs);
 
             case 'news-archived':
-                return $this->render('site/templates/news-archived.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings,
-                    'years' => $newsItemHandler->getYears(),
-                    'societyNewsItems' => $newsItemHandler->getArchivedNewsItems('society'),
-                    'membersNewsItems' => $newsItemHandler->getArchivedNewsItems('members'),
-                    'conferencesNewsItems' => $newsItemHandler->getArchivedNewsItems('conferences'),
-                    'fellowshipsNewsItems' => $newsItemHandler->getArchivedNewsItems('fellowships')
-                ]);
+                $twigs['years'] = $newsItems->getYears();
+                $twigs['societyNewsItems'] = $newsItems->getArchivedNewsItems('society');
+                $twigs['membersNewsItems'] = $newsItems->getArchivedNewsItems('members');
+                $twigs['conferencesNewsItems'] = $newsItems->getArchivedNewsItems('conferences');
+                $twigs['fellowshipsNewsItems'] = $newsItems->getArchivedNewsItems('fellowships');
+                return $this->render('site/templates/news-archived.twig', $twigs);
 
             case 'minutes-reports':
-                return $this->render('site/templates/minutes-reports.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings,
-                    'years' => $uploadHandler->getReportYears(),
-                    'reports' => $uploadHandler->getReports()
-                ]);
+                $twigs['years'] = $uploads->getReportYears();
+                $twigs['reports'] = $uploads->getReports();
+                return $this->render('site/templates/minutes-reports.twig', $twigs);
 
             case 'committee-voting':
-                return $this->render('site/templates/committee-voting.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings
-                ]);
+                // TODO: voting form
+                return $this->render('site/templates/committee-voting.twig', $twigs);
 
             default:
-                return $this->render('site/templates/'.$page->getTemplate().'.twig', [
-                    'page' => $page,
-                    'siblings' => $siblings
-                ]);
+                return $this->render("site/templates/{$page->getTemplate()}.twig", $twigs);
         }
     }
 }
