@@ -4,15 +4,15 @@
   <div class="inner-header">
     <a href="{{ path('admin_conference_details_index') }}"{% if subarea == 'details' %} class="is-active"{% endif %}>
       <span class="icon"><i class="far fa-file-alt"></i></span>
-      <span class="link-text">Details</span>
+      <span class="link-text">Conference Details</span>
     </a>
-    <a href="{{ path('admin_conference_text_index') }}"{% if subarea == 'text' %} class="is-active"{% endif %}>
+    <a href="{{ path('admin_conference_custom_index') }}"{% if subarea == 'custom' %} class="is-active"{% endif %}>
       <span class="icon"><i class="fas fa-align-left"></i></span>
-      <span class="link-text">Custom Text</span>
+      <span class="link-text">Custom Text &amp; Emails</span>
     </a>
     <a href="{{ path('admin_conference_email_index') }}"{% if subarea == 'email' %} class="is-active"{% endif %}>
       <span class="icon"><i class="far fa-envelope"></i></span>
-      <span class="link-text">Emails</span>
+      <span class="link-text">Bulk Emails</span>
     </a>
     <a href="{{ path('admin_conference_submission_index') }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>
       <span class="icon"><i class="far fa-file-word"></i></span>

@@ -141,7 +141,7 @@ class ConferenceHandler
      */
     public function getDecades(): array
     {
-        if ($this->countConferences() == 0) {
+        if ($this->countConferences() === 0) {
             return [];
         }
         $decades = $this->repository->createQueryBuilder('c')
@@ -179,7 +179,7 @@ class ConferenceHandler
      */
     public function createNextConference(): Conference
     {
-        if ($this->countConferences() == 0) {
+        if ($this->countConferences() === 0) {
             $nextNumber = 1;
             $nextYear = date('Y');
         } else {

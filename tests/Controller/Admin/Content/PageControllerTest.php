@@ -19,6 +19,6 @@ class PageControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/admin/content/page');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

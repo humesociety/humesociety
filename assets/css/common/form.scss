@@ -69,6 +69,11 @@ textarea {
   &:not(:last-child) {
     margin-bottom: 1em;
   }
+  button, .button {
+    &:not(:last-child) {
+      margin-right: 1em;
+    }
+  }
 }
 
 button, .button {
@@ -81,6 +86,10 @@ button, .button {
   &:hover {
     background: lighten($blue, 10%);
     text-decoration: none !important;
+  }
+  &[disabled] {
+    cursor: not-allowed;
+    background: darken($grey, 15%);
   }
   &.create, &.update {
     background: $green;

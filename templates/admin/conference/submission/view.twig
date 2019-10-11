@@ -17,10 +17,10 @@
           </select>
         </div>
         <div class="input">
-          <label for="show-status">Status:</label>
+          <label for="show-status">Decision:</label>
           <select id="show-status" data-filter="status" data-table="submissions">
             <option value="all">all</option>
-            <option value="submitted">submitted</option>
+            <option value="pending">pending</option>
             <option value="accepted">accepted</option>
             <option value="rejected">rejected</option>
           </select>
@@ -28,6 +28,8 @@
       {% endif %}
     {% endblock %}
     {% block body %}
+      <p>Below is a list of all the submissions to the {{ conference }}. Using the dropdown menus above you can filter the list by keyword and status. Keywords are entered by users when they submit their paper, but can then be edited here however you wish. Users will not see the modifications you make to their keywords.</p>
+      <p>Click on the title of a submission to view more details and download the paper. From there you can also manage the reviews for that paper, enter your decision, and send an email informing the user of that decision. Decision emails can also be sent out in bulk from the <a href="{{ path('admin_conference_email_index') }}">Emails</a> section.</p>
       {% if conference.submissions|length > 0 %}
         {% include 'admin/_include/submission/list.twig' %}
       {% else %}

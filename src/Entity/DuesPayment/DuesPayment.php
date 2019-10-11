@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * A dues payment records a PayPal payment in the database.
  *
- * @ORM\Entity(repositoryClass="App\Entity\DuesPayment\DuesPaymentRepository")
+ * @ORM\Entity()
  */
 class DuesPayment
 {
@@ -40,6 +40,14 @@ class DuesPayment
     private $user;
 
     /**
+     * The date the payment was made.
+     *
+     * @var \DateTimeInterface
+     * @ORM\Column(type="date")
+     */
+    private $date;
+
+    /**
      * The amount paid.
      *
      * @var string
@@ -56,21 +64,28 @@ class DuesPayment
     private $description;
 
     /**
-     * The date the payment was made.
-     *
-     * @var \DateTimeInterface
-     * @ORM\Column(type="date")
-     */
-    private $date;
-
-    /**
      * Constructor function
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user, string $paypalOrderId)
     {
+        $this->id = null; // doctrine takes care of this
+        $this->paypalOrderId = $paypalOrderId;
+        $this->user = $user;
         $this->date = new \DateTime();
+        $this->amount = null;
+        $this->description = null;
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->paypalOrderId;
     }
 
     /**
@@ -84,32 +99,19 @@ class DuesPayment
     }
 
     /**
-     * Get the PayPal order ID (null when the object is first created).
+     * Get the PayPal order identifier.
      *
-     * @return string|null
+     * @return string
      */
-    public function getPaypalOrderId(): ?string
+    public function getPaypalOrderId(): string
     {
         return $this->paypalOrderId;
     }
 
     /**
-     * Set the PayPal order ID.
+     * Get the user who made the payment.
      *
-     * @param string The PayPal order ID.
-     * @return self
-     */
-    public function setPaypalOrderId(string $paypalOrderId): self
-    {
-        $this->paypalOrderId = $paypalOrderId;
-
-        return $this;
-    }
-
-    /**
-     * Get the user who made the payment (null when the object is first created).
-     *
-     * @return User|null
+     * @return User
      */
     public function getUser(): ?User
     {
@@ -117,16 +119,13 @@ class DuesPayment
     }
 
     /**
-     * Set the user who made the payment.
+     * Get the date of the payment.
      *
-     * @param User The user who made the payment.
-     * @return self
+     * @return \DateTimeInterface The date of the payment.
      */
-    public function setUser(?User $user): self
+    public function getDate(): \DateTimeInterface
     {
-        $this->user = $user;
-
-        return $this;
+        return $this->date;
     }
 
     /**
@@ -148,7 +147,6 @@ class DuesPayment
     public function setAmount(string $amount): self
     {
         $this->amount = $amount;
-
         return $this;
     }
 
@@ -171,17 +169,6 @@ class DuesPayment
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
         return $this;
-    }
-
-    /**
-     * Get the date of the payment.
-     *
-     * @return \DateTimeInterface The date of the payment.
-     */
-    public function getDate(): \DateTimeInterface
-    {
-        return $this->date;
     }
 }

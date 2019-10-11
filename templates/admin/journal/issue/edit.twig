@@ -20,7 +20,7 @@
       </div>
       <div class="tab-pane{% if tab == 'articles' %} is-active{% endif %}" id="articles">
         <div class="box-buttons">
-          <a href="{{ path('admin_journal_article_create', { id: issue.id }) }}" class="button create"><i class="fas fa-plus"></i> Upload Article</a>
+          <a href="{{ path('admin_journal_issue_create_article', { id: issue.id }) }}" class="button create"><i class="fas fa-plus"></i> Upload Article</a>
         </div>
         {% if issue.articles|length > 0 %}
           {% include 'admin/_include/article/list.twig' %}

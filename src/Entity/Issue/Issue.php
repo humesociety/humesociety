@@ -11,19 +11,21 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass="App\Entity\Issue\IssueRepository")
+ * An issue of Hume Studies.
+ *
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"volume", "number"},
  *     errorPath="volume",
  *     message="There is already an issue with this volume and number."
  * )
- *
- * An issue of Hume Studies. Contains Articles and Notes, both of which are persisted entities.
- * Articles can be articles or book reviews; Notes are for miscellaneous front and back matter.
  */
 class Issue
 {
     /**
+     * The issue's unique identifier in the database.
+     *
+     * @var int
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -31,186 +33,281 @@ class Issue
     private $id;
 
     /**
+     * The issue's volume.
+     *
+     * @var int
      * @ORM\Column(type="integer")
      * @Groups("json")
      */
     private $volume;
 
     /**
-     * @ORM\Column(type="integer")
+     * The year the issue was officially published (derived from its volume).
+     *
+     * @var int
      * @Groups("json")
+     */
+    private $year;
+
+    /**
+     * The decade the issue was officially published (derived from its number).
+     *
+     * @var int
+     * @Groups("json")
+     */
+    private $decade;
+
+    /**
+     * The issue's number.
      *
      * Typically each volume has two issues, numbered 1 and 2. Some volumes only have one issue;
      * these should be numbered 0. Some volumes have a supplementary issue (e.g. the 10th
      * anniversary special edition in volume 11); these should be numbered 3.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     * @Groups("json")
      */
     private $number;
 
     /**
+     * The month the issue was officially published (derived from its number).
+     *
+     * @var string
+     * @Groups("json")
+     */
+    private $month;
+
+    /**
+     * The issue's name (for special issues).
+     *
+     * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups("json")
      */
     private $name;
 
     /**
-    * @ORM\Column(type="integer")
-    * @Groups("json")
+     * The issue's identifier on Project MUSE.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     * @Groups("json")
      */
     private $museId;
 
     /**
-    * @ORM\Column(type="string", length=255)
-    * @Groups("json")
+     * The issue's editors.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     * @Groups("json")
      */
     private $editors;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Article\Article", mappedBy="issue", cascade={"persist", "remove"})
+     * The issue's articles.
+     *
+     * @var Article[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Article\Article",
+     *     mappedBy="issue",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\OrderBy({"position" = "ASC"})
      * @Groups("json")
      */
     private $articles;
 
     /**
-     * @Groups("json")
+     * Constructor function.
+     *
+     * @return void
      */
-    private $month;
-
-    /**
-     * @Groups("json")
-     */
-    private $year;
-
-    // Constructor function
     public function __construct()
     {
+        $this->id = null; // doctrine take's care of this
+        $this->volume = null;
+        $this->year = null;
+        $this->decade = null;
+        $this->number = null;
+        $this->month = null;
+        $this->name = null;
+        $this->museId = null;
+        $this->editors = null;
         $this->articles = new ArrayCollection();
     }
 
-    // ToString function
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
     public function __toString(): string
     {
-        return 'volume '.$this->volume.', number '.$this->number;
+        return ($this->volume && $this->number)
+            ? "volume {$this->volume}, number {$this->number}"
+            : 'uninitiialised issue';
     }
 
-    // Getters and setters for private properties
+    /**
+     * Get the issue's unique identifier (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Get the issue's volume (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getVolume(): ?int
     {
         return $this->volume;
     }
 
+    /**
+     * Set the issue's volume.
+     *
+     * @param int The issue's volume.
+     * @return self
+     */
     public function setVolume(int $volume): self
     {
         $this->volume = $volume;
-
         return $this;
     }
 
+    /**
+     * Get the issue's official publication year (null when the object is first created).
+     *
+     * @return int|null
+     */
+    public function getYear(): ?int
+    {
+        return $this->volume ? $this->volume + 1974 : null;
+    }
+
+    /**
+     * Get the issue's official publication decade (null when the object is first created).
+     *
+     * @return int|null
+     */
+    public function getDecade(): ?int
+    {
+        return $this->getYear() ? $this->getYear() - ($this->getYear() % 10) : null;
+    }
+
+    /**
+     * Get the issue's number (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getNumber(): ?int
     {
         return $this->number;
     }
 
+    /**
+     * Set the issue's number.
+     *
+     * @param int The issue's number.
+     * @return self
+     */
     public function setNumber(int $number): self
     {
         $this->number = $number;
-
         return $this;
     }
 
+    /**
+     * Get the issue's official publication month (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getMonth(): ?string
+    {
+        $months = ['April/November', 'April', 'November', $this->name];
+        return $this->number ? $months[$this->number] : null;
+    }
+
+    /**
+     * Get the issue's name.
+     *
+     * @return string|null
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    /**
+     * Set the issue's name.
+     *
+     * @param string|null The issue's name.
+     * @return self
+     */
+    public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
+    /**
+     * Get the issue's identifier on Project MUSE (null when the object is first created).
+     *
+     * @return int|null
+     */
     public function getMuseId(): ?int
     {
         return $this->museId;
     }
 
+    /**
+     * Set the issue's identifier on Project MUSE.
+     *
+     * @param int The issue's identifier on Project MUSE.
+     * @return self
+     */
     public function setMuseId(int $museId): self
     {
         $this->museId = $museId;
-
         return $this;
     }
 
+    /**
+     * Get the issue's editors (null when the object is first created).
+     *
+     * @return string|null
+     */
     public function getEditors(): ?string
     {
         return $this->editors;
     }
 
+    /**
+     * Set the issue's editors.
+     *
+     * @param string The issue's editors.
+     * @return self
+     */
     public function setEditors(string $editors): self
     {
         $this->editors = $editors;
-
         return $this;
     }
 
+    /**
+     * Get the issue's articles.
+     *
+     * @return Article[]
+     */
     public function getArticles(): Collection
     {
         return $this->articles;
-    }
-
-    public function addArticle(Article $article): self
-    {
-        if (!$this->articles->contains($article)) {
-            $this->articles[] = $article;
-            $article->setIssue($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArticle(Article $article): self
-    {
-        if ($this->articles->contains($article)) {
-            $this->articles->removeElement($article);
-            // set the owning side to null (unless already changed)
-            if ($article->getIssue() === $this) {
-                $article->setIssue(null);
-            }
-        }
-
-        return $this;
-    }
-
-    // Getters for derivative properties
-    public function getYear(): ?int
-    {
-        return $this->volume + 1974;
-    }
-
-    public function getDecade(): ?int
-    {
-        return $this->getYear() - ($this->getYear() % 10);
-    }
-
-    public function getMonth(): ?string
-    {
-        if ($this->number == 0) {
-            return 'April/November';
-        }
-        if ($this->number == 1) {
-            return 'April';
-        }
-        if ($this->number == 2) {
-            return 'November';
-        }
-        if ($this->number == 3) {
-            return $this->name;
-        }
     }
 }

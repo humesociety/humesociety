@@ -134,8 +134,14 @@ class Candidate
      */
     public function __construct()
     {
+        $this->id = null; // doctrine takes care of this
+        $this->firstname = null;
+        $this->lastname = null;
+        $this->institution = null;
+        $this->user = null;
         $this->start = idate('Y') + 1; // default should be candidates for next year's term
         $this->end = $this->start + 2; // terms last three years by default
+        $this->description = null;
         $this->votes = 0;
         $this->elected = false;
         $this->reelectable = true;
@@ -148,9 +154,11 @@ class Candidate
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->firstname.' '.$this->lastname.' ('.$this->start.' - '.$this->end.')';
+        return $this->firstname && $this->lastname && $this->start && $this->end
+            ? "{$this->firstname} {$this->lastname} ({$this->start}-{$this->end})"
+            : 'uninitialised candidate';
     }
 
     /**
@@ -182,7 +190,6 @@ class Candidate
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
-
         return $this;
     }
 
@@ -205,7 +212,6 @@ class Candidate
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
-
         return $this;
     }
 
@@ -228,7 +234,6 @@ class Candidate
     public function setInstitution(string $institution): self
     {
         $this->institution = $institution;
-
         return $this;
     }
 
@@ -251,7 +256,6 @@ class Candidate
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -273,7 +277,6 @@ class Candidate
     public function setStart(int $start): self
     {
         $this->start = $start;
-
         return $this;
     }
 
@@ -295,7 +298,6 @@ class Candidate
     public function setEnd(int $end): self
     {
         $this->end = $end;
-
         return $this;
     }
 
@@ -318,7 +320,6 @@ class Candidate
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -341,7 +342,6 @@ class Candidate
     public function setVotes(int $votes): self
     {
         $this->votes = $votes;
-
         return $this;
     }
 
@@ -364,7 +364,6 @@ class Candidate
     public function setElected(bool $elected): self
     {
         $this->elected = $elected;
-
         return $this;
     }
 
@@ -387,7 +386,6 @@ class Candidate
     public function setReelectable(bool $reelectable): self
     {
         $this->reelectable = $reelectable;
-
         return $this;
     }
 
@@ -410,7 +408,6 @@ class Candidate
     public function setPresident(bool $president): self
     {
         $this->president = $president;
-
         return $this;
     }
 
@@ -433,7 +430,6 @@ class Candidate
     public function setEvpt(bool $evpt): self
     {
         $this->evpt = $evpt;
-
         return $this;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Entity\Submission;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -20,7 +21,16 @@ class SubmissionTypeDecision extends AbstractType
     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('accepted');
+        $builder->add('accepted', ChoiceType::class, [
+            'label' => 'Decision',
+            'expanded' => false,
+            'multiple' => false,
+            'choices' => [
+                'pending' => null,
+                'accepted' => true,
+                'rejected' => false
+            ]
+        ]);
     }
 
     /**

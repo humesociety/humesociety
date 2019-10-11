@@ -17,7 +17,7 @@ class SecurityControllerTest extends WebTestCase
     {
         // check the login page exists
         $crawler = $this->client->request('GET', '/login');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Sign In');
 
         // submit the login form with bad credentials
@@ -29,7 +29,7 @@ class SecurityControllerTest extends WebTestCase
         // follow the redirect and check we haven't been logged in
         $this->assertTrue($this->client->getResponse()->isRedirect('/login'));
         $crawler = $this->client->followRedirect();
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('.error', 'Invalid credentials.');
 
         // submit the form with good credentials
@@ -41,14 +41,14 @@ class SecurityControllerTest extends WebTestCase
         // follow the redirect and check we have been logged in
         $this->assertTrue($this->client->getResponse()->isRedirect('/account'));
         $crawler = $this->client->followRedirect();
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     public function testRegister()
     {
         // check the register page exists
         $crawler = $this->client->request('GET', '/register');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Sign Up');
     }
 
@@ -56,7 +56,7 @@ class SecurityControllerTest extends WebTestCase
     {
         // check the forgot details page exists
         $crawler = $this->client->request('GET', '/forgot');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Forgot Credentials');
 
         // submit the forgot details form with bad details
@@ -65,7 +65,7 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $this->client->submit($forgotForm);
 
         // check for the error message
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('form li', 'Email address not found');
     }
 }

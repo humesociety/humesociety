@@ -76,7 +76,7 @@ class CandidateRepository extends ServiceEntityRepository
      */
     public function findYears(): array
     {
-        if ($this->countCandidates() == 0) {
+        if ($this->countCandidates() === 0) {
             return [];
         }
 

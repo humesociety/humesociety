@@ -19,27 +19,6 @@ class EmailControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/admin/conference/email/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-    }
-
-    public function testEdit()
-    {
-        $this->client->request('GET', '/admin/conference/email/edit/submission');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-
-        $this->client->request('GET', '/admin/conference/email/edit/review');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-
-        $this->client->request('GET', '/admin/conference/email/edit/pending-reminder');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-
-        $this->client->request('GET', '/admin/conference/email/edit/accepted-reminder');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-
-        $this->client->request('GET', '/admin/conference/email/edit/accept');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-
-        $this->client->request('GET', '/admin/conference/email/edit/reject');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

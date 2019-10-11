@@ -19,6 +19,6 @@ class ConferenceControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/admin/content/conference');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

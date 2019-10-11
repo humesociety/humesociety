@@ -20,6 +20,9 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+/**
+ * Login form authenticator.
+ */
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
     use TargetPathTrait;
@@ -29,7 +32,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     private $csrfTokenManager;
     private $passwordEncoder;
     private $security;
-    private $userHandler;
+    private $users;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -37,26 +40,23 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         CsrfTokenManagerInterface $csrfTokenManager,
         UserPasswordEncoderInterface $passwordEncoder,
         Security $security,
-        UserHandler $userHandler
+        UserHandler $users
     ) {
         $this->entityManager = $entityManager;
         $this->router = $router;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->security = $security;
-        $this->userHandler = $userHandler;
+        $this->users = $users;
     }
 
-    public function supports(
-        Request $request
-    ) {
-        return 'security_login' === $request->attributes->get('_route')
-            && $request->isMethod('POST');
+    public function supports(Request $request): bool
+    {
+        return 'security_login' === $request->attributes->get('_route') && $request->isMethod('POST');
     }
 
-    public function getCredentials(
-        Request $request
-    ) {
+    public function getCredentials(Request $request)
+    {
         $credentials = [
             'username' => $request->request->get('username'),
             'password' => $request->request->get('password'),
@@ -66,20 +66,17 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
             Security::LAST_USERNAME,
             $credentials['username']
         );
-
         return $credentials;
     }
 
-    public function getUser(
-        $credentials,
-        UserProviderInterface $userProvider
-    ) {
+    public function getUser($credentials, UserProviderInterface $userProvider): User
+    {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
         }
 
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $credentials['username']]);
+        $user = $this->users->getUserByUsername($credentials['username']);
 
         if (!$user) {
             // fail authentication with a custom error
@@ -89,20 +86,15 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         return $user;
     }
 
-    public function checkCredentials(
-        $credentials,
-        UserInterface $user
-    ) {
+    public function checkCredentials($credentials, UserInterface $user): bool
+    {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 
-    public function onAuthenticationSuccess(
-        Request $request,
-        TokenInterface $token,
-        $providerKey
-    ) {
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): RedirectResponse
+    {
         // update last login details for this user in the database
-        $this->userHandler->updateLastLogin($this->security->getUser());
+        $this->users->updateLastLogin($this->security->getUser());
 
         // maybe redirect to secure referring page
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
@@ -113,7 +105,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         return new RedirectResponse($this->router->generate('account_index'));
     }
 
-    protected function getLoginUrl()
+    protected function getLoginUrl(): string
     {
         return $this->router->generate('security_login');
     }

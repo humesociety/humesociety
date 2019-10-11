@@ -189,4 +189,45 @@ class SubmissionController extends AbstractController
             'tab' => 'reviews'
         ]);
     }
+
+    /**
+     * Route for sending a decision email to a user who submitted a paper.
+     *
+     * @param EmailHandler The email handler.
+     * @param Submission The submission.
+     * @return Response
+     * @Route("/email-decision/{submission}", name="email_decision")
+     */
+    public function emailDecision(
+        EmailHandler $emails,
+        SubmissionHandler $submissions,
+        Submission $submission
+    ): Response {
+        // check the email can be sent
+        if ($submission->getDecisionEmailed() || $submission->getStatus() === 'pending') {
+            throw $this->createNotFoundException('Page not found.');
+        }
+
+        // send the email
+        switch ($submission->getStatus()) {
+            case 'accepted':
+                $emails->sendSubmissionEmail($submission, 'accept');
+                break;
+
+            case 'rejected':
+                $emails->sendSubmissionEmail($submission, 'reject');
+                break;
+        }
+
+        // record that the email has been sent and add a flashbag message
+        $submission->setDecisionEmailed(true);
+        $submissions->saveSubmission($submission);
+        $this->addFlash('notice', "{$submission->getUser()} has been sent an email informing them of the decision.");
+
+        // return a redirect to the submission page
+        return $this->redirectToRoute('admin_conference_submission_details', [
+          'submission' => $submission->getId(),
+          'tab' => 'decision'
+        ]);
+    }
 }

@@ -37,7 +37,7 @@ class SecurityController extends AbstractController
     {
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'login', 'section' => 'security'],
+            'page' => ['slug' => 'login', 'section' => 'security'],
             'last_username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError()
         ];
@@ -76,7 +76,7 @@ class SecurityController extends AbstractController
         UserHandler $users
     ) : Response {
         // initialise the twig variables
-        $twigs = ['page' => ['id' => 'register', 'section' => 'security']];
+        $twigs = ['page' => ['slug' => 'register', 'section' => 'security']];
 
         // create and handle the registration form
         $user = new User();
@@ -109,7 +109,7 @@ class SecurityController extends AbstractController
     public function forgot(Request $request, EmailHandler $emails, UserHandler $users) : Response
     {
         // initialise the twig variables
-        $twigs = ['page' => ['id' => 'forgot', 'section' => 'security']];
+        $twigs = ['page' => ['slug' => 'forgot', 'section' => 'security']];
 
         // create and handle the forgot details form
         $forgotCredentialsForm = $this->createForm(UserTypeForgotCredentials::class);
@@ -179,7 +179,7 @@ class SecurityController extends AbstractController
 
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'forgot', 'section' => 'security'],
+            'page' => ['slug' => 'forgot', 'section' => 'security'],
             'user' => $user,
             'resetPasswordForm' => $resetPasswordForm->createView()
         ];

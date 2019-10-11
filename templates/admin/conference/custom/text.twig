@@ -1,0 +1,26 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Edit Email Template{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit {{ text }} Text{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_conference_custom_index', { tab: 'text' }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Custom Text List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <nav class="tabs">
+        <a data-tab="edit" class="is-active">Edit</a>
+        <a data-tab="preview">Preview</a>
+      </nav>
+      <div class="tab-pane is-active" id="edit">
+        {% include 'admin/_include/text/update.twig' %}
+      </div>
+      <div class="tab-pane" id="preview">
+        {% include 'admin/_include/text/preview.twig' %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

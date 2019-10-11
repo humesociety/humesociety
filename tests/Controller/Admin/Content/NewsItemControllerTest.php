@@ -19,6 +19,6 @@ class NewsItemControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/admin/content/news-item');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

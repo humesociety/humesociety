@@ -163,8 +163,19 @@ class Conference
      */
     public function __construct()
     {
-        $this->uploads = [];
+        $this->id = null;
+        $this->number = null;
+        $this->ordinal = null;
+        $this->year = null;
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->institution = null;
+        $this->town = null;
+        $this->country = 'USA';
+        $this->website = null;
+        $this->deadline = null;
         $this->submissions = new ArrayCollection();
+        $this->uploads = [];
     }
 
     /**
@@ -174,7 +185,7 @@ class Conference
      */
     public function __toString(): string
     {
-        return $this->getOrdinal().' Hume Conference';
+        return $this->number ? "{$this->getOrdinal()} Hume Conference" : 'uninitialised conference';
     }
 
     /**
@@ -210,17 +221,20 @@ class Conference
     }
 
     /**
-     * Get the ordinal of this conference (from its number).
+     * Get the ordinal of this conference (null when the object is first created).
      *
-     * @return string
+     * @return string|null
      */
-    public function getOrdinal(): string
+    public function getOrdinal(): ?string
     {
-        if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
-            return $this->number.'th';
+        if ($this->number) {
+            if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
+                return $this->number.'th';
+            }
+            $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+            return $this->number.$ends[$this->number % 10];
         }
-        $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
-        return $this->number.$ends[$this->number % 10];
+        return null;
     }
 
     /**
@@ -246,13 +260,13 @@ class Conference
     }
 
     /**
-     * Get the decade of this conference (from its year).
+     * Get the decade of this conference (null when the object is first created).
      *
-     * @return int
+     * @return int|null
      */
-    public function getDecade(): int
+    public function getDecade(): ?int
     {
-        return $this->year - ($this->year % 10);
+        return $this->year ? $this->year - ($this->year % 10) : null;
     }
 
     /**
@@ -300,16 +314,16 @@ class Conference
     }
 
     /**
-     * Get a string representation of the dates of this conference.
+     * Get a string representation of the dates of this conference (null when the object is first created).
      *
-     * @return string
+     * @return string|null
      */
-    public function getDates(): string
+    public function getDates(): ?string
     {
         if ($this->startDate && $this->endDate) {
             return date_format($this->startDate, 'F j').' - '.date_format($this->endDate, 'F j').', '.$this->year;
         }
-        return $this->year;
+        return $this->year ? (string) $this->year : null;
     }
 
     /**
@@ -357,12 +371,11 @@ class Conference
     }
 
     /**
-     * Get the three-letter country code of the country where the conference is held (null when the
-     * object is first created).
+     * Get the three-letter country code of the country where the conference is held (USA by default).
      *
-     * @return string|null
+     * @return string
      */
-    public function getCountry(): ?string
+    public function getCountry(): string
     {
         return $this->country;
     }
@@ -402,7 +415,7 @@ class Conference
     }
 
     /**
-     * Get the date at which submissions to this conference close.
+     * Get the date at which submissions to this conference close (null means submission not yet open).
      *
      * @return \DateTimeInterface|null
      */
@@ -482,7 +495,7 @@ class Conference
      */
     public function getPath(): string
     {
-        return 'conferences/'.$this->number.'/';
+        return "conferences/{$this->number}/";
     }
 
     /**

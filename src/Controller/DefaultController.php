@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
     {
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'home', 'section' => 'home'],
+            'page' => ['slug' => 'home', 'section' => 'home'],
             'newsItems' => $newsItems->getCurrentNewsItems('society'),
             'conference' => $conferences->getCurrentConference()
         ];
@@ -83,7 +83,7 @@ class DefaultController extends AbstractController
         $twigs = ['page' => $page, 'siblings' => $siblings];
 
         // security check for members area
-        if ($section == 'members') {
+        if ($section === 'members') {
             // not logged in; show page inviting to join or log in
             if (!$this->getUser()) {
                 return $this->render('site/templates/members-not-logged-in.twig', $twigs);

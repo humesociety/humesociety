@@ -105,7 +105,7 @@ class UploadsController extends AbstractController
      * @Route("/issues/v{volume}n{number}/{filename}", name="article_file")
      */
     public function articleFile(
-        IssueHandler $issueHandler,
+        IssueHandler $issues,
         int $volume,
         int $number,
         string $filename
@@ -118,9 +118,9 @@ class UploadsController extends AbstractController
         }
 
         // check the user is allowed to see the article
-        $latestVolume = $issueHandler->getLatestVolume();
+        $latestVolume = $issues->getLatestVolume();
         if ($latestVolume && $latestVolume - $volume < 5) {
-            if ($this->getUser() == null) {
+            if ($this->getUser() === null) {
                 throw new AccessDeniedException('Please log in to view this article.');
             }
             if (!$this->getUser()->isMember()) {
@@ -148,7 +148,7 @@ class UploadsController extends AbstractController
     {
         // look for the file
         $path = $this->container->get('parameter_bag')->get('uploads_directory');
-        $path .= 'submissions/'.$submission->getPath().$submission->getFilename();
+        $path .= $submission->getPath().$submission->getFilename();
         if (!file_exists($path)) {
             throw new NotFoundHttpException('File not found.');
         }

@@ -115,22 +115,6 @@ class Submission
     private $keywords;
 
     /**
-     * The name of the submission file.
-     *
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $filename;
-
-    /**
-     * Whether the submission is accepted (null means decision pending; false means rejected).
-     *
-     * @var bool|null
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $accepted;
-
-    /**
      * The uploaded submission file (used temporarily when uploading the file).
      *
      * @var UploadedFile|null
@@ -147,14 +131,51 @@ class Submission
     private $file;
 
     /**
+     * The name of the submission file.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $filename;
+
+    /**
+     * Whether the submission is accepted (null means decision pending; false means rejected).
+     *
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $accepted;
+
+    /**
+     * Whether the user has been emailed informing them of the decision.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    private $decisionEmailed;
+
+    /**
      * Constructor function.
      *
+     * @param User The user who submitted the paper.
+     * @param Conference The conference the paper is submitted to.
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user, Conference $conference)
     {
+        $this->id = null; // doctrine will take care of this
+        $this->user = $user;
+        $this->conference = $conference;
         $this->dateSubmitted = new \DateTime();
         $this->reviews = new ArrayCollection();
+        $this->title = null;
+        $this->authors = null;
+        $this->abstract = null;
+        $this->keywords = null;
+        $this->file = null;
+        $this->filename = null;
+        $this->accepted = null;
+        $this->decisionEmailed = false;
     }
 
     /**
@@ -164,7 +185,7 @@ class Submission
      */
     public function __toString(): string
     {
-        return $this->title;
+        return $this->title ? $this->title : 'pending submission';
     }
 
     /**
@@ -178,47 +199,23 @@ class Submission
     }
 
     /**
-     * Get the user who submitted the paper (null when the object is first created).
+     * Get the user who submitted the paper.
      *
-     * @return User|null
+     * @return User
      */
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
     /**
-     * Set the user who submitted the paper.
-     *
-     * @param User The user who submitted the paper.
-     * @return self
-     */
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
-
-    /**
-     * Get the conference this paper is submitted to (null when the object is first created).
+     * Get the conference this paper is submitted to.
      *
      * @return Conference
      */
-    public function getConference(): ?Conference
+    public function getConference(): Conference
     {
         return $this->conference;
-    }
-
-    /**
-     * Set the conference the paper is submitted to.
-     *
-     * @param Conference The conference the paper is submitted to.
-     * @return self
-     */
-    public function setConference(Conference $conference): self
-    {
-        $this->conference = $conference;
-        return $this;
     }
 
     /**
@@ -331,6 +328,31 @@ class Submission
     }
 
     /**
+     * Get the submission file.
+     *
+     * @return UploadedFile|null
+     */
+    public function getFile(): ?UploadedFile
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set the submission file (and the filename at the same time).
+     *
+     * @param UploadedFile|null The submission file.
+     * @return self
+     */
+    public function setFile(?UploadedFile $file): self
+    {
+        if ($file !== null) {
+            $this->filename = $file->getClientOriginalName();
+        }
+        $this->file = $file;
+        return $this;
+    }
+
+    /**
      * Get the name of the submission file (null when the object is first created).
      *
      * @return string|null
@@ -341,7 +363,7 @@ class Submission
     }
 
     /**
-     * Get whether the submission is accepted.
+     * Get whether the submission is accepted (null means the decision is pending).
      *
      * @return bool|null
      */
@@ -363,27 +385,24 @@ class Submission
     }
 
     /**
-     * Get the submission file.
+     * Get whether the user has been emailed the decision.
      *
-     * @return UploadedFile|null
+     * @return bool
      */
-    public function getFile(): ?UploadedFile
+    public function getDecisionEmailed(): bool
     {
-        return $this->file;
+        return $this->decisionEmailed;
     }
 
     /**
-     * Set the submission file.
+     * Set whether the user has been emailed the decision.
      *
-     * @param UploadedFile|null The submission file.
+     * @param bool Whether the user has been emailed the decision.
      * @return self
      */
-    public function setFile(?UploadedFile $file): self
+    public function setDecisionEmailed(bool $decisionEmailed): self
     {
-        if ($file !== null) {
-            $this->filename = $file->getClientOriginalName();
-        }
-        $this->file = $file;
+        $this->decisionEmailed = $decisionEmailed;
         return $this;
     }
 
@@ -404,14 +423,13 @@ class Submission
      */
     public function getStatus(): string
     {
-        switch ($this->accepted) {
-            case true:
-                return 'accepted';
-            case false:
-                return 'rejected';
-            default: // i.e. null
-                return 'submitted';
+        if ($this->accepted === true) {
+            return 'accepted';
         }
+        if ($this->accepted === false) {
+            return 'rejected';
+        }
+        return 'pending';
     }
 
     /**
@@ -425,7 +443,7 @@ class Submission
     {
         if ($user) {
             // anyone can view their own submissions
-            if ($this->user == $user) {
+            if ($this->user === $user) {
                 return true;
             }
             // the conference organisers can view any submission
@@ -440,7 +458,7 @@ class Submission
         if ($secret) {
             foreach ($this->reviews as $review) {
                 // the secret from any accepted review is ok
-                if ($review->getSecret() == $secret && $review->isAccepted()) {
+                if ($review->getSecret() === $secret && $review->isAccepted()) {
                     return true;
                 }
             }

@@ -19,24 +19,24 @@ class AccountControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/account');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     public function testPassword()
     {
         $this->client->request('GET', '/account/password');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     public function testResearch()
     {
         $this->client->request('GET', '/account/research');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     public function testPay()
     {
         $this->client->request('GET', '/account/pay');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

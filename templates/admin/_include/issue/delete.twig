@@ -1,7 +1,7 @@
 <p>Are you sure you want to delete this journal issue? All its articles and notes will be deleted as well, and this action cannot be undone!</p>
-{{ form_start(issueForm) }}
-  {{ form_row(issueForm._token) }}
+{{ form_start(deleteIssueForm) }}
+  {{ form_row(deleteIssueForm._token) }}
   <div class="buttons">
     <button type="submit" class="button delete">Delete</button>
   </div>
-{{ form_end(issueForm, { render_rest: false }) }}
+{{ form_end(deleteIssueForm) }}

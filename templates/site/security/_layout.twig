@@ -1,7 +1,7 @@
 {% extends 'site/base.twig' %}
 
 {% block sidebar %}
-  <a href="{{ path('security_login') }}"{% if page.id == 'login' %} class="is-active"{% endif %}>Sign In</a>
-  <a href="{{ path('security_register') }}"{% if page.id == 'register' %} class="is-active"{% endif %}>Sign Up</a>
-  <a href="{{ path('security_forgot') }}"{% if page.id == 'forgot' %} class="is-active"{% endif %}>Forgot Credentials</a>
+  <a href="{{ path('security_login') }}"{% if page.slug == 'login' %} class="is-active"{% endif %}>Sign In</a>
+  <a href="{{ path('security_register') }}"{% if page.slug == 'register' %} class="is-active"{% endif %}>Sign Up</a>
+  <a href="{{ path('security_forgot') }}"{% if page.slug == 'forgot' %} class="is-active"{% endif %}>Forgot Credentials</a>
 {% endblock %}

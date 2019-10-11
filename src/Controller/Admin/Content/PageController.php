@@ -58,7 +58,7 @@ class PageController extends AbstractController
      */
     public function edit(Page $page, PageHandler $pageHandler, Request $request): Response
     {
-        $isIndexPage = ($page->getSlug() == 'index');
+        $isIndexPage = ($page->getSlug() === 'index');
         $form = $this->createForm(PageType::class, $page);
         $form->handleRequest($request);
 
@@ -87,7 +87,7 @@ class PageController extends AbstractController
      */
     public function delete(Page $page, PageHandler $pageHandler, Request $request) : Response
     {
-        if ($page->getSlug() == 'index') {
+        if ($page->getSlug() === 'index') {
             throw $this->createNotFoundException(); // index pages cannot be deleted
         }
 

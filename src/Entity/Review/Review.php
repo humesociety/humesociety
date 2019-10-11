@@ -289,14 +289,13 @@ class Review
      */
     public function getStatus(): string
     {
-        switch ($this->accepted) {
-            case true:
-                return $this->dateSubmitted ? 'submitted' : 'accepted';
-            case false:
-                return 'declined';
-            default: // i.e. null
-                return 'pending';
+        if ($this->accepted === true) {
+            return $this->dateSubmitted ? 'submitted' : 'accepted';
         }
+        if ($this->accepted === false) {
+            return 'declined';
+        }
+        return 'pending';
     }
 
     /**

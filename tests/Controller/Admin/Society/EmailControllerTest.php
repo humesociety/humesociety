@@ -19,6 +19,6 @@ class EmailControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/admin/society/email/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

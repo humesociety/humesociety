@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * An article (or book review) in an issue of Hume Studies.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Article\ArticleRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields={"issue", "position"},
  *     errorPath="position",
@@ -45,7 +45,11 @@ class Article
      * The issue the article is published in.
      *
      * @var Issue
-     * @ORM\ManyToOne(targetEntity="App\Entity\Issue\Issue", inversedBy="articles", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\Entity\Issue\Issue",
+     *     inversedBy="articles",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $issue;
@@ -96,7 +100,7 @@ class Article
     private $endPage;
 
     /**
-     * The article's ID on Project MUSE.
+     * The article's identifier on Project MUSE.
      *
      * @var int|null
      * @ORM\Column(type="integer", unique=true, nullable=true)
@@ -126,7 +130,7 @@ class Article
     private $file;
 
     /**
-     * The article's filename on disk (derivative property, not persisted to the database).
+     * The article's filename on disk.
      *
      * @var string
      * @Groups("json")
@@ -134,12 +138,33 @@ class Article
     private $filename;
 
     /**
-     * The path to the article's file on disk (derivative property, not persisted to the database).
+     * The path to the article's file on disk.
      *
      * @var string
      * @Groups("json")
      */
     private $path;
+
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct($issue)
+    {
+        $this->id= null;
+        $this->issue = $issue;
+        $this->position = null;
+        $this->title = null;
+        $this->authors = null;
+        $this->startPage = null;
+        $this->endPage = null;
+        $this->museId = null;
+        $this->doi = null;
+        $this->file = null;
+        $this->filename = null;
+        $this->path = null;
+    }
 
     /**
      * ToString function.
@@ -148,7 +173,7 @@ class Article
      */
     public function __toString(): string
     {
-        return $this->title;
+        return $this->title ? $this->title : 'uninitialised article';
     }
 
     /**
@@ -162,26 +187,13 @@ class Article
     }
 
     /**
-     * Get the issue the article is published in (null when the object is first created).
+     * Get the issue the article is published in.
      *
-     * @return Issue|null
+     * @return Issue
      */
-    public function getIssue(): ?Issue
+    public function getIssue(): Issue
     {
         return $this->issue;
-    }
-
-    /**
-     * Set the issue the article is published in.
-     *
-     * @param Issue The issue the article is published in.
-     * @return self
-     */
-    public function setIssue(Issue $issue): self
-    {
-        $this->issue = $issue;
-
-        return $this;
     }
 
     /**
@@ -203,7 +215,6 @@ class Article
     public function setPosition(int $position): self
     {
         $this->position = $position;
-
         return $this;
     }
 
@@ -226,7 +237,6 @@ class Article
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -249,7 +259,6 @@ class Article
     public function setAuthors(?string $authors): self
     {
         $this->authors = $authors;
-
         return $this;
     }
 
@@ -272,7 +281,6 @@ class Article
     public function setStartPage(?int $startPage): self
     {
         $this->startPage = $startPage;
-
         return $this;
     }
 
@@ -295,7 +303,6 @@ class Article
     public function setEndPage(?int $endPage): self
     {
         $this->endPage = $endPage;
-
         return $this;
     }
 
@@ -318,7 +325,6 @@ class Article
     public function setMuseId(?int $museId): self
     {
         $this->museId = $museId;
-
         return $this;
     }
 
@@ -341,7 +347,6 @@ class Article
     public function setDoi(?string $doi): self
     {
         $this->doi = $doi;
-
         return $this;
     }
 
@@ -364,18 +369,23 @@ class Article
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
-
         return $this;
     }
 
     /**
-     * Get the article's filename on disk.
+     * Get the article's filename on disk (null when the object is first created).
      *
-     * @return string
+     * @return string|null
      */
-    public function getFilename(): string
+    public function getFilename(): ?string
     {
-        return $this->museId ? $this->museId.'.pdf' : $this->title.'.pdf';
+        if ($this->museId) {
+            return "{$this->museId}.pdf";
+        }
+        if ($this->title) {
+            return "{$this->title}.pdf";
+        }
+        return null;
     }
 
     /**
@@ -385,6 +395,6 @@ class Article
      */
     public function getPath(): string
     {
-        return 'issues/v'.$this->issue->getVolume().'n'.$this->issue->getNumber().'/';
+        return "issues/v{$this->issue->getVolume()}n{$this->issue->getNumber()}/";
     }
 }

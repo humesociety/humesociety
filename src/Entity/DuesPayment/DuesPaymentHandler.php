@@ -42,7 +42,7 @@ class DuesPaymentHandler
      */
     public function getDuesPayments() : Array
     {
-        return $this->repository->findAll();
+        return $this->repository->findBy([], ['date' => 'asc']);
     }
 
     /**

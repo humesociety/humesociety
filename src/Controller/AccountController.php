@@ -51,7 +51,7 @@ class AccountController extends AbstractController
     {
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'details', 'section' => 'account'],
+            'page' => ['slug' => 'details', 'section' => 'account'],
             'tab' => $tab
         ];
 
@@ -99,7 +99,7 @@ class AccountController extends AbstractController
     ): Response {
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'password', 'section' => 'account']
+            'page' => ['slug' => 'password', 'section' => 'account']
         ];
 
         // create and handle the change password form
@@ -145,7 +145,7 @@ class AccountController extends AbstractController
     ): Response {
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'research', 'section' => 'account'],
+            'page' => ['slug' => 'research', 'section' => 'account'],
             'tab' => $tab
         ];
 
@@ -159,8 +159,7 @@ class AccountController extends AbstractController
             $availabilityForm->handleRequest($request);
 
             // create and handle the submission form
-            $submission = new Submission();
-            $submission->setUser($this->getUser())->setConference($conference);
+            $submission = new Submission($this->getUser(), $conference);
             $submissionForm = $this->createForm(SubmissionType::class, $submission);
             $submissionForm->handleRequest($request);
             if ($submissionForm->isSubmitted() && $conference->isOpen()) {
@@ -224,7 +223,7 @@ class AccountController extends AbstractController
 
         // initialise the twig variables
         $twigs = [
-            'page' => ['id' => 'pay', 'section' => 'account'],
+            'page' => ['slug' => 'pay', 'section' => 'account'],
             'payable' => $payable
         ];
 
@@ -266,10 +265,8 @@ class AccountController extends AbstractController
         if ($result->status === 'COMPLETED') {
             $duesPayment = $duesPaymentHandler->getDuesPaymentByPaypalOrderId($orderId);
             if (!$duesPayment) {
-                $newMember = ($this->getUser()->getDues() == null);
-                $duesPayment = new DuesPayment();
-                $duesPayment->setPaypalOrderId($orderId);
-                $duesPayment->setUser($this->getUser());
+                $newMember = ($this->getUser()->getDues() === null);
+                $duesPayment = new DuesPayment($this->getUser(), $orderId);
                 $duesPayment->setAmount($result->purchase_units[0]->amount->value);
                 $duesPayment->setDescription($result->purchase_units[0]->description);
                 $duesPayments->saveDuesPayment($duesPayment);
@@ -282,7 +279,7 @@ class AccountController extends AbstractController
 
         // return the response
         return $this->render('site/account/paid.twig', [
-            'page' => ['id' => 'pay', 'section' => 'account'],
+            'page' => ['slug' => 'pay', 'section' => 'account'],
             'orderId' => $orderId,
             'result' => $result,
             'duesPayment' => $duesPayment

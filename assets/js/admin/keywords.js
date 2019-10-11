@@ -13,7 +13,8 @@ const createOption = (value) => {
 }
 
 keywords.forEach((keyword) => {
-  keyword.addEventListener('change', (e) => {
+  keyword.addEventListener('keyup', (e) => {
+    if (keyword.value.length === 0) return
     const submissionId = keyword.dataset.keywords
     const keywords = keyword.value
     const url = `/admin/conference/submission/keywords/${submissionId}/${keywords}`

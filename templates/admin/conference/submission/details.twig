@@ -32,7 +32,11 @@
         {% endif %}
       </div>
       <div class="tab-pane{% if tab == 'decision' %} is-active{% endif %}" id="decision">
-        <p>TODO</p>
+        {% if submission.decisionEmailed %}
+          <p>This paper has been {{ submission.status }}, and {{ submission.user }} has been informed of the decision.</p>
+        {% else %}
+          {% include 'admin/_include/submission/decision.twig' %}
+        {% endif %}
       </div>
     {% endblock %}
   {% endembed %}

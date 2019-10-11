@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SendEmailsCommand extends Command
 {
     /**
-     * The name of the command (use to call it from the command line).
+     * The name of the command (used to call it from the command line).
      *
      * @var string
      */
@@ -31,7 +31,6 @@ class SendEmailsCommand extends Command
     {
         $this->emails = $emails;
         $this->users = $users;
-
         parent::__construct();
     }
 

@@ -2,6 +2,8 @@
   <tbody>
     <tr><th>Title</th><td>{{ submission.title }}</td></tr>
     <tr><th>File</th><td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.filename }}</a></td></tr>
+    <tr><th>Authors</th><td>{{ submission.authors }}</td></tr>
+    <tr><th>Submitted By</th><td>{{ submission.user }}</td></tr>
     <tr><th>Keywords</th><td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td></tr>
     <tr><th>Abstract</th><td>{{ submission.abstract }}</td></tr>
   </tbody>

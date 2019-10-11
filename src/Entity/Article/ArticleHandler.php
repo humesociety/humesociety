@@ -49,14 +49,32 @@ class ArticleHandler
     }
 
     /**
-     * Get the next free article position in an issue.
+     * Find how many articles there are in an issue.
      *
      * @param Issue The issue.
      * @return int
      */
-    public function getNextArticlePosition(Issue $issue): int
+    private function countArticles(Issue $issue): int
     {
-        return $this->repository->findLastArticlePosition($issue) + 1;
+        return $this->repository->createQueryBuilder('a')
+            ->select('count(a.id)')
+            ->where('a.issue = :issue')
+            ->setParameter('issue', $issue)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Create the next article in an issue.
+     *
+     * @param Issue The issue to create the article in.
+     * @return Article
+     */
+    public function createNextArticle(Issue $issue): Article
+    {
+        $article = new Article($issue);
+        $article->setPosition($this->countArticles($issue) + 1);
+        return $article;
     }
 
     /**
@@ -69,10 +87,9 @@ class ArticleHandler
     {
         $httpClient = HttpClient::create();
         $response = $httpClient->request('GET', 'https://api.crossref.org/v1/works/' . $article->doi);
-
-        if ($response->getStatusCode() == 200) {
+        if ($response->getStatusCode() === 200) {
             $content = json_decode($response->getContent());
-            if ($content->status == 'ok') {
+            if ($content->status === 'ok') {
                 $article->setMetaData($content->message);
                 $article->setTitle($content->message->title[0]);
                 $authors = array_map(function ($author) {
@@ -148,6 +165,40 @@ class ArticleHandler
     }
 
     /**
+     * Get the article preceeding the given article in an issue.
+     *
+     * @param Article The article.
+     * @return Article|null
+     */
+    private function getPreviousArticle(Article $article): ?Article
+    {
+        return $this->repository->createQueryBuilder('a')
+            ->where('a.issue = :issue')
+            ->andWhere('a.position = :position')
+            ->setParameter('issue', $article->getIssue())
+            ->setParameter('position', $article->getPosition() - 1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Get the article following the given article in an issue.
+     *
+     * @param Article The article.
+     * @return Article|null
+     */
+    private function getNextArticle(Article $article): ?Article
+    {
+        return $this->repository->createQueryBuilder('a')
+            ->where('a.issue = :issue')
+            ->andWhere('a.position = :position')
+            ->setParameter('issue', $article->getIssue())
+            ->setParameter('position', $article->getPosition() + 1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Move an article up in an issue.
      *
      * @param Article The article to move.
@@ -156,7 +207,7 @@ class ArticleHandler
     public function moveArticleUp(Article $article)
     {
         if ($article->getPosition() > 1) {
-            $previous = $this->repository->findPreviousArticle($article);
+            $previous = $this->getPreviousArticle($article);
             if ($previous) {
                 $this->swapArticles($previous, $article);
             }
@@ -171,8 +222,8 @@ class ArticleHandler
      */
     public function moveArticleDown(Article $article)
     {
-        if ($article->getPosition() < $this->getNextArticlePosition($article->getIssue()) - 1) {
-            $next = $this->repository->findNextArticle($article);
+        if ($article->getPosition() < $this->countArticles($article->getIssue())) {
+            $next = $this->getNextArticle($article);
             if ($next) {
                 $this->swapArticles($article, $next);
             }

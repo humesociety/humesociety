@@ -142,7 +142,7 @@ class EmailHandler
      * @param string|null The path to an attachment.
      * @return void
      */
-    private function sendEmail(Email $email, ?string $pathToAttachment)
+    private function sendEmail(Email $email, ?string $pathToAttachment = null)
     {
         // create the email
         $message = new \Swift_Message($email->getSubject());
@@ -321,7 +321,7 @@ class EmailHandler
     private function emailFromTemplate(string $label): ?Email
     {
         $template = $this->emailTemplates->getEmailTemplateByLabel($label);
-        if ($template) {
+        if ($template->getContent()) {
             $email = new Email();
             $email->setSender($template->getSender())
                 ->setSubject($template->getSubject())

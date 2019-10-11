@@ -4,12 +4,9 @@
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Conference Emails{% endblock %}
+  {% block title %}Bulk Emails{% endblock %}
     {% block body %}
-      {% for template in conferenceEmailTemplates %}
-        <h4><a href="{{ path('admin_conference_email_edit', { label: template.label }) }}">Edit {{ template.title }} Email</a></h4>
-        <p>{{ template.description }}</p>
-      {% endfor %}
+      <p>From here you will be able to send out bulk emails (e.g. informing everyone of the decision reached regarding their paper). However, this functionality is not yet available.</p>
     {% endblock %}
   {% endembed %}
 {% endblock %}

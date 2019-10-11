@@ -41,21 +41,21 @@ class DefaultControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->client->request('GET', '/admin');
-        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(302, $this->client->getResponse()->getStatusCode());
 
         $this->memberClient->request('GET', '/admin');
-        $this->assertEquals(403, $this->memberClient->getResponse()->getStatusCode());
+        $this->assertSame(403, $this->memberClient->getResponse()->getStatusCode());
 
         $this->evptClient->request('GET', '/admin');
-        $this->assertEquals(301, $this->evptClient->getResponse()->getStatusCode());
+        $this->assertSame(301, $this->evptClient->getResponse()->getStatusCode());
 
         $this->organiserClient->request('GET', '/admin');
-        $this->assertEquals(301, $this->organiserClient->getResponse()->getStatusCode());
+        $this->assertSame(301, $this->organiserClient->getResponse()->getStatusCode());
 
         $this->editorClient->request('GET', '/admin');
-        $this->assertEquals(301, $this->editorClient->getResponse()->getStatusCode());
+        $this->assertSame(301, $this->editorClient->getResponse()->getStatusCode());
 
         $this->techClient->request('GET', '/admin');
-        $this->assertEquals(301, $this->techClient->getResponse()->getStatusCode());
+        $this->assertSame(301, $this->techClient->getResponse()->getStatusCode());
     }
 }

@@ -1,0 +1,12 @@
+{% extends 'site/review/_layout.twig' %}
+
+{% block main %}
+  <h1>Review for “{{ review.submission }}”</h1>
+  <p>Thank you for considering our invitation to review this paper for the {{ review.submission.conference }}. Please indicate your response using the buttons below. If you accept the invitation, the paper will be made available to download from this page.</p>
+  <div class="invitation-buttons">
+    <a href="{{ path('review_index', { reviewerSecret: review.reviewer.secret, reviewSecret: review.secret, reply: 'decline' }) }}" class="button delete">Decline Invitation</a>
+    <a href="{{ path('review_index', { reviewerSecret: review.reviewer.secret, reviewSecret: review.secret, reply: 'accept' }) }}" class="button create">Accept Invitation</a>
+  </div>
+  <p><strong>Title:</strong> {{ review.submission.title }}</p>
+  <p><strong>Abstract:</strong> {{ review.submission.abstract }}</p>
+{% endblock %}

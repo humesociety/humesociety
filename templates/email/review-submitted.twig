@@ -3,6 +3,6 @@
 {% block image %}{{ image }}{% endblock %}
 
 {% block content %}
-  <p>{{ review.reviewer }} has submitted their review of the paper “{{ review.submission }}”. They graded it {{ review.grade }}, and their comments were as follows:</p>
-  <pre>{{ review.comments }}</pre>
+  <p>{{ review.reviewer }} has submitted their review of the paper &ldquo;{{ review.submission }}&rdquo;. They graded it {{ review.grade }}, and their comments were as follows:</p>
+  <pre style="font-size: 16px; font-family: -apple-system, system-ui, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial, sans-serif; line-height: 1.5; color: #282828;">{{ review.comments }}</pre>
 {% endblock %}

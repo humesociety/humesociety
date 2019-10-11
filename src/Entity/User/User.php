@@ -1092,12 +1092,12 @@ class User implements UserInterface
      */
     public function getSubmissions(?Conference $conference = null): Collection
     {
-        if ($conference == null) {
+        if ($conference === null) {
             return $this->submissions;
         }
         $submissions = new ArrayCollection();
         foreach ($this->submissions as $submission) {
-            if ($submission->getConference() == $conference) {
+            if ($submission->getConference() === $conference) {
                 $submissions->add($submission);
             }
         }
@@ -1112,7 +1112,7 @@ class User implements UserInterface
      */
     public function getSubmissionsWithoutConference(?Conference $conference = null): Collection
     {
-        if ($conference == null) {
+        if ($conference === null) {
             return $this->submissions;
         }
         $submissions = new ArrayCollection();
@@ -1278,7 +1278,7 @@ class User implements UserInterface
     public function hasSubmittedToConference(Conference $conference)
     {
         foreach ($this->submissions as $submission) {
-            if ($submission->getConference() == $conference) {
+            if ($submission->getConference() === $conference) {
                 return true;
             }
         }
