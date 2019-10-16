@@ -42,7 +42,10 @@ class ElectionHandler
      */
     public function getElections(): Array
     {
-        return $this->repository->findAll();
+        return $this->repository->createQueryBuilder('e')
+            ->orderBy('e.year', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -62,7 +65,12 @@ class ElectionHandler
      */
     public function getDecades(): Array
     {
-        return $this->repository->findDecades();
+        $decades = $this->repository->createQueryBuilder('e')
+            ->select('DISTINCT (e.year - MOD(e.year, 10)) AS decade')
+            ->orderBy('decade', 'DESC')
+            ->getQuery()
+            ->getScalarResult();
+        return array_map('current', $decades);
     }
 
     /**

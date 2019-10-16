@@ -60,11 +60,26 @@ class Text
     private $description;
 
     /**
+     * Constructor function.
+     *
+     * @var string The text's label.
+     * @return void
+     */
+    public function __construct(string $label)
+    {
+        $this->id = null; // Doctrine takes care of this
+        $this->label = $label;
+        $this->content = null;
+        $this->title = null;
+        $this->description = null;
+    }
+
+    /**
      * ToString function.
      */
     public function __toString(): string
     {
-        return $this->title ? $this->title : 'unintialised text object';
+        return $this->title ? $this->title : 'uninitialised text object';
     }
 
     /**

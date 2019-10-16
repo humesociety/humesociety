@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * The candidates for each election are those whose term starts that year.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Election\ElectionRepository")
+ * @ORM\Entity()
  * @UniqueEntity(
  *     fields="year",
  *     message="There is already an election for this year in the database."
@@ -71,6 +71,7 @@ class Election
      */
     public function __construct()
     {
+        $this->id = null; // Doctrine takes care of this
         $this->year = idate('Y') + 1;
         $this->open = false;
         $this->votes = 0;
@@ -116,16 +117,15 @@ class Election
     public function setOpen(bool $open): self
     {
         $this->open = $open;
-
         return $this;
     }
 
     /**
-     * Get the year for which the election is held (null when the object is first created).
+     * Get the year for which the election is held.
      *
-     * @return int|null
+     * @return int
      */
-    public function getYear(): ?int
+    public function getYear(): int
     {
         return $this->year;
     }
@@ -139,16 +139,15 @@ class Election
     public function setYear(int $year): self
     {
         $this->year = $year;
-
         return $this;
     }
 
     /**
-     * Get the decade for which the election is held (null when the object is first created).
+     * Get the decade for which the election is held.
      *
-     * @return int|null
+     * @return int
      */
-    public function getDecade(): ?int
+    public function getDecade(): int
     {
         return $this->year - ($this->year % 10);
     }
@@ -172,7 +171,6 @@ class Election
     public function setVotes(int $votes): self
     {
         $this->votes = $votes;
-
         return $this;
     }
 
@@ -195,7 +193,6 @@ class Election
     public function setPopulation(int $population): self
     {
         $this->population = $population;
-
         return $this;
     }
 
@@ -209,7 +206,6 @@ class Election
         if ($this->population > 0) {
             return round($this->votes / $this->population, 2) * 100;
         }
-
         return null;
     }
 }

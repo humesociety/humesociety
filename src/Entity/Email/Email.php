@@ -54,17 +54,6 @@ class Email
     private $twigs;
 
     /**
-     * Constructor function.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->twigs = ['content' => null];
-        $this->template = 'base';
-    }
-
-    /**
      * The twig template to use when rendering the email.
      *
      * Note that this is not the same as the email template entity from which the email was (possibly)
@@ -74,6 +63,22 @@ class Email
      * @var string
      */
     private $template;
+
+    /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->sender = null;
+        $this->recipientName = null;
+        $this->recipientEmail = null;
+        $this->subject = null;
+        $this->attachment = null;
+        $this->twigs = ['content' => null];
+        $this->template = 'base';
+    }
 
     /**
      * Get the sender of the email (null when the object is created).

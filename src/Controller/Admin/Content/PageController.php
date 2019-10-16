@@ -63,7 +63,7 @@ class PageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($isIndexPage && ($page->getSlug() != 'index')) {
+            if ($isIndexPage && ($page->getSlug() !== 'index')) {
                 $error = new FormError('The slug for index pages cannot be changed.');
                 $form->get('slug')->addError($error);
             } else {
@@ -113,13 +113,11 @@ class PageController extends AbstractController
      */
     public function create(PageHandler $pageHandler, Request $request, string $section = 'about'): Response
     {
-        $page = new Page();
-        $page->setSection($section);
+        $page = $pageHandler->createNextPage($section);
         $form = $this->createForm(PageType::class, $page);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $page->setPosition($pageHandler->getNextPagePosition($page->getSection()));
             $pageHandler->savePage($page);
             $this->addFlash('notice', 'Page "'.$page.'" has been created.');
             return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);

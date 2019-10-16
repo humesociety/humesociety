@@ -73,6 +73,22 @@ class EmailTemplate
     private $content;
 
     /**
+     * Constructor function.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->id = null; // Doctrine takes care of this
+        $this->label = null;
+        $this->title = null;
+        $this->description = null;
+        $this->sender = null;
+        $this->subject = null;
+        $this->content = null;
+    }
+
+    /**
      * Get the template's unique identifier (null when the object is first created).
      *
      * @return int|null

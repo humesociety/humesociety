@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * That information may change or be deleted, however, when the information here should stay the
  * same (e.g. if the person moves institution, or deletes their account.
  *
- * @ORM\Entity(repositoryClass="App\Entity\Candidate\CandidateRepository")
+ * @ORM\Entity()
  */
 class Candidate
 {

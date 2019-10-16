@@ -32,6 +32,19 @@ class Review
     private $id;
 
     /**
+     * The submission being reviewed.
+     *
+     * @var Submission
+     * @ORM\ManyToOne(
+     *     targetEntity="App\Entity\Submission\Submission",
+     *     inversedBy="reviews",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $submission;
+
+    /**
      * The reviewer.
      *
      * @var Reviewer
@@ -45,19 +58,6 @@ class Review
     private $reviewer;
 
     /**
-     * The submission.
-     *
-     * @var Submission
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     inversedBy="reviews",
-     *     cascade={"persist", "remove"}
-     * )
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $submission;
-
-    /**
      * The review's secret (randomly generated string for linking to the review).
      *
      * @var string
@@ -66,7 +66,7 @@ class Review
     private $secret;
 
     /**
-     * Whether the reviewer accepts the invitation to review.
+     * Whether the reviewer accepts the invitation to review (null means reply pending).
      *
      * @var bool|null
      * @ORM\Column(type="boolean", nullable=true)
@@ -100,15 +100,23 @@ class Review
     /**
      * Constructor function.
      *
+     * @var Submission The submission being reviewed.
      * @return void
      */
-    public function __construct()
+    public function __construct(Submission $submission)
     {
+        $this->id = null; // Doctrine takes care of this
+        $this->submission = $submission;
+        $this->reviewer = null;
         $this->secret = '';
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         for ($i = 0; $i < 8; $i++) {
             $this->secret .= $characters[rand(0, strlen($characters) - 1)];
         }
+        $this->accepted = null;
+        $this->dateSubmitted = null;
+        $this->grade = null;
+        $this->comments = null;
     }
 
     /**
@@ -118,7 +126,7 @@ class Review
      */
     public function __toString(): string
     {
-        return 'Review for “'.$this->submission->getTitle().'”';
+        return "Review for “{$this->submission->getTitle()}”";
     }
 
     /**
@@ -129,6 +137,16 @@ class Review
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Get the submission being reviewed.
+     *
+     * @return Submission
+     */
+    public function getSubmission(): Submission
+    {
+        return $this->submission;
     }
 
     /**
@@ -150,28 +168,6 @@ class Review
     public function setReviewer(Reviewer $reviewer): self
     {
         $this->reviewer = $reviewer;
-        return $this;
-    }
-
-    /**
-     * Get the submission (null when the object is first created).
-     *
-     * @return Submission|null
-     */
-    public function getSubmission(): ?Submission
-    {
-        return $this->submission;
-    }
-
-    /**
-     * Set the submission.
-     *
-     * @var Submission The submission.
-     * @return self
-     */
-    public function setSubmission(Submission $submission): self
-    {
-        $this->submission = $submission;
         return $this;
     }
 

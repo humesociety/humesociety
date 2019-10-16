@@ -36,13 +36,32 @@ class CandidateHandler
     }
 
     /**
+     * Find how many candidates there are in the database.
+     *
+     * @return int
+     */
+    private function countCandidates(): int
+    {
+        return $this->repository->createQueryBuilder('c')
+            ->select('count(c.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Get all EVPTs.
      *
      * @return Candidate[]
      */
     public function getEvpts(): array
     {
-        return $this->repository->findEVPTs();
+        return $this->repository->createQueryBuilder('c')
+            ->where('c.elected = TRUE')
+            ->andWhere('c.evpt = TRUE')
+            ->orderBy('c.start', 'DESC')
+            ->addOrderBy('c.lastname, c.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -52,7 +71,13 @@ class CandidateHandler
      */
     public function getExecs(): array
     {
-        return $this->repository->findExecs();
+        return $this->repository->createQueryBuilder('c')
+            ->where('c.elected = TRUE')
+            ->andWhere('c.evpt = FALSE')
+            ->orderBy('c.start', 'DESC')
+            ->addOrderBy('c.lastname, c.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -62,7 +87,15 @@ class CandidateHandler
      */
     public function getYears(): array
     {
-        return $this->repository->findYears();
+        if ($this->countCandidates() === 0) {
+            return [];
+        }
+        $years = $this->repository->createQueryBuilder('c')
+            ->select('DISTINCT c.start')
+            ->orderBy('c.start')
+            ->getQuery()
+            ->getScalarResult();
+        return array_map('current', $years);
     }
 
     /**
@@ -73,7 +106,12 @@ class CandidateHandler
      */
     public function getCandidatesByYear(int $year): array
     {
-        return $this->repository->findCandidatesByYear($year);
+        return $this->repository->createQueryBuilder('c')
+            ->where('c.start = :year')
+            ->setParameter('year', $year)
+            ->orderBy('c.lastname, c.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -95,18 +133,6 @@ class CandidateHandler
     public function deleteCandidate(Candidate $candidate)
     {
         $this->manager->remove($candidate);
-        $this->manager->flush();
-    }
-
-    /**
-     * Elect a candidate.
-     *
-     * @param Candidate The candidate to elect.
-     */
-    public function electCandidate(Candidate $candidate)
-    {
-        $candidate->setElected(true);
-        $this->manager->persist($candidate);
         $this->manager->flush();
     }
 }

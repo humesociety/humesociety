@@ -107,12 +107,18 @@ class Reviewer
      */
     public function __construct()
     {
-        $this->secret = '';
+        $this->id = null; // Doctrine takes care of this
+        $this->user = null;
+        $this->reviews = new ArrayCollection();
+        $this->email = null;
+        $this->firstname = null;
+        $this->lastname = null;
+        $this->keywords = null;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $this->secret = '';
         for ($i = 0; $i < 8; $i++) {
             $this->secret .= $characters[rand(0, strlen($characters) - 1)];
         }
-        $this->reviews = new ArrayCollection();
     }
 
     /**
@@ -122,7 +128,12 @@ class Reviewer
      */
     public function __toString(): string
     {
-        return $this->getFirstname().' '.$this->getLastname().' ('.$this->getEmail().')';
+        if ($this->user) {
+            return (string) $user;
+        }
+        return $this->firstname && $this->lastname && $this->email
+            ? "{$this->firstname} {$this->lastname} ({$this->email})"
+            : 'uninitialised reviewer';
     }
 
     /**
@@ -136,7 +147,7 @@ class Reviewer
     }
 
     /**
-    * Get the linked user user.
+    * Get the linked user.
     *
     * @return User|null
     */
@@ -269,7 +280,7 @@ class Reviewer
      */
     public function getFullname(): ?string
     {
-        return $this->getFirstname().' '.$this->getLastname();
+        return "{$this->getFirstname()} {$this->getLastname()}";
     }
 
     /**

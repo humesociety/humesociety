@@ -161,7 +161,7 @@ class SecurityController extends AbstractController
         }
 
         // throw 404 error if the secret is wrong or has expired
-        if ($user->getPasswordResetSecret() != $secret || new \DateTime() > $user->getPasswordResetSecretExpires()) {
+        if ($user->getPasswordResetSecret() !== $secret || new \DateTime() > $user->getPasswordResetSecretExpires()) {
             throw $this->createNotFoundException('Page not found.');
         }
 

@@ -10,7 +10,22 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class ElectionTest extends WebTestCase
 {
-    public function testGettersAndSetters()
+    private $nextYear;
+    private $election;
+
+    public function setUp()
     {
+        $this->nextYear = idate('Y') + 1;
+        $this->election = new Election();
+    }
+
+    public function testConstructor()
+    {
+        $this->assertSame((string) $this->nextYear, (string) $this->election);
+        $this->assertSame(null, $this->election->getId());
+        $this->assertSame($this->nextYear, $this->election->getYear());
+        $this->assertSame(false, $this->election->getOpen());
+        $this->assertSame(0, $this->election->getVotes());
+        $this->assertSame(0, $this->election->getPopulation());
     }
 }

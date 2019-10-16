@@ -108,8 +108,7 @@ class SubmissionController extends AbstractController
         $twigs['reviewers'] = $reviewers->getReviewers();
 
         // create and handle the review invitation form
-        $review = new Review();
-        $review->setSubmission($submission);
+        $review = new Review($submission);
         $reviewInvitationForm = $this->createForm(ReviewTypeInvitation::class, $review);
         $reviewInvitationForm->handleRequest($request);
         if ($reviewInvitationForm->isSubmitted()) {

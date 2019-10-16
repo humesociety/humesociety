@@ -81,8 +81,7 @@ class NewsItemController extends AbstractController
      */
     public function create(NewsItemHandler $newsItemHandler, Request $request, $category = 'society') : Response
     {
-        $newsItem = new NewsItem();
-        $newsItem->setCategory($category);
+        $newsItem = new NewsItem($category);
 
         $newsItemForm = $this->createForm(NewsItemType::class, $newsItem);
         $newsItemForm->handleRequest($request);

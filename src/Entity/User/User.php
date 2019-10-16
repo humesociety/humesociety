@@ -382,20 +382,44 @@ class User implements UserInterface
      */
     public function __construct()
     {
+        $this->id = null; // Doctrine takes care of this
+        $this->username = null;
+        $this->email = null;
         $this->roles = ['ROLE_USER']; // everyone is at least a user
-        $this->country = 'USA'; // this is most likely, so will save most people some time
+        $this->password = null;
         $this->dateJoined = new \DateTime();
         $this->rejoined = false; // TODO: let people indicate if they are rejoining
+        $this->lastLogin = null;
         $this->candidacies = new ArrayCollection();
         $this->voted = false;
+        $this->notes = null;
+        $this->dues = null;
         $this->lifetimeMember = false;
+        $this->passwordResetSecret = null;
+        $this->passwordResetSecretExpires = null;
+        $this->firstname = null;
+        $this->lastname = null;
+        $this->department = null;
+        $this->institution = null;
+        $this->city = null;
+        $this->state = null;
+        $this->country = 'USA'; // this is most likely, so will save most people some time
+        $this->officePhone = null;
+        $this->homePhone = null;
+        $this->fax = null;
+        $this->webpage = null;
         $this->receiveEmail = true;
         $this->receiveHumeStudies = true;
+        $this->mailingAddress = null;
+        $this->submissions = new ArrayCollection();
+        $this->reviewer = null;
         $this->willingToReview = false;
         $this->willingToComment = false;
         $this->willingToChair = false;
-        $this->submissions = new ArrayCollection();
-        $this->reviews = new ArrayCollection();
+        $this->keywords = null;
+        $this->member = false;
+        $this->memberInGoodStanding = false;
+        $this->memberInArrears = false;
     }
 
     /**
@@ -405,7 +429,9 @@ class User implements UserInterface
      */
     public function __toString(): string
     {
-        return $this->firstname.' '.$this->lastname.' ('.$this->email.')';
+        return $this->firstname && $this->lastname && $this->email
+            ? "{$this->firstname} {$this->lastname} ({$this->email})"
+            : 'uninitialised user';
     }
 
     /**
@@ -437,7 +463,6 @@ class User implements UserInterface
     public function setUsername(string $username): self
     {
         $this->username = $username;
-
         return $this;
     }
 
@@ -459,7 +484,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -502,7 +526,6 @@ class User implements UserInterface
                 $this->roles[] = $role;
             }
         }
-
         return $this;
     }
 
@@ -519,7 +542,6 @@ class User implements UserInterface
             unset($this->roles[$key]);
             $this->roles = array_values($this->roles);
         }
-
         return $this;
     }
 
@@ -542,7 +564,6 @@ class User implements UserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
         return $this;
     }
 
@@ -575,7 +596,6 @@ class User implements UserInterface
     public function setRejoined(bool $rejoined): self
     {
         $this->rejoined = $rejoined;
-
         return $this;
     }
 
@@ -598,7 +618,6 @@ class User implements UserInterface
     public function setLastLogin(\DateTimeInterface $lastLogin): self
     {
         $this->lastLogin = $lastLogin;
-
         return $this;
     }
 
@@ -631,7 +650,6 @@ class User implements UserInterface
     public function setVoted(bool $voted): self
     {
         $this->voted = $voted;
-
         return $this;
     }
 
@@ -654,7 +672,6 @@ class User implements UserInterface
     public function setNotes(?string $notes): self
     {
         $this->notes = $notes;
-
         return $this;
     }
 
@@ -684,11 +701,9 @@ class User implements UserInterface
         $this->dues = ($currentMonth > 6)
             ? new \DateTime($currentYear.'-06-30')
             : new \DateTime($currentYear.'-12-31');
-
         if ($yearsToAdd > 0) {
             $this->dues->add(new \DateInterval('P'.$yearsToAdd.'Y'));
         }
-
         return $this;
     }
 
@@ -711,7 +726,6 @@ class User implements UserInterface
     public function setLifetimeMember(bool $lifetimeMember): self
     {
         $this->lifetimeMember = $lifetimeMember;
-
         return $this;
     }
 
@@ -738,7 +752,6 @@ class User implements UserInterface
             $this->passwordResetSecret .= $characters[rand(0, strlen($characters) - 1)];
         }
         $this->passwordResetSecretExpires = new \DateTime('+1 day');
-
         return $this;
     }
 
@@ -771,7 +784,6 @@ class User implements UserInterface
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
-
         return $this;
     }
 
@@ -794,7 +806,6 @@ class User implements UserInterface
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
-
         return $this;
     }
 
@@ -805,7 +816,7 @@ class User implements UserInterface
      */
     public function getFullname(): ?string
     {
-        return $this->firstname.' '.$this->lastname;
+        return $this->firstname && $this->lastname ? "{$this->firstname} {$this->lastname}" : null;
     }
 
     /**
@@ -827,7 +838,6 @@ class User implements UserInterface
     public function setDepartment(?string $department): self
     {
         $this->department = $department;
-
         return $this;
     }
 
@@ -850,7 +860,6 @@ class User implements UserInterface
     public function setInstitution(?string $institution): self
     {
         $this->institution = $institution;
-
         return $this;
     }
 
@@ -873,7 +882,6 @@ class User implements UserInterface
     public function setCity(?string $city): self
     {
         $this->city = $city;
-
         return $this;
     }
 
@@ -896,7 +904,6 @@ class User implements UserInterface
     public function setState(?string $state): self
     {
         $this->state = $state;
-
         return $this;
     }
 
@@ -919,7 +926,6 @@ class User implements UserInterface
     public function setCountry(?string $country): self
     {
         $this->country = $country;
-
         return $this;
     }
 
@@ -942,7 +948,6 @@ class User implements UserInterface
     public function setOfficePhone(?string $officePhone): self
     {
         $this->officePhone = $officePhone;
-
         return $this;
     }
 
@@ -965,7 +970,6 @@ class User implements UserInterface
     public function setHomePhone(?string $homePhone): self
     {
         $this->homePhone = $homePhone;
-
         return $this;
     }
 
@@ -988,7 +992,6 @@ class User implements UserInterface
     public function setFax(?string $fax): self
     {
         $this->fax = $fax;
-
         return $this;
     }
 
@@ -1011,7 +1014,6 @@ class User implements UserInterface
     public function setWebpage(?string $webpage): self
     {
         $this->webpage = $webpage;
-
         return $this;
     }
 
@@ -1034,7 +1036,6 @@ class User implements UserInterface
     public function setReceiveEmail(bool $receiveEmail): self
     {
         $this->receiveEmail = $receiveEmail;
-
         return $this;
     }
 
@@ -1057,7 +1058,6 @@ class User implements UserInterface
     public function setReceiveHumeStudies(bool $receiveHumeStudies): self
     {
         $this->receiveHumeStudies = $receiveHumeStudies;
-
         return $this;
     }
 
@@ -1080,7 +1080,6 @@ class User implements UserInterface
     public function setMailingAddress(?string $mailingAddress): self
     {
         $this->mailingAddress = $mailingAddress;
-
         return $this;
     }
 
@@ -1117,7 +1116,7 @@ class User implements UserInterface
         }
         $submissions = new ArrayCollection();
         foreach ($this->submissions as $submission) {
-            if ($submission->getConference() != $conference) {
+            if ($submission->getConference() !== $conference) {
                 $submissions->add($submission);
             }
         }
@@ -1143,7 +1142,6 @@ class User implements UserInterface
     public function setReviewer(?Reviewer $reviewer): self
     {
         $this->reviewer = $reviewer;
-
         return $this;
     }
 
@@ -1166,7 +1164,6 @@ class User implements UserInterface
     public function setWillingToReview(bool $willingToReview): self
     {
         $this->willingToReview = $willingToReview;
-
         return $this;
     }
 
@@ -1189,7 +1186,6 @@ class User implements UserInterface
     public function setWillingToComment(bool $willingToComment): self
     {
         $this->willingToComment = $willingToComment;
-
         return $this;
     }
 
@@ -1212,7 +1208,6 @@ class User implements UserInterface
     public function setWillingToChair(bool $willingToChair): self
     {
         $this->willingToChair = $willingToChair;
-
         return $this;
     }
 
@@ -1235,7 +1230,6 @@ class User implements UserInterface
     public function setKeywords(?string $keywords): self
     {
         $this->keywords = $keywords;
-
         return $this;
     }
 

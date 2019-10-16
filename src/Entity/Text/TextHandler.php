@@ -68,8 +68,7 @@ class TextHandler
     {
         $text = $this->repository->findOneByLabel($label);
         if (!$text) {
-            $text = new Text();
-            $text->setLabel($label);
+            $text = new Text($label);
         }
         return $this->enrichText($text);
     }
