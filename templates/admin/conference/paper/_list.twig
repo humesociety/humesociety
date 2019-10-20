@@ -14,9 +14,7 @@
           {% if paper.status == 'pending' %}
             <div class="right">
               <a href="{{ path('admin_conference_paper_reminder', { paper: paper.id }) }}" class="button">email reminder</a>
-              {% if paper.invitationReminderEmails > 0 %}
-                <p>{{ paper.invitationReminderEmails }} reminders sent<br> last reminder: {{ paper.dateLastInvitationReminderSent|date('m/d/Y') }}</p>
-              {% endif %}
+              {% include 'admin/_include/reminder-summary.twig' with { invitation: paper } %}
             </div>
           {% endif %}
           <div class="right"><i class="{{ paper.statusIcon }}"></i> {{ paper.status }}</div>

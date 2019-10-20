@@ -9,8 +9,11 @@
             <h3><a href="{{ path('admin_conference_submission_view', { submission: submission.id }) }}">{{ submission.title }}</a></h3>
             <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
           </div>
-          {% if submission.decisionEmailed and submission.accepted and not submission.submitted %}
-            <div class="right"><a href="" class="button">email reminder</a></div>
+          {% if submission.status == 'accepted' and submission.decisionEmailed %}
+            <div class="right">
+              <a href="{{ path('admin_conference_submission_email_submission_reminder', { submission: submission.id }) }}" class="button">email reminder</a>
+              {% include 'admin/_include/reminder-summary.twig' with { invitation: submission } %}
+            </div>
           {% endif %}
           <div class="right"><i class="{{ submission.statusIcon }}"></i> {{ submission.status }}</div>
         </div>

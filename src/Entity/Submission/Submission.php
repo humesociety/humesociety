@@ -184,20 +184,20 @@ class Submission
     private $dateDecisionEmailed;
 
     /**
-     * The number of final submission reminder emails sent.
+     * The number of submission reminder emails sent.
      *
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $finalReminderEmails;
+    private $submissionReminderEmails;
 
     /**
-     * The date the last final submission reminder email was sent.
+     * The date the last submission reminder email was sent.
      *
      * @var \DateTimeInterface|null
      * @ORM\Column(type="date", nullable=true)
      */
-    private $dateLastFinalReminderSent;
+    private $dateLastSubmissionReminderSent;
 
     /**
      * The FINAL uploaded file.
@@ -247,8 +247,8 @@ class Submission
         $this->chairs = new ArrayCollection();
         $this->accepted = null;
         $this->dateDecisionEmailed = null;
-        $this->finalReminderEmails = 0;
-        $this->dateLastFinalReminderSent = null;
+        $this->submissionReminderEmails = 0;
+        $this->dateLastSubmissionReminderSent = null;
         $this->finalFile = null;
         $this->finalFilename = null;
     }
@@ -428,16 +428,6 @@ class Submission
     }
 
     /**
-     * Get the FINAL uploaded file.
-     *
-     * @return UploadedFile|null
-     */
-    public function getFinalFile(): ?UploadedFile
-    {
-        return $this->finalFile;
-    }
-
-    /**
      * Get the reviews of this submission.
      *
      * @return Review[]
@@ -608,9 +598,9 @@ class Submission
      *
      * @return int
      */
-    public function getFinalReminderEmails(): int
+    public function getSubmissionReminderEmails(): int
     {
-        return $this->finalReminderEmails;
+        return $this->submissionReminderEmails;
     }
 
     /**
@@ -618,10 +608,10 @@ class Submission
      *
      * @return self
      */
-    public function incrementFinalReminderEmails(): self
+    public function incrementSubmissionReminderEmails(): self
     {
-        $this->finalReminderEmails += 1;
-        $this->dateLastFinalReminderSent = new \DateTime('today');
+        $this->submissionReminderEmails += 1;
+        $this->dateLastSubmissionReminderSent = new \DateTime('today');
         return $this;
     }
 
@@ -630,9 +620,19 @@ class Submission
      *
      * @return \DateTimeInterface|null
      */
-    public function getDateLastFinalReminderSent(): ?\DateTimeInterface
+    public function getDateLastSubmissionReminderSent(): ?\DateTimeInterface
     {
-        return $this->dateLastFinalReminderSent;
+        return $this->dateLastSubmissionReminderSent;
+    }
+
+    /**
+     * Get the FINAL uploaded file.
+     *
+     * @return UploadedFile|null
+     */
+    public function getFinalFile(): ?UploadedFile
+    {
+        return $this->finalFile;
     }
 
     /**
@@ -644,10 +644,7 @@ class Submission
     public function setFinalFile(?UploadedFile $finalFile): self
     {
         if ($finalFile !== null) {
-            $this->finalFilename = $file->getClientOriginalName();
-            if ($this->finalFilename === $this->filename) {
-                $this->finalFilename .= '_FINAL';
-            }
+            $this->finalFilename = $finalFile->getClientOriginalName();
         }
         $this->finalFile = $finalFile;
         return $this;

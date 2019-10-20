@@ -78,14 +78,6 @@ class Invitation
     private $dateSubmitted;
 
     /**
-     * The user invited.
-     *
-     * @var User|null
-     * @Assert\NotBlank(groups={"existing"}, message="Please select a user.")
-     */
-    private $user;
-
-    /**
      * The user's firstname (used when inviting a new user).
      *
      * @var string|null

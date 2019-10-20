@@ -21,8 +21,11 @@
                   <div class="left">
                     <h3>{{ chair.user }}</h3>
                   </div>
-                  {% if not chair.accepted %}
-                    <div class="right"><a href="{{ path('admin_conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">email reminder</a></div>
+                  {% if chair.status == 'pending' %}
+                    <div class="right">
+                      <a href="{{ path('admin_conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">email reminder</a>
+                      {% include 'admin/_include/reminder-summary.twig' with { invitation: chair } %}
+                    </div>
                   {% endif %}
                   <div class="right"><i class="{{ chair.statusIcon }}"></i> {{ chair.status }}</div>
                 </div>

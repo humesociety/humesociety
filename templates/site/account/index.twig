@@ -2,12 +2,17 @@
 
 {% block main %}
   <div class="section content">
-    {% embed 'site/_embed/heading.twig' %}{% endembed %}
+    {% embed 'site/_embed/heading.twig' %}
+      {% block right %}
+        {% if app.user.member %}
+          <nav class="tabs">
+            <a data-tab="contact-details"{% if tab == 'details' %} class="is-active"{% endif %}>Contact Details</a>
+            <a data-tab="membership-settings"{% if tab == 'settings' %} class="is-active"{% endif %}>Membership Settings</a>
+          </nav>
+        {% endif %}
+      {% endblock %}
+    {% endembed %}
     {% if app.user.member %}
-      <nav class="tabs">
-        <a data-tab="contact-details"{% if tab == 'details' %} class="is-active"{% endif %}>Contact Details</a>
-        <a data-tab="membership-settings"{% if tab == 'settings' %} class="is-active"{% endif %}>Membership Settings</a>
-      </nav>
       <div class="tab-panes">
         <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="contact-details">
           {% include 'site/_form/user-details.twig' %}

@@ -67,7 +67,7 @@ class EmailController extends AbstractController
         if ($emailTemplateForm->isSubmitted() && $emailTemplateForm->isValid()) {
             $emailTemplates->saveEmailTemplate($emailTemplate);
             $this->addFlash('notice', $emailTemplate.' email has been modified.');
-            return $this->redirectToRoute('admin_conference_custom_index', ['tab' => 'email']);
+            return $this->redirectToRoute('admin_conference_email_index', ['tab' => $emailTemplate->getGroup()]);
         }
 
         // add additional twig variables

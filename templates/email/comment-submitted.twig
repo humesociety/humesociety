@@ -1,0 +1,7 @@
+{% extends 'email/base.twig' %}
+
+{% block image %}{{ image }}{% endblock %}
+
+{% block content %}
+  <p>{{ comment.user }} has submitted their comments for the paper {{ comment.submission }} by {{ comment.submission.authors }}.</p>
+{% endblock %}

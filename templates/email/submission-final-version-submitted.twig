@@ -1,0 +1,7 @@
+{% extends 'email/base.twig' %}
+
+{% block image %}{{ image }}{% endblock %}
+
+{% block content %}
+  <p>{{ submission.user }} has just submitted the final version of their paper, {{ submission }}.</p>
+{% endblock %}

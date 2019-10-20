@@ -120,8 +120,7 @@ class ResearchController extends AbstractController
             $submissionForm->handleRequest($request);
             if ($submissionForm->isSubmitted() && $submissionForm->isValid()) {
                 $submissions->saveSubmission($submission);
-                $twigs['submission'] = $submission;
-                $conferenceEmails->sendSubmissionEmail($submission, 'submission');
+                $conferenceEmails->sendSubmissionEmail($submission, 'submission-acknowledgement');
                 $systemEmails->sendSubmissionNotification($submission);
                 $message = 'Your paper has been submitted. A confirmation email has been sent to '
                          . $this->getUser()->getEmail();
@@ -138,6 +137,7 @@ class ResearchController extends AbstractController
             $finalSubmissionForm->handleRequest($request);
             if ($finalSubmissionForm->isSubmitted() && $finalSubmissionForm->isValid()) {
                 $submissions->saveSubmission($submission);
+                $systemEmails->sendSubmissionFinalNotification($submission);
                 $this->addFlash('success', 'The final version of your paper has been uploaded.');
             }
             $twigs['finalSubmissionForm'] = $finalSubmissionForm->createView();
@@ -145,162 +145,5 @@ class ResearchController extends AbstractController
 
         // render and return the page
         return $this->render('site/account/research/submissions.twig', $twigs);
-    }
-
-    /**
-     * Route for managing reviews for the Hume Conference.
-     *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param ReviewHandler The review handler.
-     * @return Response
-     * @Route("/reviews", name="reviews")
-     * @IsGranted("ROLE_USER")
-     */
-    public function reviews(Request $request, ConferenceHandler $conferences, ReviewHandler $reviews): Response
-    {
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // return a 404 error if there isn't one
-        if ($conference === null) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // get the current user's review invitations for the current conference (if any)
-        $reviewer = $this->getUser()->getReviewer();
-        $reviews = $reviewer ? $reviews->getReviews($reviewer, $conference) : [];
-
-        // return a 404 error if the current user has no reviews
-        if (sizeof($reviews) === 0) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // initialise the twig variables
-        $twigs = [
-            'page' => ['slug' => 'research', 'section' => 'account', 'title' => 'Research'],
-            'tab' => 'reviews',
-            'conference' => $conference,
-            'reviews' => $reviews
-        ];
-
-        // render and return the page
-        return $this->render('site/account/research/reviews.twig', $twigs);
-    }
-
-    /**
-     * Route for managing comments for the Hume Conference.
-     *
-     * @param Request Symfony's request object.
-     * @param CommentHandler The comment handler.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param SystemEmailHandler The system email handler.
-     * @return Response
-     * @Route("/comments", name="comments")
-     * @IsGranted("ROLE_USER")
-     */
-    public function comments(
-        Request $request,
-        CommentHandler $comments,
-        ConferenceHandler $conferences,
-        ConferenceEmailHandler $conferenceEmails,
-        SystemEmailHandler $systemEmails
-    ): Response {
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // return a 404 error if there isn't one
-        if ($conference === null) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // look for a comment for this conference from this user
-        $comment = $comments->getComment($this->getUser(), $conference);
-
-        // return a 404 error if there isn't one
-        if ($comment === null) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // initialise twig variables
-        $twigs = [
-          'page' => ['slug' => 'research', 'section' => 'account', 'title' => 'Research'],
-          'tab' => 'papers',
-          'conference' => $conference
-        ];
-
-        // create and handle the comment upload form
-        $commentForm = $this->createForm(CommentType::class, $comment);
-        $commentForm->handleRequest($request);
-        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
-            $comments->saveComment($comment);
-            $conferenceEmails->sendSubmissionEmail($comment->getSubmission(), 'submission-comments-submitted');
-            $systemEmails->sendCommentNotification($comment);
-            $this->addFlash('success', 'Your comments have been uploaded.');
-        }
-
-        // add additional twig variables
-        $twigs['commentForm'] = $commentForm->createView();
-
-        // render and return the page
-        return $this->render('site/account/research/comments.twig', $twigs);
-    }
-
-    /**
-     * Route for managing invited papers for the Hume Conference.
-     *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param SystemEmailHandler The system email handler.
-     * @param PaperHandler The paper handler.
-     * @return Response
-     * @Route("/papers", name="papers")
-     * @IsGranted("ROLE_USER")
-     */
-    public function papers(
-        Request $request,
-        ConferenceHandler $conferences,
-        SystemEmailHandler $systemEmails,
-        PaperHandler $papers
-    ): Response {
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // return a 404 error if there isn't one
-        if ($conference === null) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // look for a paper for this conference from this user
-        $paper = $papers->getPaper($this->getUser(), $conference);
-
-        // return a 404 error if there isn't one
-        if ($paper === null) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // initialise twig variables
-        $twigs = [
-          'page' => ['slug' => 'research', 'section' => 'account', 'title' => 'Research'],
-          'tab' => 'papers',
-          'conference' => $conference,
-          'paper' => $paper
-        ];
-
-        // create and handle the paper upload form
-        $paperForm = $this->createForm(PaperType::class, $paper);
-        $paperForm->handleRequest($request);
-        if ($paperForm->isSubmitted() && $paperForm->isValid()) {
-            $papers->savePaper($paper);
-            $systemEmails->sendPaperSubmissionNotification($paper);
-            $this->addFlash('success', 'Your paper has been uploaded.');
-        }
-
-        // add additional twig variables
-        $twigs['paperForm'] = $paperForm->createView();
-
-        // render and return the page
-        return $this->render('site/account/research/papers.twig', $twigs);
     }
 }

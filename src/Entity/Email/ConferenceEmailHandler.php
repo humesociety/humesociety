@@ -115,7 +115,7 @@ class ConferenceEmailHandler
                     $this->submissions->saveSubmission($submission);
                     break;
                 case 'submission-reminder':
-                    $submission->incrementFinalReminderEmails();
+                    $submission->incrementSubmissionReminderEmails();
                     $this->submissions->saveSubmission($submission);
                     break;
             }

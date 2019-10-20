@@ -151,17 +151,35 @@ parameters:
         fellowships: Fellowships and Awards
         jobs: Job Advertisements
 
-    conference_text_ids: submission|review|thanks
+    conference_text_ids: submission-guidance|review-guidance|review-acknowledgement|comment-guidance|comment-acknowledgement|chair-guidance|chair-acknowledgement|paper-guidance|paper-acknowledgement
     conference_texts:
-        submission:
+        submission-guidance:
             title: Submission Guidance
             description: The submission guidance text is shown directly above the submission form.
-        review:
+        review-guidance:
             title: Review Guidance
             description: The review guidance text is shown directly above the review form.
-        thanks:
+        review-acknowledgement:
             title: Review Acknowledgement
             description: The review acknowledgement text is shown to each reviewer after they have submitted their review.
+        comment-guidance:
+            title: Comment Guidance
+            description: The comment guidance text is shown directly above the form for submitting comments on a paper.
+        comment-acknowledgement:
+            title: Comment Acknowledgement
+            description: The comment acknowledgement text is shown to each commentator after they have submitted their comments.
+        chair-guidance:
+            title: Chair Guidance
+            description: The chair guidance text is shown directly above the form for replying to an invitation to chair a session.
+        chair-acknowledgement:
+            title: Chair Acknowledgement
+            description: The review acknowledgement text is shown to each chair after they have accepted an invitation to chair a session.
+        paper-guidance:
+            title: Invited Paper Guidance
+            description: The invited paper guidance text is shown directly above the form for submitting an invited paper.
+        paper-acknowledgement:
+            title: Invited Paper Acknowledgement
+            description: The invited paper acknowledgement text is shown to each invited speaker after they have submitted their paper.
 
     countries:
         AFG: Afghanistan

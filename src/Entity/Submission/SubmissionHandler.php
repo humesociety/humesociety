@@ -94,6 +94,11 @@ class SubmissionHandler
             $submission->getFile()->move($path, $submission->getFilename());
             $submission->setFile(null);
         }
+        if ($submission->getFinalFile()) {
+            $path = $this->uploadsDirectory.$submission->getPath().'final/';
+            $submission->getFinalFile()->move($path, $submission->getFinalFilename());
+            $submission->setFinalFile(null);
+        }
         $this->manager->persist($submission);
         $this->manager->flush();
     }

@@ -1,0 +1,7 @@
+{% extends 'email/base.twig' %}
+
+{% block image %}{{ image }}{% endblock %}
+
+{% block content %}
+  <p>{{ review.user }} has {{ response }} the invitation to review the paper {{ review.submission }} by {{ review.submission.authors }}.</p>
+{% endblock %}

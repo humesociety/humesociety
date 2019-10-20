@@ -283,7 +283,7 @@ class Email
     public function prepareReviewContent(Review $review, array $countries): self
     {
         $this->prepareSubmissionContent($review->getSubmission(), $countries);
-        $link = "https://www.humesociety.org/review/{$review->getSecret()}";
+        $link = "https://www.humesociety.org/invitation/review/{$review->getSecret()}";
         $link = "<a href=\"{$link}\">{$link}</a>";
         $this->subject = preg_replace('/{{ ?link ?}}/', $link, $this->subject);
         $this->twigs['content'] = preg_replace('/{{ ?link ?}}/', $link, $this->twigs['content']);
@@ -300,6 +300,10 @@ class Email
     public function prepareCommentContent(Comment $comment, array $countries): self
     {
         $this->prepareSubmissionContent($comment->getSubmission(), $countries);
+        $link = "https://www.humesociety.org/invitation/comment/{$comment->getSecret()}";
+        $link = "<a href=\"{$link}\">{$link}</a>";
+        $this->subject = preg_replace('/{{ ?link ?}}/', $link, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?link ?}}/', $link, $this->twigs['content']);
         return $this;
     }
 
@@ -313,6 +317,10 @@ class Email
     public function prepareChairContent(Chair $chair, array $countries): self
     {
         $this->prepareSubmissionContent($chair->getSubmission(), $countries);
+        $link = "https://www.humesociety.org/invitation/chair/{$chair->getSecret()}";
+        $link = "<a href=\"{$link}\">{$link}</a>";
+        $this->subject = preg_replace('/{{ ?link ?}}/', $link, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?link ?}}/', $link, $this->twigs['content']);
         return $this;
     }
 
@@ -326,6 +334,10 @@ class Email
     public function preparePaperContent(Paper $paper, array $countries): self
     {
         $this->prepareConferenceContent($paper->getConference(), $countries);
+        $link = "https://www.humesociety.org/invitation/paper/{$paper->getSecret()}";
+        $link = "<a href=\"{$link}\">{$link}</a>";
+        $this->subject = preg_replace('/{{ ?link ?}}/', $link, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?link ?}}/', $link, $this->twigs['content']);
         return $this;
     }
 

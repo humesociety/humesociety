@@ -275,7 +275,7 @@ class SubmissionController extends AbstractController
         if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
             $comments->saveComment($comment1);
             $conferenceEmails->sendCommentEmail($comment1, 'comment-invitation');
-            $this->addFlash('notice', "A comment invitation email has been sent to {$comment2->getUser()}.");
+            $this->addFlash('notice', "A comment invitation email has been sent to {$comment1->getUser()}.");
         }
 
         // create and handle the comment invitation form for new users

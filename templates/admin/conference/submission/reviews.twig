@@ -18,9 +18,12 @@
                   <h3>{{ review.user }}</h3>
                 </div>
                 {% if review.status == 'submitted' %}
-                  <div class="right">Grade: {{ review.grade }} <a data-action="toggle-review-details">Show Comments</a></div>
-                {% elseif review.status != 'rejected' %}
-                  <div class="right"><a href="{{ path('admin_conference_submission_email_review_reminder', { review: review.id }) }}" class="button">email reminder</a></div>
+                  <div class="right">Grade: {{ review.grade }} <a data-action="toggle-review-comments">Show Comments</a></div>
+                {% elseif review.status == 'pending' or review.status == 'accepted' %}
+                  <div class="right">
+                    <a href="{{ path('admin_conference_submission_email_review_reminder', { review: review.id }) }}" class="button">email reminder</a>
+                    {% include 'admin/_include/reminder-summary.twig' with { invitation: review } %}
+                  </div>
                 {% endif %}
                 <div class="right"><i class="{{ review.statusIcon }}"></i> {{ review.status }}</div>
               </div>

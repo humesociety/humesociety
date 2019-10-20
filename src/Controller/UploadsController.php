@@ -163,4 +163,26 @@ class UploadsController extends AbstractController
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $submission->getFilename());
         return $response;
     }
+
+    /**
+     * Show conference submission file FINAL version.
+     *
+     * @param Submission The submission to download.
+     * @return Response
+     * @Route("/final-submissions/{submission}", name="final_submission")
+     */
+    public function finalSubmission(Submission $submission): Response
+    {
+        // look for the file
+        $path = $this->container->get('parameter_bag')->get('uploads_directory');
+        $path .= $submission->getPath().'final/'.$submission->getFinalFilename();
+        if (!file_exists($path)) {
+            throw new NotFoundHttpException('File not found.');
+        }
+
+        // return the response
+        $response = new BinaryFileResponse($path);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $submission->getFinalFilename());
+        return $response;
+    }
 }

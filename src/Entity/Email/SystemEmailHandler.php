@@ -28,6 +28,10 @@ class SystemEmailHandler
     public function __construct(EmailHandler $emails)
     {
         $this->emails = $emails;
+        $this->conferenceOrganisers = new User();
+        $this->conferenceOrganisers->setFirstname('Conference')
+            ->setLastname('Organisers')
+            ->setEmail('conference@humesociety.org');
     }
 
     /**
@@ -58,32 +62,48 @@ class SystemEmailHandler
         $email = new Email();
         $email->setSubject("{$submission->getConference()}: Paper Submitted")
             ->setSender('web')
-            ->setRecipientName('Conference Organisers')
-            ->setRecipientEmail('conference@humesociety.org')
+            ->setRecipient($this->conferenceOrganisers)
             ->setTemplate('submission-received')
             ->addTwig('submission', $submission);
         $this->emails->sendEmail($email);
     }
 
     /**
-     * Send review acceptance/rejection notification email to conference organisers.
+     * Send submission final version notification email to conference organisers.
+     *
+     * @param Submission The submission.
+     * @return void
+     */
+    public function sendSubmissionFinalNotification(Submission $submission)
+    {
+        $email = new Email();
+        $email->setSubject("{$submission->getConference()}: Final Version Submitted")
+            ->setSender('web')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('submission-final-version-submitted')
+            ->addTwig('submission', $submission);
+        $this->emails->sendEmail($email);
+    }
+
+    /**
+     * Send review invitation response notification email to conference organisers.
      *
      * @param Review The review.
      * @return void
      */
-    public function sendReviewAcceptanceNotification(Review $review)
+    public function sendReviewResponseNotification(Review $review)
     {
         $email = new Email();
         if ($review->isAccepted()) {
             $email->setSubject("{$review->getSubmission()->getConference()}: Review Invitation Accepted")
-                ->setTemplate('review-accepted');
+                ->addTwig('response', 'accepted');
         } else {
             $email->setSubject("{$review->getSubmission()->getConference()}: Review Invitation Declined")
-                ->setTemplate('review-declined');
+                ->addTwig('response', 'declined');
         }
         $email->setSender('web')
-            ->setRecipientName('Conference Organisers')
-            ->setRecipientEmail('conference@humesociety.org')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('review-response')
             ->addTwig('review', $review);
         $this->emails->sendEmail($email);
     }
@@ -99,10 +119,72 @@ class SystemEmailHandler
         $email = new Email();
         $email->setSubject("{$review->getSubmission()->getConference()}: Review Submitted")
             ->setSender('web')
-            ->setRecipientName('Conference Organisers')
-            ->setRecipientEmail('conference@humesociety.org')
+            ->setRecipient($this->conferenceOrganisers)
             ->setTemplate('review-submitted')
             ->addTwig('review', $review);
+        $this->emails->sendEmail($email);
+    }
+
+    /**
+     * Send comment invitation response notification email to conference organisers.
+     *
+     * @param Comment The comment.
+     * @return void
+     */
+    public function sendCommentResponseNotification(Comment $comment)
+    {
+        $email = new Email();
+        if ($comment->isAccepted()) {
+            $email->setSubject("{$comment->getSubmission()->getConference()}: Comment Invitation Accepted")
+                ->addTwig('response', 'accepted');
+        } else {
+            $email->setSubject("{$comment->getSubmission()->getConference()}: Comment Invitation Declined")
+                ->addTwig('response', 'declined');
+        }
+        $email->setSender('web')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('comment-response')
+            ->addTwig('comment', $comment);
+        $this->emails->sendEmail($email);
+    }
+
+    /**
+     * Send comment submission notification email to conference organisers.
+     *
+     * @param Comment The comment.
+     * @return void
+     */
+    public function sendCommentSubmissionNotification(Comment $comment)
+    {
+        $email = new Email();
+        $email->setSubject("{$comment->getSubmission()->getConference()}: Comments Submitted")
+            ->setSender('web')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('comment-submitted')
+            ->addTwig('comment', $comment);
+        $this->emails->sendEmail($email);
+    }
+
+    /**
+     * Send chair invitation response notification email to conference organisers.
+     *
+     * @param Chair The chair invitation.
+     * @return void
+     */
+    public function sendChairResponseNotification(Chair $chair)
+    {
+        $email = new Email();
+        if ($chair->isAccepted()) {
+            $email->setSubject("{$chair->getSubmission()->getConference()}: Chair Invitation Accepted")
+                ->addTwig('response', 'accepted');
+        } else {
+            $email->setSubject("{$comment->getSubmission()->getConference()}: Chair Invitation Declined")
+                ->addTwig('response', 'declined');
+        }
+        $email->setSender('web')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('chair-response')
+            ->addTwig('chair', $chair);
         $this->emails->sendEmail($email);
     }
 
@@ -112,14 +194,13 @@ class SystemEmailHandler
      * @param Paper The paper.
      * @return void
      */
-    public function sendPaperSubmissionNotification(Paper $paper)
+    public function sendPaperNotification(Paper $paper)
     {
         $email = new Email();
-        $email->setSubject("{$paper->getConference()}: Paper Submitted")
+        $email->setSubject("{$paper->getConference()}: Paper Received")
             ->setSender('web')
-            ->setRecipientName('Conference Organisers')
-            ->setRecipientEmail('conference@humesociety.org')
-            ->setTemplate('paper-submitted')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('paper-recieved')
             ->addTwig('paper', $paper);
         $this->emails->sendEmail($email);
     }

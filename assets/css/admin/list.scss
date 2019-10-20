@@ -44,6 +44,9 @@
         p {
           margin-bottom: 0;
         }
+        a {
+          cursor: pointer;
+        }
       }
     }
     .body {
@@ -54,6 +57,11 @@
     }
     .review-comments {
       display: none;
+      pre {
+        margin: .5em;
+        background: #fff;
+        font-family: $sans;
+      }
       &.is-active {
         display: block;
       }

@@ -1,8 +1,10 @@
-{% extends 'site/review/_layout.twig' %}
+{% extends 'site/invitation/_layout.twig' %}
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
-  <p>Download the paper: <a href="{{ path('uploads_submission', { submission: review.submission.id, secret: review.secret }) }}">{{ review.submission.filename }}</a></p>
+  <p><strong>Title:</strong> {{ review.submission.title }}</p>
+  <p><strong>Paper: </strong> <a href="{{ path('uploads_submission', { submission: review.submission.id, secret: review.secret }) }}">{{ review.submission.filename }}</a></p>
+  <p><strong>Abstract:</strong> {{ review.submission.abstract }}</p>
   {% if reviewInstructions is defined %}{{ reviewInstructions|raw }}{% endif %}
   {{ form_start(reviewForm) }}
     {{ form_row(reviewForm.grade) }}

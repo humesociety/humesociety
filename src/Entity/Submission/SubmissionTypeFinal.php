@@ -21,7 +21,7 @@ class SubmissionTypeFinal extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('file');
+            ->add('finalFile');
     }
 
     /**
