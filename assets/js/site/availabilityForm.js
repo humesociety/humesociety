@@ -1,9 +1,9 @@
 /*
 Set up interactive features of the availability form.
 */
-const formName = document.querySelector('[name="user_full_availability"]')
-  ? 'user_full_availability'
-  : 'user_partial_availability'
+const formName = document.querySelector('[name="user_type_full_availability"]')
+  ? 'user_type_full_availability'
+  : 'user_type_partial_availability'
 
 const availability = document.querySelector(`[name="${formName}"]`)
 

@@ -82,8 +82,8 @@ class NewsItem
         $this->id = null; // Doctrine takes care of this
         $this->category = $category;
         $this->title = null;
-        $this->date = new \DateTime();
-        $this->end = new \DateTime();
+        $this->date = new \DateTime('today');
+        $this->end = new \DateTime('today');
         $this->end->add(new \DateInterval('P4M'));
         $this->content = null;
     }

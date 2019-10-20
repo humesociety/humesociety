@@ -35,7 +35,7 @@ class EmailController extends AbstractController
         $twigs = [
             'area' => 'society',
             'subarea' => 'email',
-            'emailTemplates' => $emailTemplates->getSocietyEmailTemplates()
+            'emailTemplates' => $emailTemplates->getEmailTemplates('society')
         ];
 
         // render and return the page

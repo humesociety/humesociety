@@ -35,6 +35,13 @@ class EmailTemplate
     private $label;
 
     /**
+     * The template's group (from `services.yml`).
+     *
+     * @var string
+     */
+    private $group;
+
+    /**
      * The title of the email template (from `services.yml`).
      *
      * @var string
@@ -81,6 +88,7 @@ class EmailTemplate
     {
         $this->id = null; // Doctrine takes care of this
         $this->label = null;
+        $this->group = null;
         $this->title = null;
         $this->description = null;
         $this->sender = null;
@@ -117,6 +125,28 @@ class EmailTemplate
     public function setLabel(string $label): self
     {
         $this->label = $label;
+        return $this;
+    }
+
+    /**
+     * Get the template's group (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getGroup(): ?string
+    {
+        return $this->group;
+    }
+
+    /**
+     * Set the template's group.
+     *
+     * @param string The template's group.
+     * @return self
+     */
+    public function setGroup(string $group): self
+    {
+        $this->group = $group;
         return $this;
     }
 

@@ -43,6 +43,20 @@
 
 .box-body {
   padding: 1em;
+  h2 {
+    font-size: 1.25em;
+    font-weight: normal;
+    padding: 0 .5em;
+    border-bottom: 1px solid $green;
+    margin-bottom: 1em;
+    &:not(:first-child) {
+      margin-top: 1.25em;
+    }
+  }
+  h3 {
+    font-size: 1.125em;
+    font-weight: normal;
+  }
 }
 
 .box-buttons {

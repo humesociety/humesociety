@@ -34,7 +34,7 @@ class CandidateType extends AbstractType
                     return $er->createQueryBuilder('u')
                         ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
                         ->andWhere('u.dues > :now')
-                        ->setParameter('now', new \DateTime())
+                        ->setParameter('now', new \DateTime('today'))
                         ->orderBy('u.lastname, u.firstname', 'ASC');
                 },
                 'attr' => [

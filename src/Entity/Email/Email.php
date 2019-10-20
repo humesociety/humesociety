@@ -2,8 +2,7 @@
 
 namespace App\Entity\Email;
 
-use App\Entity\Review\Review;
-use App\Entity\Submission\Submission;
+use App\Entity\User\User;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -19,18 +18,11 @@ class Email
     private $sender;
 
     /**
-     * The recipient's name'.
+     * The recipient user.
      *
      * @var string
      */
-    private $recipientName;
-
-    /**
-     * The recipient's email address.
-     *
-     * @var string
-     */
-    private $recipientEmail;
+    private $user;
 
     /**
      * The subject of the email.
@@ -72,8 +64,7 @@ class Email
     public function __construct()
     {
         $this->sender = null;
-        $this->recipientName = null;
-        $this->recipientEmail = null;
+        $this->user = null;
         $this->subject = null;
         $this->attachment = null;
         $this->twigs = ['content' => null];
@@ -103,59 +94,24 @@ class Email
     }
 
     /**
-     * Get the recipient's name (null when the object is created).
+     * Get the recipient (null when the object is created).
      *
      * @return string|null
      */
-    public function getRecipientName(): ?string
+    public function getRecipient(): User
     {
-        return $this->recipientName;
+        return $this->recipient;
     }
 
     /**
-     * Set the recipient's name.
+     * Set the recipient.
      *
-     * @param string The recipient's name.
+     * @param User The recipient.
      * @return self
      */
-    public function setRecipientName($recipientName): self
+    public function setRecipient(User $recipient): self
     {
-        $this->recipientName = $recipientName;
-        return $this;
-    }
-
-    /**
-     * Get the recipient's email address (null when the object is created).
-     *
-     * @return string|null
-     */
-    public function getRecipientEmail(): ?string
-    {
-        return $this->recipientEmail;
-    }
-
-    /**
-     * Set the recipient's email address.
-     *
-     * @param string The recipient's email address.
-     * @return self
-     */
-    public function setRecipientEmail($recipientEmail): self
-    {
-        $this->recipientEmail = $recipientEmail;
-        return $this;
-    }
-
-    /**
-     * Set the recipient's name and email address simultaneously.
-     *
-     * @param User|Reviewer The recipient.
-     * @return self
-     */
-    public function setRecipient($recipient): self
-    {
-        $this->recipientName = $recipient->getFullname();
-        $this->recipientEmail = $recipient->getEmail();
+        $this->recipient = $recipient;
         return $this;
     }
 
@@ -245,6 +201,125 @@ class Email
     public function setContent(string $content): self
     {
         $this->twigs['content'] = $content;
+        return $this;
+    }
+
+    /**
+     * Replace recipient-related variables with their values in the email's subject and content.
+     *
+     * @return self
+     */
+    public function prepareRecipientContent(): self
+    {
+        $email = $this->recipient->getEmail();
+        $firstname = $this->recipient->getFirstname();
+        $lastname = $this->recipient->getLastname();
+        $this->subject = preg_replace('/{{ ?email ?}}/', $email, $this->subject);
+        $this->subject = preg_replace('/{{ ?firstname ?}}/', $firstname, $this->subject);
+        $this->subject = preg_replace('/{{ ?lastname ?}}/', $lastname, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?email ?}}/', $email, $this->twigs['content']);
+        $this->twigs['content'] = preg_replace('/{{ ?firstname ?}}/', $firstname, $this->twigs['content']);
+        $this->twigs['content'] = preg_replace('/{{ ?lastname ?}}/', $lastname, $this->twigs['content']);
+        return $this;
+    }
+
+    /**
+     * Replace conference-related variables with their values in the email's subject and content.
+     *
+     * @param Conference The conference.
+     * @param object Associative array of country codes and names.
+     * @return self
+     */
+    public function prepareConferenceContent(Conference $conference, array $countries): self
+    {
+        $this->prepareRecipientContent();
+        $ordinal = $conference->getOrdinal();
+        $town = $conference->getTown();
+        $country = $countries[$conference->getCountry()];
+        $this->subject = preg_replace('/{{ ?ordinal ?}}/', $ordinal, $this->subject);
+        $this->subject = preg_replace('/{{ ?town ?}}/', $town, $this->subject);
+        $this->subject = preg_replace('/{{ ?country ?}}/', $country, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?ordinal ?}}/', $ordinal, $this->twigs['content']);
+        $this->twigs['content'] = preg_replace('/{{ ?town ?}}/', $town, $this->twigs['content']);
+        $this->twigs['content'] = preg_replace('/{{ ?country ?}}/', $country, $this->twigs['content']);
+        return $this;
+    }
+
+    /**
+     * Replace submission-related variables with their values in the email's subject and content.
+     *
+     * @param Submission The submission.
+     * @param object Associative array of country codes and names.
+     * @return string
+     */
+    private function prepareSubmissionContent(Submission $submission, array $countries): self
+    {
+        $this->prepareConferenceContent($submission->getConference(), $countries);
+        $title = $submission->getTitle();
+        $abstract = $submission->getAbstract();
+        $authors = $submission->getAuthors();
+        $this->subject = preg_replace('/{{ ?title ?}}/', $title, $this->subject);
+        $this->subject = preg_replace('/{{ ?authors ?}}/', $authors, $this->subject);
+        $this->subject = preg_replace('/{{ ?abstract ?}}/', $abstract, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?title ?}}/', $title, $this->twigs['content']);
+        $this->twigs['content'] = preg_replace('/{{ ?authors ?}}/', $authors, $this->twigs['content']);
+        $this->twigs['content'] = preg_replace('/{{ ?abstract ?}}/', $abstract, $this->twigs['content']);
+        return $this;
+    }
+
+    /**
+     * Replace review-related variables with their values in the email's subject and content.
+     *
+     * @param Review The review.
+     * @param object Associative array of country codes and names.
+     * @return string
+     */
+    private function prepareReviewContent(Review $review, array $countries): self
+    {
+        $this->prepareSubmissionContent($review->getSubmission(), $countries);
+        $link = "https://www.humesociety.org/review/{$review->getSecret()}";
+        $link = "<a href=\"{$link}\">{$link}</a>";
+        $this->subject = preg_replace('/{{ ?link ?}}/', $link, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?link ?}}/', $link, $this->twigs['content']);
+        return $this;
+    }
+
+    /**
+     * Replace comment-related variables with their values in the email's subject and content.
+     *
+     * @param Comment The comment.
+     * @param object Associative array of country codes and names.
+     * @return string
+     */
+    private function prepareCommentContent(Comment $comment, array $countries): self
+    {
+        $this->prepareSubmissionContent($comment->getSubmission(), $countries);
+        return $this;
+    }
+
+    /**
+     * Replace chair-related variables with their values in the email's subject and content.
+     *
+     * @param Chair The chair.
+     * @param object Associative array of country codes and names.
+     * @return string
+     */
+    private function prepareChairContent(Chair $chair, array $countries): self
+    {
+        $this->prepareSubmissionContent($chair->getSubmission(), $countries);
+        return $this;
+    }
+
+    /**
+     * Replace paper-related variables with their values in the email's subject and content.
+     *
+     * @param Paper The paper.
+     * @param object Associative array of country codes and names.
+     * @return string
+     */
+    private function preparePaperContent(Paper $paper, array $countries): self
+    {
+        $this->prepareConferenceContent($paper->getConference(), $countries);
         return $this;
     }
 

@@ -66,7 +66,7 @@ class ReviewController extends AbstractController
 
         // initialise the twig variables
         $twigs = [
-            'page' => ['slug' => 'review', 'section' => 'review'],
+            'page' => ['slug' => 'review', 'section' => 'review', 'title' => "Review for “{$review->getSubmission()}”"],
             'review' => $review
         ];
 
@@ -83,7 +83,7 @@ class ReviewController extends AbstractController
                 $reviewForm->handleRequest($request);
                 if ($reviewForm->isSubmitted() && $reviewForm->isValid()) {
                     // submit the review
-                    $review->setDateSubmitted(new \DateTime());
+                    $review->setDateSubmitted(new \DateTime('today'));
                     $reviews->saveReview($review);
                     $emails->sendReviewSubmissionNotification($review);
 

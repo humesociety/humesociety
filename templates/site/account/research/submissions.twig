@@ -1,0 +1,51 @@
+{% extends 'site/account/research/_layout.twig' %}
+
+{% block content %}
+  <div class="section content">
+    <h4>Submissions for the {{ conference }}</h4>
+    {% if submission == null and conference.open %}
+      <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Eastern Time) on {{ conference.deadline|date('F jS') }}. Please submit your paper using the form below.</p>
+      {% if guidanceText is defined %}{{ guidanceText|raw }}{% endif %}
+      {% include 'site/_form/conference-submission.twig' %}
+    {% elseif submission %}
+      {% if submission.status == 'pending' %}
+        <p>Thank you for submitting your paper, {{ submission }}. We will email you when a decision has been made. You can also check the status of your submission on this page at any time.</p>
+      {% elseif submission.status == 'rejected' %}
+        <p>We regret to inform you that your paper has not been accepted for the {{ conference }}. You can read your reviewers&rsquo; comments below.</p>
+      {% elseif submission.status == 'accepted' %}
+        <p>We are pleased to inform you that your paper has been accepted for the {{ conference }}. You can read your reviewers&rsquo; comments below.</p>
+        {% if submission.finalFilename %}
+          <p>Thank you for uploading the final version of your paper.</p>
+        {% else %}
+          <p>Please use the form below to upload the final version of your paper.</p>
+          {% include 'site/_form/conference-submission-final.twig' %}
+        {% endif %}
+        {% if submission.comment %}
+          <p>The commentator for your paper is {{ submission.comment.user }}</p>
+          {% if submission.comment.submitted %}
+            <p>The commentary has been submitted and is available for download: <a href="{{ path('uploads_comment', { comment: submission.comment.id }) }}">{{ submission.comment.filename }}</a>.</p>
+          {% else %}
+            <p>The commentary has not yet been submitted.</p>
+          {% endif %}
+        {% else %}
+          <p>A commentator has not yet been assigned to your paper.</p>
+        {% endif %}
+      {% endif %}
+      {% if submission.status != 'pending' %}
+        <br>
+        <nav class="tabs">
+          {% for review in submission.submittedReviews %}
+            <a data-tab="review{{ loop.index }}"{% if loop.first %} class="is-active"{% endif %}>Review {{ loop.index }}</a>
+          {% endfor %}
+        </nav>
+        {% for review in submission.submittedReviews %}
+          <div class="tab-pane{% if loop.first %} is-active{% endif %}" id="review{{ loop.index }}">
+            <p><strong>Grade:</strong> {{ review.grade }}</p>
+            <p><strong>Comments</strong></p>
+            <pre>{{ review.comments }}</pre>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}

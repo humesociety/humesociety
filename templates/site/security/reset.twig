@@ -1,10 +1,8 @@
 {% extends 'site/security/_layout.twig' %}
 
-{% block title %}Reset Password{% endblock %}
-
 {% block main %}
   <div class="section content">
-    <h1>Reset Password for {{ user.username }}</h1>
+    {% embed 'site/_embed/heading.twig' %}{% endembed %}
     {% include 'site/_form/reset-password.twig' %}
   </div>
 {% endblock %}

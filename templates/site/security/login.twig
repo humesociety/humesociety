@@ -1,8 +1,6 @@
 {% extends 'site/security/_layout.twig' %}
 
-{% block title %}Sign In{% endblock %}
-
 {% block main %}
-  <h1>Sign In</h1>
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
   {% include 'site/_form/login.twig' %}
 {% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Submission Reviews{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/submission-box.twig' %}
+    {% block body %}
+      <h2>Invite Someone to Review this Paper</h2>
+      {% include 'admin/_form/invitation-existing.twig' %}
+      {% include 'admin/_form/invitation-new.twig' %}
+      <h2>Current Invitations</h2>
+      {% if submission.reviews|length > 0 %}
+        <div class="list">
+          {% for review in submission.reviews %}
+            <div class="list-item">
+              <div class="heading">
+                <div class="left">
+                  <h3>{{ review.user }}</h3>
+                </div>
+                {% if review.status == 'submitted' %}
+                  <div class="right">Grade: {{ review.grade }} <a data-action="toggle-review-details">Show Comments</a></div>
+                {% elseif review.status != 'rejected' %}
+                  <div class="right"><a href="{{ path('admin_conference_submission_email_review_reminder', { review: review.id }) }}" class="button">email reminder</a></div>
+                {% endif %}
+                <div class="right"><i class="{{ review.statusIcon }}"></i> {{ review.status }}</div>
+              </div>
+              {% if review.submitted %}
+                <div class="review-comments">
+                  <pre>{{ review.comments }}</pre>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>There are no review invitations for this submission. Use the forms above to invite someone to review.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

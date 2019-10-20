@@ -1,0 +1,38 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Submission Chair{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/submission-box.twig' %}
+    {% block body %}
+      {% if submission.chair %}
+        <h2>Chair Assigned</h2>
+        <p>{{ submission.chair.user }} has accepted the invitation to chair the session for this paper.</p>
+      {% else %}
+        <h2>Invite Someone to Chair the Session for this Paper</h2>
+        {% include 'admin/_form/invitation-existing.twig' %}
+        {% include 'admin/_form/invitation-new.twig' %}
+        <h2>Current Invitations</h2>
+        {% if submission.chairs|length > 0 %}
+          <div class="list">
+            {% for chair in submission.chairs %}
+              <div class="list-item">
+                <div class="heading">
+                  <div class="left">
+                    <h3>{{ chair.user }}</h3>
+                  </div>
+                  {% if not chair.accepted %}
+                    <div class="right"><a href="{{ path('admin_conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">email reminder</a></div>
+                  {% endif %}
+                  <div class="right"><i class="{{ chair.statusIcon }}"></i> {{ chair.status }}</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No one has been invited to chair the session for this paper.</p>
+        {% endif %}
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

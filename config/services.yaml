@@ -42,34 +42,106 @@ parameters:
         committee-voting: Commitee Voting Form
 
     society_email_template_ids: welcome|reminder
-    society_email_templates:
+    conference_email_template_group_ids: submission|review|comment|chair|paper
+    conference_email_template_ids: submission-acknowledgement|submission-acceptance|submission-rejection|submission-reminder|submission-comments-submitted|review-invitation|review-invitation-reminder|review-submission-reminder|comment-invitation|comment-invitation-reminder|comment-paper-submitted|comment-submission-reminder|chair-invitation|chair-invitation-reminder|paper-invitation|paper-invitation-reminder
+
+    email_templates:
+        # society email templates
         welcome:
+            group: society
+            sender: vicepresident
             title: Welcome
             description: The welcome email is sent out to each individual as soon as they complete their registration on the site (and pay their dues through PayPal).
         reminder:
+            group: society
+            sender: vicepresident
             title: Dues Reminder
             description: The dues reminder email is sent out to every member at the start of the month when their subscription is due (i.e. 1st June or 1st December).
-
-    conference_email_template_ids: submission|review|pending-reminder|accepted-reminder|accept|reject
-    conference_email_templates:
-        submission:
+        # submission-related email templates
+        submission-acknowledgement:
+            group: submission
+            sender: conference
             title: Submission Acknowledgement
             description: The submission acknowledgement email is sent out to a user when they submit a paper for the Hume Conference.
-        review:
-            title: Review Invitation
-            description: The review invitation email is sent out to someone you invite to review a paper.
-        pending-reminder:
-            title: Review Invitation Reminder
-            description: The review invitation reminder email can be sent out at any time to reviewers who have not yet responded to an invitation to review a paper.
-        accepted-reminder:
-            title: Review Submission Reminder
-            description: The review submission email can be sent out at any time to reviewers who have accepted an invitation to review, but not yet submitted the review itself.
-        accept:
+        submission-acceptance:
+            group: submission
+            sender: conference
             title: Submission Acceptance
             description: The acceptance email is sent out to a user when you accept their paper.
-        reject:
+        submission-rejection:
+            group: submission
+            sender: conference
             title: Submission Rejection
             description: The rejection email is sent out to a user when you reject their paper.
+        submission-reminder:
+            group: submission
+            sender: conference
+            title: Submission Reminder
+            description: The submission reminder email can be sent out at any time to users whose paper has been accepted, but who have not yet submitted their final version.
+        submission-comments-submitted:
+            group: submission
+            sender: conference
+            title: Comments Submitted
+            description: The comments submitted email is sent out users whose paper has been accepted, when the comments on their paper have been uploaded.
+        # review-related email templates
+        review-invitation:
+            group: review
+            sender: conference
+            title: Review Invitation
+            description: The review invitation email is sent out to users who you invite to review a paper.
+        review-invitation-reminder:
+            group: review
+            sender: conference
+            title: Review Invitation Reminder
+            description: The review invitation reminder email can be sent out at any time to users who have not yet responded to an invitation to review a paper.
+        review-submission-reminder:
+            group: review
+            sender: conference
+            title: Review Submission Reminder
+            description: The review submission email can be sent out at any time to users who have accepted an invitation to review a paper, but have not yet submitted their review.
+        # comment-related email templates
+        comment-invitation:
+            group: comment
+            sender: conference
+            title: Comment Invitation
+            description: The comment invitation email is sent out to users who you invite to comment on a paper.
+        comment-invitation-reminder:
+            group: comment
+            sender: conference
+            title: Comment Invitation Reminder
+            description: The comment invitation reminder email can be sent out at any time to users who have not yet responded to an invitation to comment on a paper.
+        comment-paper-submitted:
+            group: comment
+            sender: conference
+            title: Paper Submitted
+            description: The paper submitted email is sent out users who have accepted an invitation to comment on a paper, when the final version of that paper has been uploaded.
+        comment-submission-reminder:
+            group: comment
+            sender: conference
+            title: Comment Submission Reminder
+            description: The comment submission email can be sent out at any time to users who have accepted an invitation to comment on a paper, but have not yet submitted their comments.
+        # chair-related email templates
+        chair-invitation:
+            group: chair
+            sender: conference
+            title: Chair Invitation
+            description: The chair invitation email is sent out to users who you invite to chair a session.
+        chair-invitation-reminder:
+            group: chair
+            sender: conference
+            title: Chair Invitation Reminder
+            description: The chair invitation reminder email can be sent out at any time to users who have not yet responded to an invitation to chair a session.
+        # paper-related email templates
+        paper-invitation:
+            group: paper
+            sender: conference
+            title: Paper Invitation
+            description: The paper invitation email is send out to users who you invite to present a paper at the Hume Conference.
+        paper-invitation-reminder:
+            group: paper
+            sender: conference
+            title: Paper Invitation Reminder
+            description: The paper invitation reminder email can be sent out at any time to users who have been invited to present at the Hume Conference, but have not yet submitted their paper.
 
     news_category_ids: society|members|conferences|fellowships
     news_categories:

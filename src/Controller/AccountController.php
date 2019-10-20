@@ -2,29 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Conference\ConferenceHandler;
 use App\Entity\DuesPayment\DuesPayment;
 use App\Entity\DuesPayment\DuesPaymentHandler;
 use App\Entity\Email\EmailHandler;
-use App\Entity\Submission\Submission;
-use App\Entity\Submission\SubmissionHandler;
-use App\Entity\Submission\SubmissionType;
-use App\Entity\Text\TextHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserTypeDetails;
 use App\Entity\User\UserTypeChangePassword;
-use App\Entity\User\UserTypeFullAvailability;
-use App\Entity\User\UserTypePartialAvailability;
 use App\Entity\User\UserTypeSettings;
-use App\Entity\User\UserTypeVolunteer;
-use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Core\ProductionEnvironment;
-use PayPalCheckoutSdk\Core\SandboxEnvironment;
-use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,7 +38,7 @@ class AccountController extends AbstractController
     {
         // initialise the twig variables
         $twigs = [
-            'page' => ['slug' => 'details', 'section' => 'account'],
+            'page' => ['slug' => 'details', 'section' => 'account', 'title' => 'Personal Information'],
             'tab' => $tab
         ];
 
@@ -83,122 +70,16 @@ class AccountController extends AbstractController
     }
 
     /**
-     * Route for changing the account password.
+     * Route for managing conference submissions, reviews, etc.
      *
-     * @param Request Symfony's request object.
-     * @param UserHandler The user handler.
-     * @param UserPasswordEncoderInterface Symfony's password encoder.
      * @return Response
-     * @Route("/password", name="password")
+     * @Route("/research", name="research")
      * @IsGranted("ROLE_USER")
      */
-    public function password(
-        Request $request,
-        UserHandler $users,
-        UserPasswordEncoderInterface $passwordEncoder
-    ): Response {
-        // initialise the twig variables
-        $twigs = [
-            'page' => ['slug' => 'password', 'section' => 'account']
-        ];
-
-        // create and handle the change password form
-        $changePasswordForm = $this->createForm(UserTypeChangePassword::class);
-        $changePasswordForm->handleRequest($request);
-        if ($changePasswordForm->isSubmitted() && $changePasswordForm->isValid()) {
-            $plainPassword = $changePasswordForm->get('new_password')->getData();
-            $encodedPassword = $passwordEncoder->encodePassword($this->getUser(), $plainPassword);
-            $this->getUser()->setPassword($encodedPassword);
-            $users->saveUser($this->getUser());
-            $this->addFlash('success', 'Your password has been changed.');
-        }
-
-        // add additional twig variables
-        $twigs['changePasswordForm'] = $changePasswordForm->createView();
-
-        // render and return the page
-        return $this->render('site/account/password.twig', $twigs);
-    }
-
-    /**
-     * Route for submitting/viewing papers and reviews.
-     *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param EmailHandler The email handler.
-     * @param SubmissionHandler The submission handler.
-     * @param TextHandler The text handler.
-     * @param UserHandler The user handler.
-     * @param string The initially visible tab.
-     * @return Response
-     * @Route("/research/{tab}", name="research", requirements={"tab": "availability|submissions|reviews"})
-     * @IsGranted("ROLE_USER")
-     */
-    public function research(
-        Request $request,
-        ConferenceHandler $conferences,
-        EmailHandler $emails,
-        SubmissionHandler $submissions,
-        TextHandler $texts,
-        UserHandler $users,
-        string $tab = 'availability'
-    ): Response {
-        // initialise the twig variables
-        $twigs = [
-            'page' => ['slug' => 'research', 'section' => 'account'],
-            'tab' => $tab
-        ];
-
-        // look for the current conference (possibly null)
-        $conference = $conferences->getCurrentConference();
-
-        // now do things a little differently depending on whether or not there's a current conference
-        if ($conference) {
-            // create the FULL research availability form
-            $availabilityForm = $this->createForm(UserTypeFullAvailability::class, $this->getUser());
-            $availabilityForm->handleRequest($request);
-
-            // create and handle the submission form
-            $submission = new Submission($this->getUser(), $conference);
-            $submissionForm = $this->createForm(SubmissionType::class, $submission);
-            $submissionForm->handleRequest($request);
-            if ($submissionForm->isSubmitted() && $conference->isOpen()) {
-                $tab = 'submissions';
-                if ($submissionForm->isValid()) {
-                    $submissions->saveSubmission($submission);
-                    $users->refreshUser($this->getUser());
-                    $emails->sendSubmissionEmail($submission, 'submission');
-                    $emails->sendSubmissionNotification($submission);
-                    $message = 'Your paper has been submitted. A confirmation email has been '
-                             . 'sent to '.$this->getUser()->getEmail();
-                    $this->addFlash('success', $message);
-                }
-            } elseif ($submissionForm->isSubmitted() && $conference->isClosed()) {
-                $submissionForm->get('title')->addError(new FormError('The submissions deadline has now passed.'));
-            }
-
-            // add additional twig variables
-            $twigs['conference'] = $conference;
-            $twigs['submissionForm'] = $submissionForm->createView();
-            $twigs['guidanceText'] = $texts->getTextContentByLabel('submission');
-        } else {
-            // create the PARTIAL research availability form
-            $availabilityForm = $this->createForm(UserTypeFullAvailability::class, $this->getUser());
-            $availabilityForm->handleRequest($request);
-        }
-
-        // handle the research availability form
-        $availabilityForm->handleRequest($request);
-        if ($availabilityForm->isSubmitted() && $availabilityForm->isValid()) {
-            $users->saveUser($this->getUser());
-            $this->addFlash('success', 'Your availability has been updated.');
-        }
-
-        // add additional twig variables
-        $twigs['availabilityForm'] = $availabilityForm->createView();
-
-        // return the response
-        return $this->render('site/account/research.twig', $twigs);
+    public function research(): Response
+    {
+        // redirect to the research avaiability page
+        return $this->redirectToRoute('account_research_availability');
     }
 
     /**
@@ -223,7 +104,7 @@ class AccountController extends AbstractController
 
         // initialise the twig variables
         $twigs = [
-            'page' => ['slug' => 'pay', 'section' => 'account'],
+            'page' => ['slug' => 'pay', 'section' => 'account', 'title' => 'Pay Dues'],
             'payable' => $payable
         ];
 
@@ -249,40 +130,71 @@ class AccountController extends AbstractController
         UserHandler $users,
         string $orderId
     ): Response {
-        // create the PayPal environment
-        if ($_ENV['APP_ENV'] === 'prod') {
-            $environment = new ProductionEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SECRET']);
-        } else {
-            $environment = new SandboxEnvironment($_ENV['PAYPAL_CLIENT_ID'], $_ENV['PAYPAL_SECRET']);
-        }
+        // initialise the twig variables
+        $twigs = [
+            'page' => ['slug' => 'pay', 'section' => 'account', 'title' => 'Pay Dues'],
+            'orderId' => $orderId
+        ];
 
-        // create the PayPal client and check the order status
-        $client = new PayPalHttpClient($environment);
-        $response = $client->execute(new OrdersGetRequest($orderId));
-        $result = $response->result;
+        // fetch the details of the order from PayPal
+        $order = $duesPayments->fetchOrderFromPaypal($orderId);
 
         // if the payment is complete, update the database
-        if ($result->status === 'COMPLETED') {
-            $duesPayment = $duesPaymentHandler->getDuesPaymentByPaypalOrderId($orderId);
+        if ($order->status === 'COMPLETED') {
+            $twigs['completed'] = true;
+            $duesPayment = $duesPayments->getDuesPaymentByPaypalOrderId($orderId);
             if (!$duesPayment) {
                 $newMember = ($this->getUser()->getDues() === null);
-                $duesPayment = new DuesPayment($this->getUser(), $orderId);
-                $duesPayment->setAmount($result->purchase_units[0]->amount->value);
-                $duesPayment->setDescription($result->purchase_units[0]->description);
+                $duesPayment = $duesPayments->createFromOrder($this->getUser(), $oderId, $order);
                 $duesPayments->saveDuesPayment($duesPayment);
                 $users->updateDues($this->getUser(), $duesPayment);
                 if ($newMember) {
                     $emails->sendSocietyEmail($this->getUser(), 'welcome');
                 }
             }
+        } else {
+            $twigs['completed'] = false;
         }
 
         // return the response
-        return $this->render('site/account/paid.twig', [
-            'page' => ['slug' => 'pay', 'section' => 'account'],
-            'orderId' => $orderId,
-            'result' => $result,
-            'duesPayment' => $duesPayment
-        ]);
+        return $this->render('site/account/paid.twig', $twigs);
+    }
+
+    /**
+     * Route for changing the account password.
+     *
+     * @param Request Symfony's request object.
+     * @param UserHandler The user handler.
+     * @param UserPasswordEncoderInterface Symfony's password encoder.
+     * @return Response
+     * @Route("/password", name="password")
+     * @IsGranted("ROLE_USER")
+     */
+    public function password(
+        Request $request,
+        UserHandler $users,
+        UserPasswordEncoderInterface $passwordEncoder
+    ): Response {
+        // initialise the twig variables
+        $twigs = [
+            'page' => ['slug' => 'password', 'section' => 'account', 'title' => 'Change Password']
+        ];
+
+        // create and handle the change password form
+        $changePasswordForm = $this->createForm(UserTypeChangePassword::class);
+        $changePasswordForm->handleRequest($request);
+        if ($changePasswordForm->isSubmitted() && $changePasswordForm->isValid()) {
+            $plainPassword = $changePasswordForm->get('new_password')->getData();
+            $encodedPassword = $passwordEncoder->encodePassword($this->getUser(), $plainPassword);
+            $this->getUser()->setPassword($encodedPassword);
+            $users->saveUser($this->getUser());
+            $this->addFlash('success', 'Your password has been changed.');
+        }
+
+        // add additional twig variables
+        $twigs['changePasswordForm'] = $changePasswordForm->createView();
+
+        // render and return the page
+        return $this->render('site/account/password.twig', $twigs);
     }
 }

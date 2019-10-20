@@ -4,8 +4,6 @@ namespace App\Entity\User;
 
 use App\Entity\Candidate\Candidate;
 use App\Entity\Conference\Conference;
-use App\Entity\Foo;
-use App\Entity\Reviewer\Reviewer;
 use App\Entity\Submission\Submission;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -297,22 +295,93 @@ class User implements UserInterface
     private $mailingAddress;
 
     /**
-     * A collection of the user's submissions to the Hume Conference.
+     * Whether the user is "active".
+     *
+     * This property can be toggled by the Hume Conference organisers. An "active" user will show up
+     * in the dropdown lists of users who can be invited to review, chair, or comment on a paper.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    private $active;
+
+    /**
+     * Whether the user is "invited".
+     *
+     * This property is set to TRUE when the user has been created by the conference directors in
+     * order to invite them to do something (review, comment, etc.). If the invitation is declined,
+     * the account should be deleted. If the invitation is accepted, the user should set their own
+     * password and the property should be set to FALSE.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    private $invited;
+
+    /**
+     * The user's submitted papers for the Hume Conference.
      *
      * @var Submission[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Submission\Submission",
+     *     mappedBy="user",
+     *     cascade={"persist", "remove"}
+     * )
      * @ORM\JoinColumn(nullable=false)
      */
     private $submissions;
 
     /**
-     * The user's linked reviewer entity (if any).
+     * The user's invited papers for the Hume Conference.
      *
-     * @var Reviewer
-     * @ORM\OneToOne(targetEntity="App\Entity\Reviewer\Reviewer", mappedBy="user", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true)
+     * @var Paper[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Paper\Paper",
+     *     mappedBy="user",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $reviewer;
+    private $papers;
+
+    /**
+     * The user's invitations to review a paper submitted to the Hume Conference.
+     *
+     * @var Review[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Review\Review",
+     *     mappedBy="user",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $reviews;
+
+    /**
+     * The user's invitations to comment on a paper given at the Hume Conference.
+     *
+     * @var Comment[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Comment\Comment",
+     *     mappedBy="user",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $comments;
+
+    /**
+     * The user's invitations to chair a session at the Hume Conference.
+     *
+     * @var Paper[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Chair\Chair",
+     *     mappedBy="user",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $chairs;
 
     /**
      * Whether the user is willing to receive requests to review articles.
@@ -325,7 +394,7 @@ class User implements UserInterface
     /**
      * Whether the user is willing to comment on a paper for the next Hume Conference.
      *
-     * Note that this should automatically be reset to false when the conference ends.
+     * Note that this should automatically be reset to false when the current conference ends.
      *
      * @var bool
      * @ORM\Column(type="boolean", options={"default": false})
@@ -335,7 +404,7 @@ class User implements UserInterface
     /**
      * Whether the user is willing to chair a session at the next Hume Conference.
      *
-     * Note that this should automatically be reset to false when the conference ends.
+     * Note that this should automatically be reset to false when the current conference ends.
      *
      * @var bool
      * @ORM\Column(type="boolean", options={"default": false})
@@ -387,7 +456,7 @@ class User implements UserInterface
         $this->email = null;
         $this->roles = ['ROLE_USER']; // everyone is at least a user
         $this->password = null;
-        $this->dateJoined = new \DateTime();
+        $this->dateJoined = new \DateTime('today');
         $this->rejoined = false; // TODO: let people indicate if they are rejoining
         $this->lastLogin = null;
         $this->candidacies = new ArrayCollection();
@@ -411,8 +480,13 @@ class User implements UserInterface
         $this->receiveEmail = true;
         $this->receiveHumeStudies = true;
         $this->mailingAddress = null;
+        $this->active = false;
+        $this->invited = false;
         $this->submissions = new ArrayCollection();
-        $this->reviewer = null;
+        $this->papers = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->chairs = new ArrayCollection();
         $this->willingToReview = false;
         $this->willingToComment = false;
         $this->willingToChair = false;
@@ -751,7 +825,7 @@ class User implements UserInterface
         for ($i = 0; $i < 10; $i++) {
             $this->passwordResetSecret .= $characters[rand(0, strlen($characters) - 1)];
         }
-        $this->passwordResetSecretExpires = new \DateTime('+1 day');
+        $this->passwordResetSecretExpires = new \DateTime('+12 hours');
         return $this;
     }
 
@@ -1022,7 +1096,7 @@ class User implements UserInterface
      *
      * @return bool
      */
-    public function getReceiveEmail(): ?bool
+    public function getReceiveEmail(): bool
     {
         return $this->receiveEmail;
     }
@@ -1044,7 +1118,7 @@ class User implements UserInterface
      *
      * @return bool
      */
-    public function getReceiveHumeStudies(): ?bool
+    public function getReceiveHumeStudies(): bool
     {
         return $this->receiveHumeStudies;
     }
@@ -1084,7 +1158,51 @@ class User implements UserInterface
     }
 
     /**
-     * Get the collection of the user's submissions to the Hume Conference.
+     * Get whether the user is "active".
+     *
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * Set whether the user is "active".
+     *
+     * @param bool Whether the user is "active".
+     * @return self
+     */
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+        return $this;
+    }
+
+    /**
+     * Get whether the user is invited.
+     *
+     * @return bool
+     */
+    public function isInvited(): bool
+    {
+        return $this->invited;
+    }
+
+    /**
+     * Set whether the user is invited.
+     *
+     * @param bool Whether the user is invited.
+     * @return self
+     */
+    public function setInvited(bool $invited): self
+    {
+        $this->invited = $invited;
+        return $this;
+    }
+
+    /**
+     * Get the user's papers submitted to the Hume Conference.
      *
      * @param Conference|null Optional conference to restrict to.
      * @return Submission[]
@@ -1094,55 +1212,138 @@ class User implements UserInterface
         if ($conference === null) {
             return $this->submissions;
         }
-        $submissions = new ArrayCollection();
-        foreach ($this->submissions as $submission) {
-            if ($submission->getConference() === $conference) {
-                $submissions->add($submission);
-            }
-        }
-        return $submissions;
+        return $this->submissions->filter(function ($submission) use ($conference) {
+            return $submission->getConference() === $conference;
+        });
     }
 
     /**
-     * Get a collection of the user's submissions excluding those to the given conference.
+     * Get the user's invited papers for the Hume Conference.
      *
-     * @param Conference|null Optional conference to exclude.
-     * @return Submission[]
+     * @param Conference|null Optional conference to restrict to.
+     * @return Paper[]
      */
-    public function getSubmissionsWithoutConference(?Conference $conference = null): Collection
+    public function getPapers(?Conference $conference = null): Collection
     {
         if ($conference === null) {
-            return $this->submissions;
+            return $this->papers;
         }
-        $submissions = new ArrayCollection();
-        foreach ($this->submissions as $submission) {
-            if ($submission->getConference() !== $conference) {
-                $submissions->add($submission);
-            }
-        }
-        return $submissions;
+        return $this->papers->filter(function ($paper) use ($conference) {
+            return $paper->getConference() === $conference;
+        });
     }
 
     /**
-     * Get the user's linked reviewer entity.
+     * Get the user's invitations to review a paper submitted to the Hume Conference.
      *
-     * @return Reviewer|null
+     * @param Conference|null Optional conference to restrict to.
+     * @return Review[]
      */
-    public function getReviewer(): ?Reviewer
+    public function getReviews(?Conference $conference = null): Collection
     {
-        return $this->reviewer;
+        if ($conference === null) {
+            return $this->reviews;
+        }
+        return $this->reviews->filter(function ($review) use ($conference) {
+            return $review->getSubmission()->getConference() === $conference;
+        });
     }
 
     /**
-     * Set the user's linked reviewer entity.
+     * Get the user's accepted invitations to review a paper submitted to the Hume Conference.
      *
-     * @param Reviewer|null The user's liked reviewer entity.
-     * @return self
+     * @param Conference|null Optional conference to restrict to.
+     * @return Review[]
      */
-    public function setReviewer(?Reviewer $reviewer): self
+    public function getAcceptedReviews(?Conference $conference = null): Collection
     {
-        $this->reviewer = $reviewer;
-        return $this;
+        return $this->getReviews($conference)->filter(function ($review) {
+            return $review->isAccepted();
+        });
+    }
+
+    /**
+     * Get the user's submitted reviews of papers submitted to the Hume Conference.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Review[]
+     */
+    public function getSubmittedReviews(?Conference $conference = null): Collection
+    {
+        return $this->getReviews($conference)->filter(function ($review) {
+            return $review->isSubmitted();
+        });
+    }
+
+    /**
+     * Get the user's invitations to comment on a paper given at the Hume Conference.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Comment[]
+     */
+    public function getComments(?Conference $conference = null): Collection
+    {
+        if ($conference === null) {
+            return $this->comments;
+        }
+        return $this->comments->filter(function ($comment) use ($conference) {
+            return $comment->getSubmission()->getConference() === $conference;
+        });
+    }
+
+    /**
+     * Get the user's accepted invitations to comment on a paper submitted to the Hume Conference.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Comment[]
+     */
+    public function getAcceptedComments(?Conference $conference = null): Collection
+    {
+        return $this->getComments($conference)->filter(function ($comment) {
+            return $comment->isAccepted();
+        });
+    }
+
+    /**
+     * Get the user's submitted comments on a paper submitted to the Hume Conference.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Comment[]
+     */
+    public function getSubmittedComments(?Conference $conference = null): Collection
+    {
+        return $this->getReviews($conference)->filter(function ($comment) {
+            return $comment->isSubmitted();
+        });
+    }
+
+    /**
+     * Get the user's invitations to chair a session at the Hume Conference.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Chair[]
+     */
+    public function getChairs(?Conference $conference = null): Collection
+    {
+        if ($conference === null) {
+            return $this->chairs;
+        }
+        return $this->chairs->filter(function ($chair) use ($conference) {
+            return $chair->getSubmission()->getConference() === $conference;
+        });
+    }
+
+    /**
+     * Get the user's accepted invitations to chair a session at the Hume Conference.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Chair[]
+     */
+    public function getAcceptedChairs(?Conference $conference = null): Collection
+    {
+        return $this->getChairs($conference)->filter(function ($chair) {
+            return $chair->isAccepted();
+        });
     }
 
     /**
@@ -1168,7 +1369,7 @@ class User implements UserInterface
     }
 
     /**
-     * Get whether the user is willing to comment on a paper for the next Hume Conference.
+     * Get whether the user is willing to comment on a paper for the current Hume Conference.
      *
      * @return bool
      */
@@ -1178,9 +1379,9 @@ class User implements UserInterface
     }
 
     /**
-     * Set whether the user is willing to comment on a paper for the next Hume Conference.
+     * Set whether the user is willing to comment on a paper for the current Hume Conference.
      *
-     * @param bool Whether the user is willing to comment on a paper for the next Hume Conference.
+     * @param bool Whether the user is willing to comment on a paper for the current Hume Conference.
      * @return self
      */
     public function setWillingToComment(bool $willingToComment): self
@@ -1190,7 +1391,7 @@ class User implements UserInterface
     }
 
     /**
-     * Get whether the user is willing to chair a session at the next Hume Conference.
+     * Get whether the user is willing to chair a session at the current Hume Conference.
      *
      * @return bool
      */
@@ -1200,9 +1401,9 @@ class User implements UserInterface
     }
 
     /**
-     * Set whether the user is willing to chair a session at the next Hume Conference.
+     * Set whether the user is willing to chair a session at the current Hume Conference.
      *
-     * @param bool Whether the user is willing to chair a session at the next Hume Conference.
+     * @param bool Whether the user is willing to chair a session at the current Hume Conference.
      * @return self
      */
     public function setWillingToChair(bool $willingToChair): self
@@ -1250,7 +1451,7 @@ class User implements UserInterface
      */
     public function isMemberInGoodStanding(): bool
     {
-        return $this->isMember() && ($this->lifetimeMember || $this->dues > new \DateTime());
+        return $this->isMember() && ($this->lifetimeMember || $this->dues > new \DateTime('today'));
     }
 
     /**
@@ -1260,7 +1461,7 @@ class User implements UserInterface
      */
     public function isMemberInArrears(): bool
     {
-        return $this->isMember() && (!$this->lifetimeMember && $this->dues < new \DateTime());
+        return $this->isMember() && (!$this->lifetimeMember && $this->dues < new \DateTime('today'));
     }
 
     /**

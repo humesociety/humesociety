@@ -2,7 +2,10 @@
 
 namespace App\Entity\Submission;
 
+use App\Entity\Chair\Chair;
+use App\Entity\Comment\Comment;
 use App\Entity\Conference\Conference;
+use App\Entity\Paper\Paper;
 use App\Entity\Review\Review;
 use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -70,19 +73,6 @@ class Submission
     private $dateSubmitted;
 
     /**
-     * The reviews of the submission.
-     *
-     * @var Review[]
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Review\Review",
-     *     mappedBy="submission",
-     *     cascade={"persist", "remove"}
-     * )
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $reviews;
-
-    /**
      * The title of the paper.
      *
      * @var string
@@ -115,7 +105,7 @@ class Submission
     private $keywords;
 
     /**
-     * The uploaded submission file (used temporarily when uploading the file).
+     * The INITIAL uploaded file.
      *
      * @var UploadedFile|null
      * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
@@ -131,12 +121,51 @@ class Submission
     private $file;
 
     /**
-     * The name of the submission file.
+     * The name of the INITIAL uploaded file.
      *
      * @var string
      * @ORM\Column(type="string", length=255)
      */
     private $filename;
+
+    /**
+     * The reviews of the submission.
+     *
+     * @var Review[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Review\Review",
+     *     mappedBy="submission",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $reviews;
+
+    /**
+     * The (invited) comments on the submission.
+     *
+     * @var Comment[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Comment\Comment",
+     *     mappedBy="submission",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $comments;
+
+    /**
+     * The (invited) chairs for the session.
+     *
+     * @var Chair[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Chair\Chair",
+     *     mappedBy="submission",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $chairs;
 
     /**
      * Whether the submission is accepted (null means decision pending; false means rejected).
@@ -147,12 +176,52 @@ class Submission
     private $accepted;
 
     /**
-     * Whether the user has been emailed informing them of the decision.
+     * The date the user was emailed informing them of the decision (null if not yet emailed).
      *
-     * @var bool
-     * @ORM\Column(type="boolean")
+     * @var \DateTimeInterface|null
+     * @ORM\Column(type="date", nullable=true)
      */
-    private $decisionEmailed;
+    private $dateDecisionEmailed;
+
+    /**
+     * The number of final submission reminder emails sent.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $finalReminderEmails;
+
+    /**
+     * The date the last final submission reminder email was sent.
+     *
+     * @var \DateTimeInterface|null
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $dateLastFinalReminderSent;
+
+    /**
+     * The FINAL uploaded file.
+     *
+     * @var UploadedFile|null
+     * @Assert\NotBlank(groups={"final"}, message="Please attach a file.")
+     * @Assert\File(
+     *     mimeTypes = {
+     *          "application/msword",
+     *          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     *          "application/rtf"
+     *     },
+     *     mimeTypesMessage = "Please upload your paper in Word or RTF format."
+     * )
+     */
+    private $finalFile;
+
+    /**
+     * The name of the FINAL uploaded file.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $finalFilename;
 
     /**
      * Constructor function.
@@ -166,16 +235,22 @@ class Submission
         $this->id = null; // doctrine will take care of this
         $this->user = $user;
         $this->conference = $conference;
-        $this->dateSubmitted = new \DateTime();
-        $this->reviews = new ArrayCollection();
+        $this->dateSubmitted = new \DateTime('today');
         $this->title = null;
         $this->authors = null;
         $this->abstract = null;
         $this->keywords = null;
         $this->file = null;
         $this->filename = null;
+        $this->reviews = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->chairs = new ArrayCollection();
         $this->accepted = null;
-        $this->decisionEmailed = false;
+        $this->dateDecisionEmailed = null;
+        $this->finalReminderEmails = 0;
+        $this->dateLastFinalReminderSent = null;
+        $this->finalFile = null;
+        $this->finalFilename = null;
     }
 
     /**
@@ -185,7 +260,7 @@ class Submission
      */
     public function __toString(): string
     {
-        return $this->title ? $this->title : 'pending submission';
+        return $this->title ? "“{$this->title}”" : 'uninitialised submission';
     }
 
     /**
@@ -226,16 +301,6 @@ class Submission
     public function getDateSubmitted(): \DateTimeInterface
     {
         return $this->dateSubmitted;
-    }
-
-    /**
-     * Get the reviews of this submission.
-     *
-     * @return Review[]
-     */
-    public function getReviews(): Collection
-    {
-        return $this->reviews;
     }
 
     /**
@@ -328,7 +393,7 @@ class Submission
     }
 
     /**
-     * Get the submission file.
+     * Get the INITIAL uploaded file.
      *
      * @return UploadedFile|null
      */
@@ -338,9 +403,9 @@ class Submission
     }
 
     /**
-     * Set the submission file (and the filename at the same time).
+     * Set the INITIAL uploaded file (and the filename at the same time).
      *
-     * @param UploadedFile|null The submission file.
+     * @param UploadedFile|null The INITIAL uploaded file.
      * @return self
      */
     public function setFile(?UploadedFile $file): self
@@ -353,13 +418,95 @@ class Submission
     }
 
     /**
-     * Get the name of the submission file (null when the object is first created).
+     * Get the name of the INITIAL uploaded file (null when the object is first created).
      *
      * @return string|null
      */
     public function getFilename(): ?string
     {
         return $this->filename;
+    }
+
+    /**
+     * Get the FINAL uploaded file.
+     *
+     * @return UploadedFile|null
+     */
+    public function getFinalFile(): ?UploadedFile
+    {
+        return $this->finalFile;
+    }
+
+    /**
+     * Get the reviews of this submission.
+     *
+     * @return Review[]
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    /**
+     * Get the submitted reviews of this submission.
+     *
+     * @return Review[]
+     */
+    public function getSubmittedReviews(): Collection
+    {
+        return $this->reviews->filter(function ($review) {
+            return $review->isSubmitted();
+        });
+    }
+
+    /**
+     * Get the (invited) comments on this submission.
+     *
+     * @return Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    /**
+     * Get the accepted comment comment invitation for this submission.
+     *
+     * @return Comment|null
+     */
+    public function getComment(): ?Comment
+    {
+        foreach ($this->comments as $comment) {
+            if ($comment->isAccepted()) {
+                return $comment;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the (invited) chairs for the session.
+     *
+     * @return Chair[]
+     */
+    public function getChairs(): Collection
+    {
+        return $this->chairs;
+    }
+
+    /**
+     * Get the accepted chair for the session.
+     *
+     * @return Chair|null
+     */
+    public function getChair(): ?Chair
+    {
+        foreach ($this->chairs as $chair) {
+            if ($chair->isAccepted()) {
+                return $chair;
+            }
+        }
+        return null;
     }
 
     /**
@@ -385,44 +532,15 @@ class Submission
     }
 
     /**
-     * Get whether the user has been emailed the decision.
-     *
-     * @return bool
-     */
-    public function getDecisionEmailed(): bool
-    {
-        return $this->decisionEmailed;
-    }
-
-    /**
-     * Set whether the user has been emailed the decision.
-     *
-     * @param bool Whether the user has been emailed the decision.
-     * @return self
-     */
-    public function setDecisionEmailed(bool $decisionEmailed): self
-    {
-        $this->decisionEmailed = $decisionEmailed;
-        return $this;
-    }
-
-    /**
-     * Get path to this file in the uploads subdirectory (overwrite the Upload default).
-     *
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return 'submissions/user'.$this->getUser()->getId().'/'.$this->getConference()->getNumber().'/';
-    }
-
-    /**
      * Get the status of the submission.
      *
      * @return string
      */
     public function getStatus(): string
     {
+        if ($this->finalFilename !== null) {
+            return 'submitted';
+        }
         if ($this->accepted === true) {
             return 'accepted';
         }
@@ -430,6 +548,139 @@ class Submission
             return 'rejected';
         }
         return 'pending';
+    }
+
+    /**
+     * Get the status icon.
+     *
+     * @return string
+     */
+    public function getStatusIcon(): string
+    {
+        switch ($this->getStatus()) {
+            case 'submitted':
+                return 'fas fa-check-double';
+
+            case 'accepted':
+                return 'fas fa-check';
+
+            case 'rejected':
+                return 'fas fa-times';
+
+            case 'pending':
+                return 'fas fa-hourglass-half';
+        }
+    }
+
+    /**
+     * Get the date when the user was emailed the decision (if any).
+     *
+     * @return \DateTimeInterface|null
+     */
+    public function getDateDecisionEmailed(): ?\DateTimeInterface
+    {
+        return $this->dateDecisionEmailed;
+    }
+
+    /**
+     * Set the date when the user was emailed the decision (set it to today's date).
+     *
+     * @return self
+     */
+    public function setDateDecisionEmailed(): self
+    {
+        $this->dateDecisionEmailed = new \DateTime('today');
+        return $this;
+    }
+
+    /**
+     * Get whether the user has been emailed the decision.
+     *
+     * @return bool
+     */
+    public function getDecisionEmailed(): bool
+    {
+        return $this->dateDecisionEmailed !== null;
+    }
+
+    /**
+     * Get the number of final submission reminder emails sent.
+     *
+     * @return int
+     */
+    public function getFinalReminderEmails(): int
+    {
+        return $this->finalReminderEmails;
+    }
+
+    /**
+     * Increment the number of final submission reminder emails sent.
+     *
+     * @return self
+     */
+    public function incrementFinalReminderEmails(): self
+    {
+        $this->finalReminderEmails += 1;
+        $this->dateLastFinalReminderSent = new \DateTime('today');
+        return $this;
+    }
+
+    /**
+     * Get the date the last final submission reminder email was sent.
+     *
+     * @return \DateTimeInferface|null
+     */
+    public function getDateLastFinalReminderSent(): ?\DateTimeInterface
+    {
+        return $this->dateLastFinalReminderSent;
+    }
+
+    /**
+     * Set the FINAL uploaded file (and the filename at the same time).
+     *
+     * @param UploadedFile|null The FINAL uploaded file.
+     * @return self
+     */
+    public function setFinalFile(?UploadedFile $finalFile): self
+    {
+        if ($finalFile !== null) {
+            $this->finalFilename = $file->getClientOriginalName();
+            if ($this->finalFilename === $this->filename) {
+                $this->finalFilename .= '_FINAL';
+            }
+        }
+        $this->finalFile = $finalFile;
+        return $this;
+    }
+
+    /**
+     * Get the name of the FINAL uploaded file (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFinalFilename(): ?string
+    {
+        return $this->finalFilename;
+    }
+
+    /**
+     * Get whether the user has submitted the final version.
+     *
+     * @return bool
+     */
+    public function isSubmitted(): bool
+    {
+        return $this->finalFilename !== null;
+    }
+
+    /**
+     * Get path to the files fpr this submission in the uploads subdirectory.
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return "submissions/user{$this->getUser()->getId()}/{$this->getConference()->getNumber()}/";
     }
 
     /**

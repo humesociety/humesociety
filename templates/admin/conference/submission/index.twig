@@ -1,0 +1,34 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Submissions{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conference Submissions{% endblock %}
+    {% block header_right %}
+      {% if conference.submissions|length > 0 %}
+        <div class="input">
+          <label for="show-keyword">Keyword:</label>
+          <select id="show-keyword" data-include="keyword" data-table="submissions">
+            <option value="all">all</option>
+            {% for keyword in keywords %}
+              <option value="{{ keyword }}">{{ keyword }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="input">
+          <label for="show-status">Decision:</label>
+          <select id="show-status" data-filter="status" data-table="submissions">
+            <option value="all">all</option>
+            <option value="pending">pending</option>
+            <option value="accepted">accepted</option>
+            <option value="rejected">rejected</option>
+          </select>
+        </div>
+      {% endif %}
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/conference/submission/_list.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

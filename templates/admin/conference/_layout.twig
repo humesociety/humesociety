@@ -6,13 +6,13 @@
       <span class="icon"><i class="far fa-file-alt"></i></span>
       <span class="link-text">Conference Details</span>
     </a>
-    <a href="{{ path('admin_conference_custom_index') }}"{% if subarea == 'custom' %} class="is-active"{% endif %}>
+    <a href="{{ path('admin_conference_text_index') }}"{% if subarea == 'text' %} class="is-active"{% endif %}>
       <span class="icon"><i class="fas fa-align-left"></i></span>
-      <span class="link-text">Custom Text &amp; Emails</span>
+      <span class="link-text">Custom Text</span>
     </a>
     <a href="{{ path('admin_conference_email_index') }}"{% if subarea == 'email' %} class="is-active"{% endif %}>
       <span class="icon"><i class="far fa-envelope"></i></span>
-      <span class="link-text">Bulk Emails</span>
+      <span class="link-text">Email Templates</span>
     </a>
     <a href="{{ path('admin_conference_submission_index') }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>
       <span class="icon"><i class="far fa-file-word"></i></span>
@@ -22,9 +22,13 @@
       <span class="icon"><i class="fas fa-hands-helping"></i></span>
       <span class="link-text">Volunteers</span>
     </a>
-    <a href="{{ path('admin_conference_reviewer_index') }}"{% if subarea == 'reviewer' %} class="is-active"{% endif %}>
-      <span class="icon"><i class="fas fa-gavel"></i></span>
-      <span class="link-text">Reviewers</span>
+    <a href="{{ path('admin_conference_paper_index') }}"{% if subarea == 'paper' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-microphone"></i></span>
+      <span class="link-text">Invited Papers</span>
+    </a>
+    <a href="{{ path('admin_conference_user_index') }}"{% if subarea == 'user' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user"></i></span>
+      <span class="link-text">Active Users</span>
     </a>
   </div>
 {% endblock %}

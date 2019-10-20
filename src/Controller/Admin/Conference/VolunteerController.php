@@ -3,8 +3,6 @@
 namespace App\Controller\Admin\Conference;
 
 use App\Entity\Conference\ConferenceHandler;
-use App\Entity\Reviewer\Reviewer;
-use App\Entity\Reviewer\ReviewerHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -28,33 +26,35 @@ class VolunteerController extends AbstractController
      * @param UserHandler The user handler.
      * @param string The initially visible tab.
      * @return Response
-     * @Route("/{tab}", name="index", requirements={"tab": "review|comment|chair"})
+     * @Route("/{tab}", name="index", requirements={"tab": "reviewers|commentators|chairs|speakers|active"})
      */
-    public function index(ConferenceHandler $conferences, UserHandler $users, $tab = 'review'): Response
+    public function index(ConferenceHandler $conferences, UserHandler $users, $tab = 'reviewers'): Response
     {
         // initialise twig variables
         $twigs = [
             'area' => 'conference',
             'subarea' => 'volunteer',
             'title' => 'Conference Volunteers',
-            'tab' => $tab
+            'tab' => $tab,
+            'users' => $users->getUsers()
         ];
 
         // look for the current conference
         $conference = $conferences->getCurrentConference();
 
-        // return a basic page if there isn't one
+        // render and return the page now if there isn't one
         if (!$conference) {
-            return $this->render('admin/conference/no-current-conference.twig', $twigs);
+            return $this->render('admin/conference/volunteer/index.twig', $twigs);
         }
 
-        // add additional twig variables
+        // otherwise add additional twig variables
         $twigs['conference'] = $conference;
-        $twigs['reviewers'] = $users->getReviewVolunteers();
-        $twigs['commentators'] = $users->getCommentVolunteers();
-        $twigs['chairs'] = $users->getChairVolunteers();
+        $twigs['reviewers'] = $users->getReviewers($conference);
+        $twigs['commentators'] = $users->getCommentators($conference);
+        $twigs['chairs'] = $users->getChairs($conference);
+        $twigs['speakers'] = $users->getSpeakers($conference);
 
         // render and return the page
-        return $this->render('admin/conference/volunteer/view.twig', $twigs);
+        return $this->render('admin/conference/volunteer/index.twig', $twigs);
     }
 }

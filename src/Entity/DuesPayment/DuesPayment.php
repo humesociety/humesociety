@@ -73,7 +73,7 @@ class DuesPayment
         $this->id = null; // doctrine takes care of this
         $this->paypalOrderId = $paypalOrderId;
         $this->user = $user;
-        $this->date = new \DateTime();
+        $this->date = new \DateTime('today');
         $this->amount = null;
         $this->description = null;
     }

@@ -1,0 +1,10 @@
+<div class="inline-form">
+  {{ form_start(invitationNewForm) }}
+    {{ form_row(invitationNewForm.firstname) }}
+    {{ form_row(invitationNewForm.lastname) }}
+    {{ form_row(invitationNewForm.email) }}
+    {{ form_row(invitationNewForm._token) }}
+    <div class="buttons">
+      <button type="submit" class="create">Invite New User</button>
+    </div>
+  {{ form_end(invitationNewForm) }}

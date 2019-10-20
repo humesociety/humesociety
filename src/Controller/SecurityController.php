@@ -37,7 +37,7 @@ class SecurityController extends AbstractController
     {
         // initialise the twig variables
         $twigs = [
-            'page' => ['slug' => 'login', 'section' => 'security'],
+            'page' => ['slug' => 'login', 'section' => 'security', 'title' => 'Sign In'],
             'last_username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError()
         ];
@@ -76,7 +76,7 @@ class SecurityController extends AbstractController
         UserHandler $users
     ) : Response {
         // initialise the twig variables
-        $twigs = ['page' => ['slug' => 'register', 'section' => 'security']];
+        $twigs = ['page' => ['slug' => 'register', 'section' => 'security', 'title' => 'Sign Up']];
 
         // create and handle the registration form
         $user = new User();
@@ -109,7 +109,7 @@ class SecurityController extends AbstractController
     public function forgot(Request $request, EmailHandler $emails, UserHandler $users) : Response
     {
         // initialise the twig variables
-        $twigs = ['page' => ['slug' => 'forgot', 'section' => 'security']];
+        $twigs = ['page' => ['slug' => 'forgot', 'section' => 'security', 'title' => 'Forgot Credentials']];
 
         // create and handle the forgot details form
         $forgotCredentialsForm = $this->createForm(UserTypeForgotCredentials::class);
@@ -118,7 +118,7 @@ class SecurityController extends AbstractController
             $email = $forgotCredentialsForm->get('email')->getData();
             $user = $users->getUserByEmail($email);
             if (!$user) {
-                $forgotCredentialsForm->get('email')->addError(new FormError('Email address not found'));
+                $forgotCredentialsForm->get('email')->addError(new FormError('Email address not found.'));
             } else {
                 $user->setPasswordResetSecret();
                 $users->saveUser($user);
@@ -160,8 +160,13 @@ class SecurityController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // throw 404 error if the secret is wrong or has expired
-        if ($user->getPasswordResetSecret() !== $secret || new \DateTime() > $user->getPasswordResetSecretExpires()) {
+        // throw 404 error if the secret is wrong
+        if ($user->getPasswordResetSecret() !== $secret) {
+            throw $this->createNotFoundException('Page not found.');
+        }
+
+        // throw 404 error if the secret has expired
+        if (new \DateTime() > $user->getPasswordResetSecretExpires()) {
             throw $this->createNotFoundException('Page not found.');
         }
 
@@ -179,7 +184,7 @@ class SecurityController extends AbstractController
 
         // initialise the twig variables
         $twigs = [
-            'page' => ['slug' => 'forgot', 'section' => 'security'],
+            'page' => ['slug' => 'reset', 'section' => 'security', 'title' => "Reset Password for {$user}"],
             'user' => $user,
             'resetPasswordForm' => $resetPasswordForm->createView()
         ];

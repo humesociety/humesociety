@@ -1,7 +1,7 @@
 {% extends 'site/review/_layout.twig' %}
 
 {% block main %}
-  <h1>Review for “{{ review.submission }}”</h1>
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
   <p>Download the paper: <a href="{{ path('uploads_submission', { submission: review.submission.id, secret: review.secret }) }}">{{ review.submission.filename }}</a></p>
   {% if reviewInstructions is defined %}{{ reviewInstructions|raw }}{% endif %}
   {{ form_start(reviewForm) }}

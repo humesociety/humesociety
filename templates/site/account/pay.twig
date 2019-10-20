@@ -1,10 +1,8 @@
 {% extends 'site/account/_layout.twig' %}
 
-{% block title %}Pay Dues{% endblock %}
-
 {% block main %}
   <div class="section content">
-  <h1>{% if app.user.member %}Pay Dues{% else %}Join the Society{% endif %}</h1>
+    {% embed 'site/_embed/heading.twig' %}{% endembed %}
     {% if app.user.lifetimeMember %}
       <p>You have a lifetime membership to the Hume Society. Dues payments are not required.</p>
     {% elseif app.user.memberInGoodStanding %}

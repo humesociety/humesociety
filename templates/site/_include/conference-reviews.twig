@@ -1,2 +1,25 @@
+{% set reviews = app.user.getReviews(conference) %}
+
 <h4>Reviews for the {{ conference }}</h4>
-<p>You have not reviewed any papers for the {{ conference }}.</p>
+{% if reviews|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in reviews %}
+        <tr>
+          <td>{{ review.submission.title }}</td>
+          <td>{{ review.status }}</td>
+          <td>{% if review.status == 'pending' %}<a href="{{ path('review_index', { reviewerSecret: review.reviewer.secret, reviewSecret: review.secret }) }}">submit decision</a>{% elseif review.status == 'accepted' %}<a href="{{ path('review_index', { reviewerSecret: review.reviewer.secret, reviewSecret: review.secret }) }}">submit review</a>{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>You have not reviewed any papers for the {{ conference }}.</p>
+{% endif %}

@@ -25,21 +25,7 @@ class EmailTemplateHandler
     private $repository;
 
     /**
-     * Society email template data (from `services.yml`).
-     *
-     * @var object
-     */
-    private $societyEmailTemplates;
-
-    /**
-     * Conference email template data (from `services.yml`).
-     *
-     * @var object
-     */
-    private $conferenceEmailTemplates;
-
-    /**
-     * Society and conference email template data merged.
+     * Email template data (from `services.yml`).
      *
      * @var object
      */
@@ -56,9 +42,8 @@ class EmailTemplateHandler
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(EmailTemplate::class);
-        $this->societyEmailTemplates = $params->get('society_email_templates');
-        $this->conferenceEmailTemplates = $params->get('conference_email_templates');
-        $this->emailTemplates = array_merge($this->societyEmailTemplates, $this->conferenceEmailTemplates);
+        $this->emailTemplates = $params->get('email_templates');
+        $this->conferenceEmailTemplateGroupIds = explode('|', $params->get('conference_email_template_group_ids'));
     }
 
     /**
@@ -69,13 +54,19 @@ class EmailTemplateHandler
      */
     private function enrichEmailTemplate(EmailTemplate $emailTemplate): EmailTemplate
     {
-        $emailTemplate->setTitle($this->emailTemplates[$emailTemplate->getLabel()]['title']);
-        $emailTemplate->setDescription($this->emailTemplates[$emailTemplate->getLabel()]['description']);
+        $template = $this->emailTemplates[$emailTemplate->getLabel()];
+        $emailTemplate->setGroup($template['group']);
+        $emailTemplate->setTitle($template['title']);
+        $emailTemplate->setDescription($template['description']);
+        if ($emailTemplate->getSender() === null) {
+            // set the default sender, only if the sender hasn't been set already
+            $emailTemplate->setSender($template['sender']);
+        }
         return $emailTemplate;
     }
 
     /**
-     * Get an email template from its label. Create it if it doesn't exist.
+     * Get an (enriched) email template from its label. Create it if it doesn't exist.
      *
      * @param string The label of the template to get.
      * @return EmailTemplate
@@ -86,33 +77,38 @@ class EmailTemplateHandler
         if (!$emailTemplate) {
             $emailTemplate = new EmailTemplate();
             $emailTemplate->setLabel($label);
-            if (in_array($label, array_keys($this->societyEmailTemplates))) {
-                $emailTemplate->setSender('vicepresident');
-            } elseif (in_array($label, array_keys($this->conferenceEmailTemplates))) {
-                $emailTemplate->setSender('conference');
-            }
         }
         return $this->enrichEmailTemplate($emailTemplate);
     }
 
     /**
-     * Get society email templates.
+     * Get email templates.
      *
+     * @param string|null Optional group to restrict to.
      * @return EmailTemplate[]
      */
-    public function getSocietyEmailTemplates(): array
+    public function getEmailTemplates(?string $group = null): array
     {
-        return array_map('self::getEmailTemplateByLabel', array_keys($this->societyEmailTemplates));
+        $emailTemplates = ($group === null)
+            ? $this->emailTemplates
+            : array_filter($this->emailTemplates, function ($emailTemplate) use ($group) {
+                return $emailTemplate['group'] === $group;
+            });
+        return array_map('self::getEmailTemplateByLabel', array_keys($emailTemplates));
     }
 
     /**
-     * Get conference email templates.
+     * Get all groups of conference email templates
      *
-     * @return EmailTemplate[]
+     * @return Object
      */
-    public function getConferenceEmailTemplates(): array
+    public function getConferenceEmailTemplateGroups(): array
     {
-        return array_map('self::getEmailTemplateByLabel', array_keys($this->conferenceEmailTemplates));
+        $conferenceEmailTemplateGroups = [];
+        foreach ($this->conferenceEmailTemplateGroupIds as $group) {
+            $conferenceEmailTemplateGroups[$group] = $this->getEmailTemplates($group);
+        }
+        return $conferenceEmailTemplateGroups;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Entity\Review;
 
-use App\Entity\Reviewer\Reviewer;
+use App\Entity\Invitation\Invitation;
 use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,16 +10,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * A review for a submission for the Hume Conference.
+ * A review for a submission to the Hume Conference (or an invitation to review).
  *
  * @ORM\Entity()
  * @UniqueEntity(
- *     fields={"reviewer", "submission"},
- *     errorPath="reviewer",
- *     message="This reviewer has already been invited to review this paper."
+ *     fields={"submission", "user"},
+ *     errorPath="user",
+ *     message="This person has already been invited to review this paper."
  * )
  */
-class Review
+class Review extends Invitation
 {
     /**
      * The review's unique identifier in the database.
@@ -45,41 +45,17 @@ class Review
     private $submission;
 
     /**
-     * The reviewer.
+     * The user invited to review.
      *
-     * @var Reviewer
+     * @var User
      * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Reviewer\Reviewer",
+     *     targetEntity="App\Entity\User\User",
      *     inversedBy="reviews",
      *     cascade={"persist", "remove"}
      * )
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
-    private $reviewer;
-
-    /**
-     * The review's secret (randomly generated string for linking to the review).
-     *
-     * @var string
-     * @ORM\Column(type="string", length=8)
-     */
-    private $secret;
-
-    /**
-     * Whether the reviewer accepts the invitation to review (null means reply pending).
-     *
-     * @var bool|null
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $accepted;
-
-    /**
-     * The date the review is submitted.
-     *
-     * @var \DateTimeInterface|null
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $dateSubmitted;
+    private $user;
 
     /**
      * The reviewer's grade (A|B|C|D).
@@ -107,14 +83,8 @@ class Review
     {
         $this->id = null; // Doctrine takes care of this
         $this->submission = $submission;
-        $this->reviewer = null;
-        $this->secret = '';
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-        for ($i = 0; $i < 8; $i++) {
-            $this->secret .= $characters[rand(0, strlen($characters) - 1)];
-        }
-        $this->accepted = null;
-        $this->dateSubmitted = null;
+        $this->user = null;
+        parent::__construct();
         $this->grade = null;
         $this->comments = null;
     }
@@ -150,77 +120,24 @@ class Review
     }
 
     /**
-    * Get the reviewer (null when the object is first created).
+    * Get the user invited to review (null when the object is first created).
     *
-    * @return Reviewer|null
+    * @return User|null
     */
-    public function getReviewer(): ?Reviewer
+    public function getUser(): ?User
     {
-        return $this->reviewer;
+        return $this->user;
     }
 
     /**
-     * Set the reviewer.
+     * Set the user invited to review.
      *
-     * @var Reviewer The reviewer.
+     * @var User The user invited to review.
      * @return self
      */
-    public function setReviewer(Reviewer $reviewer): self
+    public function setUser(User $user): self
     {
-        $this->reviewer = $reviewer;
-        return $this;
-    }
-
-    /**
-     * Get the review's secret.
-     *
-     * @return string
-     */
-    public function getSecret(): string
-    {
-        return $this->secret;
-    }
-
-    /**
-     * Get whether the reviewer accepts the invitation to review.
-     *
-     * @return bool|null
-     */
-    public function isAccepted(): ?bool
-    {
-        return $this->accepted;
-    }
-
-    /**
-     * Set whether the reviewer accepts the invitation to review.
-     *
-     * @var bool Whether the reviewer accepts the invitation to review.
-     * @return self
-     */
-    public function setAccepted(bool $accepted)
-    {
-        $this->accepted = $accepted;
-    }
-
-    /**
-     * Get the date the review is submitted.
-     *
-     * @return \DateTimeInferface|null
-     */
-    public function getDateSubmitted(): ?\DateTimeInterface
-    {
-        return $this->dateSubmitted;
-    }
-
-    /**
-     * Set the date the review is submitted.
-     *
-     * @var \DateTimeInterface The date the review is submitted.
-     * @return self
-     */
-    public function setDateSubmitted(\DateTimeInterface $dateSubmitted): self
-    {
-        $this->dateSubmitted = $dateSubmitted;
+        $this->user = $user;
         return $this;
     }
 
@@ -266,41 +183,5 @@ class Review
     {
         $this->comments = $comments;
         return $this;
-    }
-
-    /**
-     * Get whether the review is submitted.
-     *
-     * @return bool
-     */
-    public function getSubmitted(): bool
-    {
-        return $this->dateSubmitted !== null;
-    }
-
-    /**
-     * Get the review's status.
-     *
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        if ($this->accepted === true) {
-            return $this->dateSubmitted ? 'submitted' : 'accepted';
-        }
-        if ($this->accepted === false) {
-            return 'declined';
-        }
-        return 'pending';
-    }
-
-    /**
-     * Get the link to this review.
-     *
-     * @return string
-     */
-    public function getLink(): string
-    {
-        return $this->getReviewer()->getSecret().'/'.$this->secret;
     }
 }

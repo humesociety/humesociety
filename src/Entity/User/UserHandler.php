@@ -2,7 +2,9 @@
 
 namespace App\Entity\User;
 
+use App\Entity\Conference\Conference;
 use App\Entity\DuesPayment\DuesPayment;
+use App\Entity\Invitation\Invitation;
 use App\Entity\Submission\SubmissionHandler;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -46,6 +48,27 @@ class UserHandler
     }
 
     /**
+     * Create an invited user from an invitation.
+     *
+     * @param Invitation The invitation.
+     * @return User
+     */
+    public function createInvitedUser(Invitation $invitation): User
+    {
+        $user = new User();
+        $user->setInvited(true);
+        $user->setActive(true);
+        $user->setFirstname($invitation->getFirstname());
+        $user->setLastname($invitation->getLastname());
+        $user->setEmail($invitation->getEmail());
+        // username and password cannot be blank, so set some values; these won't do anything, however -
+        // the user will have to choose their own username and password if they accept the invitation
+        $user->setUsername($invitation->getEmail());
+        $user->setPassword('password');
+        return $user;
+    }
+
+    /**
      * Get an array of all users.
      *
      * @return User[]
@@ -79,7 +102,7 @@ class UserHandler
         return $this->repository->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
             ->andWhere('u.lifetimeMember = true OR u.dues >= :now')
-            ->setParameter('now', new \DateTime())
+            ->setParameter('now', new \DateTime('today'))
             ->orderBy('u.lastname, u.firstname', 'ASC')
             ->getQuery()
             ->getResult();
@@ -95,7 +118,7 @@ class UserHandler
         return $this->repository->createQueryBuilder('u')
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
             ->andWhere('u.lifetimeMember = false AND u.dues < :now')
-            ->setParameter('now', new \DateTime())
+            ->setParameter('now', new \DateTime('today'))
             ->orderBy('u.lastname, u.firstname', 'ASC')
             ->getQuery()
             ->getResult();
@@ -129,7 +152,7 @@ class UserHandler
             ->where('u.roles LIKE \'%ROLE_MEMBER%\'')
             ->andWhere('u.receiveHumeStudies = true')
             ->andWhere('u.dues >= :now')
-            ->setParameter('now', new \DateTime())
+            ->setParameter('now', new \DateTime('today'))
             ->orderBy('u.lastname, u.firstname', 'ASC')
             ->getQuery()
             ->getResult();
@@ -271,45 +294,55 @@ class UserHandler
     }
 
     /**
-     * Get an array of all users who have indicated a willingness to receieve invitations to review.
+     * Get all reviewers for a given conference.
      *
+     * @param Conference The conference.
      * @return User[]
      */
-    public function getReviewVolunteers(): array
+    public function getReviewers(Conference $conference): array
     {
-        return $this->repository->createQueryBuilder('u')
-            ->where('u.willingToReview = TRUE')
-            ->orderBy('u.lastname, u.firstname', 'ASC')
-            ->getQuery()
-            ->getResult();
+        return array_filter($this->getUsers(), function ($user) use ($conference) {
+            return sizeof($user->getReviews($conference)) > 0;
+        });
     }
 
     /**
-     * Get an array of all users who have volunteered to comment on a paper at the next Hume Conference.
+     * Get all commentators for a given conference.
      *
+     * @param Conference The conference.
      * @return User[]
      */
-    public function getCommentVolunteers(): array
+    public function getCommentators(Conference $conference): array
     {
-        return $this->repository->createQueryBuilder('u')
-            ->where('u.willingToComment = TRUE')
-            ->orderBy('u.lastname, u.firstname', 'ASC')
-            ->getQuery()
-            ->getResult();
+        return array_filter($this->getUsers(), function ($user) use ($conference) {
+            return sizeof($user->getComments($conference)) > 0;
+        });
     }
 
     /**
-     * Get an array of all users who have volunteered to chair a session at the next Hume Conference.
+     * Get all chairs for a given conference.
      *
+     * @param Conference The conference.
      * @return User[]
      */
-    public function getChairVolunteers(): array
+    public function getChairs(Conference $conference): array
     {
-        return $this->repository->createQueryBuilder('u')
-            ->where('u.willingToChair = TRUE')
-            ->orderBy('u.lastname, u.firstname', 'ASC')
-            ->getQuery()
-            ->getResult();
+        return array_filter($this->getUsers(), function ($user) use ($conference) {
+            return sizeof($user->getChairs($conference)) > 0;
+        });
+    }
+
+    /**
+     * Get all invited speakers for a given conference.
+     *
+     * @param Conference The conference.
+     * @return User[]
+     */
+    public function getSpeakers(Conference $conference): array
+    {
+        return array_filter($this->getUsers(), function ($user) use ($conference) {
+            return sizeof($user->getPapers($conference)) > 0;
+        });
     }
 
     /**
@@ -370,7 +403,7 @@ class UserHandler
      */
     public function updateLastLogin(User $user)
     {
-        $user->setLastLogin(new \DateTime());
+        $user->setLastLogin(new \DateTime('today'));
         $this->manager->persist($user);
         $this->manager->flush();
     }

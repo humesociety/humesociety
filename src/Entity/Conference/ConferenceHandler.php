@@ -103,7 +103,7 @@ class ConferenceHandler
         // now we may need to remove this year's conference if it's past
         if (sizeof($forthcoming) > 0
             && $forthcoming[0]->getEndDate()
-            && $forthcoming[0]->getEndDate() < new \DateTime()
+            && $forthcoming[0]->getEndDate() < new \DateTime('today')
         ) {
             array_shift($forthcoming);
         }
@@ -213,13 +213,13 @@ class ConferenceHandler
      * Save/update a conference.
      *
      * @param Conference The conference to save/update.
-     * @param int The conference's old path (in case it has changed).
+     * @param string|null The conference's old path (in case it might have changed).
      */
-    public function saveConference(Conference $conference, string $oldPath)
+    public function saveConference(Conference $conference, ?string $oldPath = null)
     {
         $this->manager->persist($conference);
         $this->manager->flush();
-        if ($conference->getPath() !== $oldPath) {
+        if ($oldPath && $conference->getPath() !== $oldPath) {
             $this->uploads->moveFiles($oldPath, $conference->getPath());
         }
         $this->refreshConference($conference);
@@ -244,7 +244,7 @@ class ConferenceHandler
      */
     public function deleteConference(Conference $conference)
     {
-        $conference = $this->enrich($conference);
+        $conference = $this->enrichConference($conference);
         foreach ($conference->getUploads() as $upload) {
             $this->uploads->deleteUpload($upload);
         }

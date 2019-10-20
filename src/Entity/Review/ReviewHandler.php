@@ -2,6 +2,8 @@
 
 namespace App\Entity\Review;
 
+use App\Entity\Conference\Conference;
+use App\Entity\Reviewer\Reviewer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -44,6 +46,25 @@ class ReviewHandler
     public function getReviewers(): array
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * Get reviews for the given user and conference.
+     *
+     * @param User The user.
+     * @param Conference The conference.
+     * @return Review[]
+     */
+    public function getReviews(Reviewer $reviewer, Conference $conference): array
+    {
+        $reviews = $this->repository->createQueryBuilder('r')
+            ->where('r.reviewer = :reviewer')
+            ->setParameter('reviewer', $reviewer)
+            ->getQuery()
+            ->getResult();
+        return array_filter($reviews, function ($review) use ($conference) {
+            return $review->getSubmission()->getConference() === $conference;
+        });
     }
 
     /**

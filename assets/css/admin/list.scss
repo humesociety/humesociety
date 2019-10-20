@@ -1,0 +1,59 @@
+.list {
+  border-left: 1px solid $grey;
+  border-right: 1px solid $grey;
+  margin-bottom: 1em;
+  .list-item {
+    border-left: 3px solid transparent;
+    border-top: 1px solid $grey;
+    border-bottom: 1px solid $grey;
+    margin-bottom: -1px;
+    &:hover {
+      background: lighten($grey, 12%);
+      border-left-color: $green;
+    }
+    .heading {
+      display: flex;
+      align-items: stretch;
+      .left, .right {
+        padding: .5em;
+      }
+      .left {
+        flex: 1;
+        h3, h4 {
+          margin-bottom: 0;
+          font-weight: normal;
+        }
+        h3 {
+          font-size: 1.125em;
+        }
+        h4 {
+          font-size: 1em;
+        }
+      }
+      .right {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        border-left: 1px solid $grey;
+        border-bottom: 1px solid $grey;
+        margin-bottom: -1px;
+        .button {
+          padding: .25em .75em;
+        }
+      }
+    }
+    .body {
+      padding: .5em;
+      input {
+        margin: 0;
+      }
+    }
+    .review-comments {
+      display: none;
+      &.is-active {
+        display: block;
+      }
+    }
+  }
+}

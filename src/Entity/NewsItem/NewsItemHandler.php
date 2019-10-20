@@ -58,7 +58,7 @@ class NewsItemHandler
     public function getCurrentNewsItems(?string $category = null): array
     {
         $queryBuilder = $this->repository->createQueryBuilder('n')
-            ->where('n.end >= :now')->setParameter('now', new \DateTime())
+            ->where('n.end >= :now')->setParameter('now', new \DateTime('today'))
             ->orderBy('n.date', 'DESC')->addOrderBy('n.title', 'ASC');
         if ($category !== null) {
             $queryBuilder->andWhere('n.category = :category')->setParameter('category', $category);
@@ -75,7 +75,7 @@ class NewsItemHandler
     public function getArchivedNewsItems(?string $category = null): array
     {
         $queryBuilder = $this->repository->createQueryBuilder('n')
-            ->where('n.end < :now')->setParameter('now', new \DateTime())
+            ->where('n.end < :now')->setParameter('now', new \DateTime('today'))
             ->orderBy('n.date', 'DESC')->addOrderBy('n.title', 'ASC');
         if ($category !== null) {
             $queryBuilder->andWhere('n.category = :category')->setParameter('category', $category);

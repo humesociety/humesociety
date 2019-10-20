@@ -1,0 +1,25 @@
+{% if conference.submissions|length > 0 %}
+  <p>Below is a list of all the submissions to the {{ conference }}. Using the dropdown menus above you can filter the list by keyword and status. Keywords are entered by users when they submit their paper, but can then be edited here however you wish. Users will not see the modifications you make to their keywords.</p>
+  <p>Click on the title of a submission to view more details and download the paper. From there you can also manage the reviews for that paper, enter your decision, and send an email informing the user of that decision.</p>
+  <div class="list" id="submissions">
+    {% for submission in conference.submissions %}
+      <div class="list-item" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
+        <div class="heading">
+          <div class="left">
+            <h3><a href="{{ path('admin_conference_submission_view', { submission: submission.id }) }}">{{ submission.title }}</a></h3>
+            <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
+          </div>
+          {% if submission.decisionEmailed and submission.accepted and not submission.submitted %}
+            <div class="right"><a href="" class="button">email reminder</a></div>
+          {% endif %}
+          <div class="right"><i class="{{ submission.statusIcon }}"></i> {{ submission.status }}</div>
+        </div>
+        <div class="body">
+          <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>There are no submissions for the {{ conference }}.</p>
+{% endif %}

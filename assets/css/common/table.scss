@@ -32,6 +32,9 @@ table {
         display: table-row;
         visibility: collapse;
       }
+      &.is-active {
+        background: lighten($green, 30%);
+      }
     }
   }
   input {

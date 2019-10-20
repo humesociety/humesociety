@@ -1,39 +1,41 @@
 {% extends 'admin/conference/_layout.twig' %}
 
-{% block title %}Submissions{% endblock %}
+{% block title %}Submission Details{% endblock %}
 
 {% block main %}
-  {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Conference Submissions{% endblock %}
-    {% block header_right %}
-      {% if conference.submissions|length > 0 %}
-        <div class="input">
-          <label for="show-keyword">Keyword:</label>
-          <select id="show-keyword" data-include="keyword" data-table="submissions">
-            <option value="all">all</option>
-            {% for keyword in keywords %}
-              <option value="{{ keyword }}">{{ keyword }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="input">
-          <label for="show-status">Decision:</label>
-          <select id="show-status" data-filter="status" data-table="submissions">
-            <option value="all">all</option>
-            <option value="pending">pending</option>
-            <option value="accepted">accepted</option>
-            <option value="rejected">rejected</option>
-          </select>
-        </div>
-      {% endif %}
-    {% endblock %}
+  {% embed 'admin/_embed/submission-box.twig' %}
     {% block body %}
-      <p>Below is a list of all the submissions to the {{ conference }}. Using the dropdown menus above you can filter the list by keyword and status. Keywords are entered by users when they submit their paper, but can then be edited here however you wish. Users will not see the modifications you make to their keywords.</p>
-      <p>Click on the title of a submission to view more details and download the paper. From there you can also manage the reviews for that paper, enter your decision, and send an email informing the user of that decision. Decision emails can also be sent out in bulk from the <a href="{{ path('admin_conference_email_index') }}">Emails</a> section.</p>
-      {% if conference.submissions|length > 0 %}
-        {% include 'admin/_include/submission/list.twig' %}
+      <h2>Submission Details</h2>
+      <table>
+        <tbody>
+          <tr><th>Title</th><td>{{ submission }}</td></tr>
+          <tr><th>File</th><td><a href="{{ path('uploads_submission', { submission: submission.id }) }}">{{ submission.filename }}</a></td></tr>
+          <tr><th>Authors</th><td>{{ submission.authors }}</td></tr>
+          <tr><th>Submitted By</th><td>{{ submission.user }}</td></tr>
+          <tr><th>Keywords</th><td><input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}"></td></tr>
+          <tr><th>Abstract</th><td>{{ submission.abstract }}</td></tr>
+        </tbody>
+      </table>
+      {% if submission.decisionEmailed %}
+        <h2>Decision Recorded</h2>
+        <p>This paper has been {{ submission.status }}, and {{ submission.user }} was informed of the decision on {{ submission.dateDecisionEmailed|date('m-d-Y') }}.</p>
       {% else %}
-        <p>There are no submissions for this conference.</p>
+        <h2>Record Your Decision</h2>
+        <p>Use the dropwdown menu below to record your decision for this paper. Decisions recorded here are provisional and can be changed at any time. Once you send the decision email, however, the decision will be considered final and you will no longer be able to change it.</p>
+        <div class="inline-form">
+        {{ form_start(submissionDecisionForm) }}
+          {{ form_row(submissionDecisionForm.accepted) }}
+          {{ form_row(submissionDecisionForm._token) }}
+          <div class="buttons">
+            <button type="submit" class="button update">Update Decision</button>
+            {% if submission.status != 'pending' %}
+              <a href="{{ path('admin_conference_submission_email_submission_decision', { submission: submission.id }) }}" class="button">Send Decision Email</a>
+            {% else %}
+              <button disabled>Send Decision Email</button>
+            {% endif %}
+          </div>
+        {{ form_end(submissionDecisionForm) }}
+        </div>
       {% endif %}
     {% endblock %}
   {% endembed %}

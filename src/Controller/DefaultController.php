@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
     {
         // initialise the twig variables
         $twigs = [
-            'page' => ['slug' => 'home', 'section' => 'home'],
+            'page' => ['slug' => 'home', 'section' => 'home', 'title' => 'The Hume Society'],
             'newsItems' => $newsItems->getCurrentNewsItems('society'),
             'conference' => $conferences->getCurrentConference()
         ];

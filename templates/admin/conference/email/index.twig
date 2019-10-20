@@ -1,0 +1,27 @@
+{% extends 'admin/conference/_layout.twig' %}
+
+{% block title %}Email Templates{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Email Templates{% endblock %}
+    {% block body %}
+      <p>From here you can edit the templates for emails that are automatically generated and sent out by this system. Email content should be marked up as HTML; if you are unfamiliar with HTML, please ask the technical director for help formatting this text appropriately.</p>
+      <nav class="tabs">
+        {% for group, emailTemplates in emailTemplateGroups %}
+          <a data-tab="{{ group }}"{% if tab == group %} class="is-active"{% endif %}>{{ group|capitalize }} Emails</a>
+        {% endfor %}
+      </nav>
+      <div class="tab-panes">
+        {% for group, emailTemplates in emailTemplateGroups %}
+          <div class="tab-pane{% if tab == group %} is-active{% endif %}" id="{{ group }}">
+            {% for emailTemplate in emailTemplates %}
+              <h4><a href="{{ path('admin_conference_email_edit', { label: emailTemplate.label }) }}">Edit {{ emailTemplate.title }} Email</a></h4>
+              <p>{{ emailTemplate.description }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

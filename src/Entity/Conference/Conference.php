@@ -146,6 +146,18 @@ class Conference
     private $submissions;
 
     /**
+     * The papers for this conference.
+     *
+     * @var Paper[]
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Paper\Paper",
+     *     mappedBy="conference",
+     *     cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $papers;
+
+    /**
      * The uploads associated with this conference.
      *
      * Note that uploads are not persisted to the database, but simply saved to disk. The
@@ -175,6 +187,7 @@ class Conference
         $this->website = null;
         $this->deadline = null;
         $this->submissions = new ArrayCollection();
+        $this->papers = new ArrayCollection();
         $this->uploads = [];
     }
 
@@ -464,6 +477,16 @@ class Conference
     public function getSubmissions(): Collection
     {
         return $this->submissions;
+    }
+
+    /**
+     * Get the papers for this conference.
+     *
+     * @return Collection
+     */
+    public function getPapers(): Collection
+    {
+        return $this->papers;
     }
 
     /**
