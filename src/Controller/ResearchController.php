@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Comment\CommentHandler;
 use App\Entity\Conference\ConferenceHandler;
-use App\Entity\Email\EmailHandler;
+use App\Entity\Email\ConferenceEmailHandler;
+use App\Entity\Email\SystemEmailHandler;
 use App\Entity\Paper\PaperHandler;
 use App\Entity\Paper\PaperType;
 use App\Entity\Review\ReviewHandler;
@@ -82,7 +83,8 @@ class ResearchController extends AbstractController
     public function submissions(
         Request $request,
         ConferenceHandler $conferences,
-        EmailHandler $emails,
+        ConferenceEmailHandler $conferenceEmails,
+        SystemEmailHandler $systemEmails,
         SubmissionHandler $submissions,
         TextHandler $texts
     ): Response {
@@ -119,8 +121,8 @@ class ResearchController extends AbstractController
             if ($submissionForm->isSubmitted() && $submissionForm->isValid()) {
                 $submissions->saveSubmission($submission);
                 $twigs['submission'] = $submission;
-                $emails->sendSubmissionEmail($submission, 'submission');
-                $emails->sendSubmissionNotification($submission);
+                $conferenceEmails->sendSubmissionEmail($submission, 'submission');
+                $systemEmails->sendSubmissionNotification($submission);
                 $message = 'Your paper has been submitted. A confirmation email has been sent to '
                          . $this->getUser()->getEmail();
                 $this->addFlash('success', $message);
@@ -192,7 +194,8 @@ class ResearchController extends AbstractController
      * @param Request Symfony's request object.
      * @param CommentHandler The comment handler.
      * @param ConferenceHandler The conference handler.
-     * @param EmailHandler The email handler.
+     * @param ConferenceEmailHandler The conference email handler.
+     * @param SystemEmailHandler The system email handler.
      * @return Response
      * @Route("/comments", name="comments")
      * @IsGranted("ROLE_USER")
@@ -201,7 +204,8 @@ class ResearchController extends AbstractController
         Request $request,
         CommentHandler $comments,
         ConferenceHandler $conferences,
-        EmailHandler $emails
+        ConferenceEmailHandler $conferenceEmails,
+        SystemEmailHandler $systemEmails
     ): Response {
         // look for the current conference
         $conference = $conferences->getCurrentConference();
@@ -231,8 +235,9 @@ class ResearchController extends AbstractController
         $commentForm->handleRequest($request);
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
             $comments->saveComment($comment);
+            $conferenceEmails->sendSubmissionEmail($comment->getSubmission(), 'submission-comments-submitted');
+            $systemEmails->sendCommentNotification($comment);
             $this->addFlash('success', 'Your comments have been uploaded.');
-            return $this->redirectToRoute('account_research_submissions');
         }
 
         // add additional twig variables
@@ -247,7 +252,7 @@ class ResearchController extends AbstractController
      *
      * @param Request Symfony's request object.
      * @param ConferenceHandler The conference handler.
-     * @param EmailHandler The email handler.
+     * @param SystemEmailHandler The system email handler.
      * @param PaperHandler The paper handler.
      * @return Response
      * @Route("/papers", name="papers")
@@ -256,7 +261,7 @@ class ResearchController extends AbstractController
     public function papers(
         Request $request,
         ConferenceHandler $conferences,
-        EmailHandler $emails,
+        SystemEmailHandler $systemEmails,
         PaperHandler $papers
     ): Response {
         // look for the current conference
@@ -279,7 +284,8 @@ class ResearchController extends AbstractController
         $twigs = [
           'page' => ['slug' => 'research', 'section' => 'account', 'title' => 'Research'],
           'tab' => 'papers',
-          'conference' => $conference
+          'conference' => $conference,
+          'paper' => $paper
         ];
 
         // create and handle the paper upload form
@@ -287,8 +293,8 @@ class ResearchController extends AbstractController
         $paperForm->handleRequest($request);
         if ($paperForm->isSubmitted() && $paperForm->isValid()) {
             $papers->savePaper($paper);
+            $systemEmails->sendPaperSubmissionNotification($paper);
             $this->addFlash('success', 'Your paper has been uploaded.');
-            return $this->redirectToRoute('account_research_submissions');
         }
 
         // add additional twig variables

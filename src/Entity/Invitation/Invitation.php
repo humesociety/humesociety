@@ -3,10 +3,13 @@
 namespace App\Entity\Invitation;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * An invitation is an abstract superclass inherited by chairs, comments, reviews, and papers - which
  * are invitations to chair, comment, etc. and consequently have several fields and methods in common.
+ *
+ * @ORM\MappedSuperclass()
  */
 class Invitation
 {
@@ -75,9 +78,18 @@ class Invitation
     private $dateSubmitted;
 
     /**
+     * The user invited.
+     *
+     * @var User|null
+     * @Assert\NotBlank(groups={"existing"}, message="Please select a user.")
+     */
+    private $user;
+
+    /**
      * The user's firstname (used when inviting a new user).
      *
      * @var string|null
+     * @Assert\NotBlank(groups={"new"}, message="Please enter a firstname.")
      */
     private $firstname;
 
@@ -85,6 +97,7 @@ class Invitation
      * The user's lastname (used when inviting a new user).
      *
      * @var string|null
+     * @Assert\NotBlank(groups={"new"}, message="Please enter a lastname.")
      */
     private $lastname;
 
@@ -92,6 +105,7 @@ class Invitation
      * The user's email (used when inviting a new user).
      *
      * @var string|null
+     * @Assert\NotBlank(groups={"new"}, message="Please enter an email.")
      */
     private $email;
 
@@ -113,7 +127,7 @@ class Invitation
         $this->dateLastInvitationReminderSent = null;
         $this->submissionReminderEmails = 0;
         $this->dateLastSubmissionReminderSent = null;
-        $this->dateSubmitted = false;
+        $this->dateSubmitted = null;
         $this->firstname = null;
         $this->lastname = null;
         $this->email = null;
@@ -124,7 +138,7 @@ class Invitation
      *
      * @return \DateTimeInterface
      */
-    public function getDateInvitationSent(): \DateTimeInferface
+    public function getDateInvitationSent(): \DateTimeInterface
     {
         return $this->dateInvitationSent;
     }
@@ -188,7 +202,7 @@ class Invitation
      *
      * @return \DateTimeInterface|null
      */
-    public function getDateLastInvitationReminderSent(): ?\DateTimeInferface
+    public function getDateLastInvitationReminderSent(): ?\DateTimeInterface
     {
         return $this->dateLastInvitationReminderSent;
     }
@@ -220,7 +234,7 @@ class Invitation
      *
      * @return \DateTimeInterface|null
      */
-    public function getLastSubmissionReminderEmail(): ?\DateTimeInferface
+    public function getLastSubmissionReminderEmail(): ?\DateTimeInterface
     {
         return $this->lastSubmissionReminderEmail;
     }

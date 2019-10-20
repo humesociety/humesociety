@@ -628,7 +628,7 @@ class Submission
     /**
      * Get the date the last final submission reminder email was sent.
      *
-     * @return \DateTimeInferface|null
+     * @return \DateTimeInterface|null
      */
     public function getDateLastFinalReminderSent(): ?\DateTimeInterface
     {

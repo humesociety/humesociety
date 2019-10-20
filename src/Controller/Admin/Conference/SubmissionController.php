@@ -102,22 +102,50 @@ class SubmissionController extends AbstractController
     }
 
     /**
-     * Route for viewing a submission and recording the decision.
+     * Route for viewing submission details.
      *
-     * @param Request Symfony's request object.
      * @param ConferenceHandler The conference handler.
      * @param Submission The submission.
      * @return Response
      * @Route("/details/{submission}", name="view")
      */
     public function view(
+        ConferenceHandler $conferences,
+        Submission $submission
+    ): Response {
+        // initialise the twig variables
+        $twigs = $this->createSubmissionTwigs($submission, 'details');
+
+        // look for the current conference
+        $conference = $conferences->getCurrentConference();
+
+        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
+        if ($submission->getConference() !== $conference) {
+            throw $this->createNotFoundException('Page not found.');
+        }
+
+        // render and return the page
+        return $this->render('admin/conference/submission/view.twig', $twigs);
+    }
+
+    /**
+     * Route for recording the decision for a submission.
+     *
+     * @param Request Symfony's request object.
+     * @param ConferenceHandler The conference handler.
+     * @param SubmissionHandler The submission handler.
+     * @param Submission The submission.
+     * @return Response
+     * @Route("/details/{submission}/decision", name="decision")
+     */
+    public function decision(
         Request $request,
         ConferenceHandler $conferences,
         SubmissionHandler $submissions,
         Submission $submission
     ): Response {
         // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'details');
+        $twigs = $this->createSubmissionTwigs($submission, 'decision');
 
         // look for the current conference
         $conference = $conferences->getCurrentConference();
@@ -139,7 +167,7 @@ class SubmissionController extends AbstractController
         $twigs['submissionDecisionForm'] = $submissionDecisionForm->createView();
 
         // render and return the page
-        return $this->render('admin/conference/submission/view.twig', $twigs);
+        return $this->render('admin/conference/submission/decision.twig', $twigs);
     }
 
     /**

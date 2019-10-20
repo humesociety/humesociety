@@ -1,26 +1,26 @@
 {% extends 'site/account/_layout.twig' %}
 
 {% block main %}
-  {% embed 'site/_embed/heading.twig' %}
-    {% block right %}
-      <nav class="tabs">
-        <a href="{{ path('account_research') }}"{% if tab == 'availability' %} class="is-active"{% endif %}>Availability</a>
-        {% if conference %}
-          {% if conference.open or app.user.submissions(conference)|length > 0 %}
-            <a href="{{ path('account_research_submissions') }}"{% if tab == 'submissions' %} class="is-active"{% endif %}>Submissions</a>
-          {% endif %}
-          {% if app.user.reviews(conference)|length > 0 %}
-            <a href="{{ path('account_research_reviews') }}"{% if tab == 'reviews' %} class="is-active"{% endif %}>Reviews</a>
-          {% endif %}
-          {% if app.user.comments(conference)|length > 0 %}
-            <a href="{{ path('account_research_comments') }}"{% if tab == 'comments' %} class="is-active"{% endif %}>Comments</a>
-          {% endif %}
-          {% if app.user.papers(conference)|length > 0 %}
-            <a href="{{ path('account_research_papers') }}"{% if tab == 'papers' %} class="is-active"{% endif %}>Papers</a>
-          {% endif %}
-        {% endif %}
-      </nav>
-    {% endblock %}
-  {% endembed %}
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
+  <nav class="tabs">
+    <a href="{{ path('account_research') }}"{% if tab == 'availability' %} class="is-active"{% endif %}>Availability</a>
+    {% if conference %}
+      {% if conference.open or app.user.submissions(conference)|length > 0 %}
+        <a href="{{ path('account_research_submissions') }}"{% if tab == 'submissions' %} class="is-active"{% endif %}>Submissions</a>
+      {% endif %}
+      {% if app.user.reviews(conference)|length > 0 %}
+        <a href="{{ path('account_research_reviews') }}"{% if tab == 'reviews' %} class="is-active"{% endif %}>Reviews</a>
+      {% endif %}
+      {% if app.user.comments(conference)|length > 0 %}
+        <a href="{{ path('account_research_comments') }}"{% if tab == 'comments' %} class="is-active"{% endif %}>Comments</a>
+      {% endif %}
+      {% if app.user.chairs(conference)|length > 0 %}
+        <a href="{{ path('account_research_chairs') }}"{% if tab == 'chairs' %} class="is-active"{% endif %}>Chairs</a>
+      {% endif %}
+      {% if app.user.papers(conference)|length > 0 %}
+        <a href="{{ path('account_research_papers') }}"{% if tab == 'papers' %} class="is-active"{% endif %}>Papers</a>
+      {% endif %}
+    {% endif %}
+  </nav>
   {% block content %}{% endblock %}
 {% endblock %}

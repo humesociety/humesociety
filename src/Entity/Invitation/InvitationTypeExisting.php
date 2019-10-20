@@ -25,6 +25,7 @@ class InvitationTypeExisting extends AbstractType
     {
         $builder->add('user', EntityType::class, [
             'class' => User::class,
+            'required' => true,
             'query_builder' => function (EntityRepository $repository) {
                 return $repository->createQueryBuilder('u')
                     ->where('u.active = TRUE')

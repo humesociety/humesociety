@@ -92,15 +92,19 @@ class PaperController extends AbstractController
     }
 
     /**
-     * Route for viewing details of an invited speaker.
+     * Route for sending a reminder email to an invited speaker.
      *
      * @param ConferenceHandler The conference handler.
+     * @param ConferenceEmailHandler The conference email handler.
      * @param Paper The paper.
      * @return Response
-     * @Route("/view/{paper}", name="view")
+     * @Route("/remind/{paper}", name="reminder")
      */
-    public function view(ConferenceHandler $conferences, Paper $paper): Response
-    {
+    public function remind(
+        ConferenceHandler $conferences,
+        ConferenceEmailHandler $conferenceEmails,
+        Paper $paper
+    ): Response {
         // look for the current conference
         $conference = $conferences->getCurrentConference();
 
@@ -109,15 +113,18 @@ class PaperController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // initialise the twig variables
-        $twigs = [
-            'area' => 'conference',
-            'subarea' => 'paper',
-            'title' => (string) $paper,
-            'paper' => $paper
-        ];
+        // send an email if the paper hasn't been submitted; otherwise throw 404 error
+        switch ($paper->getStatus()) {
+            case 'pending':
+                $conferenceEmails->sendPaperEmail($paper, 'paper-invitation-reminder');
+                break;
 
-        // render and return the page
-        return $this->render('admin/conference/paper/view.twig', $twigs);
+            default:
+                throw $this->createNotFoundException('Page not found.');
+        }
+
+        // add flashbag notice, and then redirect to the details page for the relevant submission
+        $this->addFlash('notice', "A reminder email has been sent to {$paper->getUser()}.");
+        return $this->redirectToRoute('admin_conference_paper_index');
     }
 }

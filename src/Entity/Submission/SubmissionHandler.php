@@ -67,6 +67,22 @@ class SubmissionHandler
     }
 
     /**
+     * Get the accepted submissions for the given conference.
+     *
+     * @param Conference The conference.
+     * @return Submission[]
+     */
+    public function getAcceptedSubmissions(Conference $conference): array
+    {
+        return $this->repository->createQueryBuilder('s')
+            ->where('s.accepted = TRUE')
+            ->andWhere('s.conference = :conference')
+            ->setParameter('conference', $conference)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Save/update a submission in the database.
      *
      * @param Submission The submission to save/update.

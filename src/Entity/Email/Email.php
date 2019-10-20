@@ -2,6 +2,12 @@
 
 namespace App\Entity\Email;
 
+use App\Entity\Chair\Chair;
+use App\Entity\Comment\Comment;
+use App\Entity\Conference\Conference;
+use App\Entity\Paper\Paper;
+use App\Entity\Review\Review;
+use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -252,7 +258,7 @@ class Email
      * @param object Associative array of country codes and names.
      * @return string
      */
-    private function prepareSubmissionContent(Submission $submission, array $countries): self
+    public function prepareSubmissionContent(Submission $submission, array $countries): self
     {
         $this->prepareConferenceContent($submission->getConference(), $countries);
         $title = $submission->getTitle();
@@ -274,7 +280,7 @@ class Email
      * @param object Associative array of country codes and names.
      * @return string
      */
-    private function prepareReviewContent(Review $review, array $countries): self
+    public function prepareReviewContent(Review $review, array $countries): self
     {
         $this->prepareSubmissionContent($review->getSubmission(), $countries);
         $link = "https://www.humesociety.org/review/{$review->getSecret()}";
@@ -291,7 +297,7 @@ class Email
      * @param object Associative array of country codes and names.
      * @return string
      */
-    private function prepareCommentContent(Comment $comment, array $countries): self
+    public function prepareCommentContent(Comment $comment, array $countries): self
     {
         $this->prepareSubmissionContent($comment->getSubmission(), $countries);
         return $this;
@@ -304,7 +310,7 @@ class Email
      * @param object Associative array of country codes and names.
      * @return string
      */
-    private function prepareChairContent(Chair $chair, array $countries): self
+    public function prepareChairContent(Chair $chair, array $countries): self
     {
         $this->prepareSubmissionContent($chair->getSubmission(), $countries);
         return $this;
@@ -317,7 +323,7 @@ class Email
      * @param object Associative array of country codes and names.
      * @return string
      */
-    private function preparePaperContent(Paper $paper, array $countries): self
+    public function preparePaperContent(Paper $paper, array $countries): self
     {
         $this->prepareConferenceContent($paper->getConference(), $countries);
         return $this;

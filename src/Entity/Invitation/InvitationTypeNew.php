@@ -36,6 +36,9 @@ class InvitationTypeNew extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => Invitation::class]);
+        $resolver->setDefaults([
+            'data_class' => Invitation::class,
+            'validation_groups' => ['Default', 'new']
+        ]);
     }
 }

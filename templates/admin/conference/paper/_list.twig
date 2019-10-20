@@ -4,11 +4,20 @@
       <div class="list-item">
         <div class="heading">
           <div class="left">
-            <h3><a href="{{ path('admin_conference_paper_view', { paper: paper.id }) }}">{{ paper }}</a></h3>
+            <h3>{% if paper.submitted %}
+              <a href="{{ path('uploads_paper', { paper: paper.id }) }}">{{ paper }}</a>
+            {% else %}
+              {{ paper }}
+            {% endif %}</h3>
             <h4>by {{ paper.user }}</h4>
           </div>
           {% if paper.status == 'pending' %}
-            <div class="right"><a href="" class="button">email reminder</a></div>
+            <div class="right">
+              <a href="{{ path('admin_conference_paper_reminder', { paper: paper.id }) }}" class="button">email reminder</a>
+              {% if paper.invitationReminderEmails > 0 %}
+                <p>{{ paper.invitationReminderEmails }} reminders sent<br> last reminder: {{ paper.dateLastInvitationReminderSent|date('m/d/Y') }}</p>
+              {% endif %}
+            </div>
           {% endif %}
           <div class="right"><i class="{{ paper.statusIcon }}"></i> {{ paper.status }}</div>
         </div>

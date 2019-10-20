@@ -2,6 +2,11 @@
 
 namespace App\Entity\Email;
 
+use App\Entity\Review\Review;
+use App\Entity\Paper\Paper;
+use App\Entity\Submission\Submission;
+use App\Entity\User\User;
+
 /**
  * The system email handler contains methods for sending SYSTEM emails.
  */
@@ -98,6 +103,24 @@ class SystemEmailHandler
             ->setRecipientEmail('conference@humesociety.org')
             ->setTemplate('review-submitted')
             ->addTwig('review', $review);
+        $this->emails->sendEmail($email);
+    }
+
+    /**
+     * Send invited paper submission notification email to conference organisers.
+     *
+     * @param Paper The paper.
+     * @return void
+     */
+    public function sendPaperSubmissionNotification(Paper $paper)
+    {
+        $email = new Email();
+        $email->setSubject("{$paper->getConference()}: Paper Submitted")
+            ->setSender('web')
+            ->setRecipientName('Conference Organisers')
+            ->setRecipientEmail('conference@humesociety.org')
+            ->setTemplate('paper-submitted')
+            ->addTwig('paper', $paper);
         $this->emails->sendEmail($email);
     }
 }

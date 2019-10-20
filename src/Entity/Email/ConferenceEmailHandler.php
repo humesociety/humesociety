@@ -112,11 +112,11 @@ class ConferenceEmailHandler
                 case 'submission-acceptance': // fallthrough
                 case 'submission-rejection':
                     $submission->setDateDecisionEmailed();
-                    $this->submissions->save($submission);
+                    $this->submissions->saveSubmission($submission);
                     break;
                 case 'submission-reminder':
                     $submission->incrementFinalReminderEmails();
-                    $this->submissions->save($submission);
+                    $this->submissions->saveSubmission($submission);
                     break;
             }
         } else {
@@ -141,12 +141,12 @@ class ConferenceEmailHandler
             switch ($label) {
                 case 'review-invitation-reminder':
                     $review->incrementInvitationReminderEmails();
-                    $this->reviews->save($review);
+                    $this->reviews->saveReview($review);
                     break;
 
                 case 'review-submission-reminder':
                     $review->incrementSubmissionReminderEmails();
-                    $this->reviews->save($review);
+                    $this->reviews->saveReview($review);
                     break;
             }
         } else {
@@ -171,12 +171,12 @@ class ConferenceEmailHandler
             switch ($label) {
                 case 'comment-invitation-reminder':
                     $comment->incrementInvitationReminderEmails();
-                    $this->comments->save($comment);
+                    $this->comments->saveComment($comment);
                     break;
 
                 case 'review-submission-reminder':
                     $comment->incrementSubmissionReminderEmails();
-                    $this->comments->save($comment);
+                    $this->comments->saveComment($comment);
                     break;
             }
         } else {
@@ -201,7 +201,7 @@ class ConferenceEmailHandler
             switch ($label) {
                 case 'chair-invitation-reminder':
                     $chair->incrementInvitationReminderEmails();
-                    $this->chairs->save($chair);
+                    $this->chairs->saveChair($chair);
                     break;
             }
         } else {
@@ -226,7 +226,7 @@ class ConferenceEmailHandler
             switch ($label) {
                 case 'paper-invitation-reminder':
                     $paper->incrementInvitationReminderEmails();
-                    $this->papers->save($paper);
+                    $this->papers->savePaper($paper);
                     break;
             }
         } else {

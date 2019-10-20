@@ -53,7 +53,7 @@ class Review extends Invitation
      *     inversedBy="reviews",
      *     cascade={"persist", "remove"}
      * )
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 

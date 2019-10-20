@@ -3,5 +3,19 @@
 {% block content %}
   <div class="section content">
     <h4>Invited Papers for the {{ conference }}</h4>
+    {% if paper.submitted %}
+      <p>Thank you for submitting your paper, {{ paper }}.</p>
+    {% else %}
+      <p>You have been invited to give a talk at the {{ conference }}. Please upload your paper using the form below.</p>
+      {{ form_start(paperForm) }}
+        {{ form_row(paperForm.title) }}
+        {{ form_row(paperForm.abstract) }}
+        {{ form_row(paperForm.file) }}
+        {{ form_row(paperForm._token) }}
+        <div class="buttons">
+          <button type="submit">Submit Paper</button>
+        </div>
+      {{ form_end(paperForm) }}
+    {% endif %}
   </div>
 {% endblock %}

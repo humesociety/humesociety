@@ -2,7 +2,9 @@
 
 namespace App\Entity\Paper;
 
+use App\Entity\Conference\Conference;
 use App\Entity\Submission\Submission;
+use App\Entity\User\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
