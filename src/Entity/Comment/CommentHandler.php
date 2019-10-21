@@ -2,6 +2,7 @@
 
 namespace App\Entity\Comment;
 
+use App\Entity\Conference\Conference;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -44,6 +45,23 @@ class CommentHandler
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Comment::class);
         $this->uploadsDirectory = $params->get('uploads_directory');
+    }
+
+    /**
+     * Get all comment invitations.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Comment[]
+     */
+    public function getComments(?Conference $conference = null): array
+    {
+        $comments = $this->repository->findAll();
+        if ($conference === null) {
+            return $comments;
+        }
+        return array_filter($comments, function ($comment) use ($conference) {
+            return $comment->getSubmission()->getConference() === $conference;
+        });
     }
 
     /**

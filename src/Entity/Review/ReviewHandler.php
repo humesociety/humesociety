@@ -39,29 +39,17 @@ class ReviewHandler
     }
 
     /**
-     * Get all reviewers.
+     * Get all review invitations.
      *
-     * @return Reviewer[]
-     */
-    public function getReviewers(): array
-    {
-        return $this->repository->findAll();
-    }
-
-    /**
-     * Get reviews for the given user and conference.
-     *
-     * @param User The user.
-     * @param Conference The conference.
+     * @param Conference|null Optional conference to restrict to.
      * @return Review[]
      */
-    public function getReviews(Reviewer $reviewer, Conference $conference): array
+    public function getReviews(?Conference $conference = null): array
     {
-        $reviews = $this->repository->createQueryBuilder('r')
-            ->where('r.reviewer = :reviewer')
-            ->setParameter('reviewer', $reviewer)
-            ->getQuery()
-            ->getResult();
+        $reviews = $this->repository->findAll();
+        if ($conference === null) {
+            return $comments;
+        }
         return array_filter($reviews, function ($review) use ($conference) {
             return $review->getSubmission()->getConference() === $conference;
         });

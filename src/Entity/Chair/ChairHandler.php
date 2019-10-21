@@ -2,6 +2,7 @@
 
 namespace App\Entity\Chair;
 
+use App\Entity\Conference\Conference;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -35,6 +36,23 @@ class ChairHandler
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Chair::class);
+    }
+
+    /**
+     * Get all chair invitations.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Chair[]
+     */
+    public function getChairs(?Conference $conference = null): array
+    {
+        $chairs = $this->repository->findAll();
+        if ($conference === null) {
+            return $chairs;
+        }
+        return array_filter($chairs, function ($chair) use ($conference) {
+            return $chair->getSubmission()->getConference() === $conference;
+        });
     }
 
     /**

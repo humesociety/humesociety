@@ -50,6 +50,24 @@ class PaperHandler
     }
 
     /**
+     * Get all papers.
+     *
+     * @param Conference|null Optional conference to restrict to.
+     * @return Paper[]
+     */
+    public function getPapers(?Conference $conference = null): array
+    {
+          if ($conference === null) {
+              return $this->repository->findAll();
+          }
+          return $this->repository->createQueryBuilder('p')
+              ->where('p.conference = :conference')
+              ->setParameter('conference', $conference)
+              ->getQuery()
+              ->getResult();
+    }
+
+    /**
      * Get the paper for a given user and conference (possibly null).
      *
      * @param User The user.
@@ -63,6 +81,21 @@ class PaperHandler
             ->andWhere('p.conference = :conference')
             ->setParameter('user', $user)
             ->setParameter('conference', $conference)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Get a paper by its secret.
+     *
+     * @param string The secret.
+     * @return Paper|null
+     */
+    public function getPaperBySecret(string $secret): ?Paper
+    {
+        return $this->repository->createQueryBuilder('p')
+            ->where('p.secret = :secret')
+            ->setParameter('secret', $secret)
             ->getQuery()
             ->getOneOrNullResult();
     }

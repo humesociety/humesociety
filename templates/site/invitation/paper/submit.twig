@@ -1,0 +1,18 @@
+{% extends 'site/invitation/_layout.twig' %}
+
+{% block main %}
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
+  <p>{{ user.fullname }}, you have been invited to give a talk at the {{ conference }}. Please upload your paper using the form below.</p>
+  {% if paperGuidance %}
+    {{ paperGuidance|raw }}
+  {% endif %}
+  {{ form_start(paperForm) }}
+    {{ form_row(paperForm.title) }}
+    {{ form_row(paperForm.abstract) }}
+    {{ form_row(paperForm.file) }}
+    {{ form_row(paperForm._token) }}
+    <div class="buttons">
+      <button type="submit">Submit Paper</button>
+    </div>
+  {{ form_end(paperForm) }}
+{% endblock %}

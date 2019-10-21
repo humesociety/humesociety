@@ -10,6 +10,7 @@ use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Email\SystemEmailHandler;
 use App\Entity\Paper\Paper;
 use App\Entity\Paper\PaperHandler;
+use App\Entity\Paper\PaperType;
 use App\Entity\Review\Review;
 use App\Entity\Review\ReviewHandler;
 use App\Entity\Review\ReviewType;
@@ -329,7 +330,8 @@ class InvitationController extends AbstractController
                 'section' => 'review',
                 'title' => "Paper for the {$paper->getConference()}"
             ],
-            'paper' => $paper
+            'paper' => $paper,
+            'conference' => $paper->getConference()
         ];
 
         // return a different response depending on the paper's status
@@ -340,6 +342,7 @@ class InvitationController extends AbstractController
                 $paperForm->handleRequest($request);
                 if ($paperForm->isSubmitted() && $paperForm->isValid()) {
                     // submit the paper
+                    $paper->setAccepted(true);
                     $paper->setDateSubmitted();
                     $papers->savePaper($paper);
                     $systemEmails->sendPaperSubmissionNotification($paper);

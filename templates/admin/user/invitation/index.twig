@@ -1,0 +1,21 @@
+{% extends 'admin/user/_layout.twig' %}
+
+{% block title %}Conference Invitations{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conference Invitations{% endblock %}
+    {% block body %}
+      <h2>Invited Papers</h2>
+      {% if papers|length > 0 %}
+        <ul>
+          {% for paper in papers %}
+            <li><a href="{{ path('invitation_paper', { secret: paper.secret }) }}">{{ paper }}</a></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>There are no invited papers for the current conference.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Issue\IssueHandler;
+use App\Entity\Paper\Paper;
 use App\Entity\Submission\Submission;
 use App\Entity\Upload\UploadHandler;
 use App\Entity\User\UserHandler;
@@ -183,6 +184,28 @@ class UploadsController extends AbstractController
         // return the response
         $response = new BinaryFileResponse($path);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $submission->getFinalFilename());
+        return $response;
+    }
+
+    /**
+     * Show invited paper file.
+     *
+     * @param Paper The invited paper to download.
+     * @return Response
+     * @Route("/paper/{paper}", name="paper")
+     */
+    public function paper(Paper $paper): Response
+    {
+        // look for the file
+        $path = $this->container->get('parameter_bag')->get('uploads_directory');
+        $path .= $paper->getPath().$paper->getFilename();
+        if (!file_exists($path)) {
+            throw new NotFoundHttpException('File not found.');
+        }
+
+        // return the response
+        $response = new BinaryFileResponse($path);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $paper->getFilename());
         return $response;
     }
 }

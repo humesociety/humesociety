@@ -194,7 +194,7 @@ class SystemEmailHandler
      * @param Paper The paper.
      * @return void
      */
-    public function sendPaperNotification(Paper $paper)
+    public function sendPaperSubmissionNotification(Paper $paper)
     {
         $email = new Email();
         $email->setSubject("{$paper->getConference()}: Paper Received")

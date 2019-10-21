@@ -2,9 +2,9 @@
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
-  {% if reviewThanks %}
-    {{ reviewThanks|raw }}
+  {% if paperThanks %}
+    {{ paperThanks|raw }}
   {% else %}
-    <p>Your review has been submitted.</p>
+    <p>Your paper has been submitted.</p>
   {% endif %}
 {% endblock %}
