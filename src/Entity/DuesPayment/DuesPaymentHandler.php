@@ -71,7 +71,7 @@ class DuesPaymentHandler
      */
     public function createDuesPaymentFromOrder(User $user, string $orderId, $order): DuesPayment
     {
-        $duesPayment = new DuesPayment($this->getUser(), $orderId);
+        $duesPayment = new DuesPayment($user, $orderId);
         $duesPayment->setAmount($order->purchase_units[0]->amount->value);
         $duesPayment->setDescription($order->purchase_units[0]->description);
         return $duesPayment;

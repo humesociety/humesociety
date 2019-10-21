@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Email\EmailHandler;
+use App\Entity\Email\SystemEmailHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserTypeRegistration;
@@ -83,7 +83,7 @@ class SecurityController extends AbstractController
         $registrationForm = $this->createForm(UserTypeRegistration::class, $user);
         $registrationForm->handleRequest($request);
         if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
-            $plainPassword = $form->get('password')->getData();
+            $plainPassword = $registrationForm->get('password')->getData();
             $encodedPassword = $passwordEncoder->encodePassword($user, $plainPassword);
             $user->setPassword($encodedPassword);
             $users->saveUser($user);
@@ -101,12 +101,12 @@ class SecurityController extends AbstractController
      * Route for requesting a forgotten username and password reset link.
      *
      * @param Request Symfony's request object.
-     * @param EmailHandler The email handler.
+     * @param SystemEmailHandler The system email handler.
      * @param UserHandler The user handler.
      * @return Response
      * @Route("/forgot", name="forgot")
      */
-    public function forgot(Request $request, EmailHandler $emails, UserHandler $users) : Response
+    public function forgot(Request $request, SystemEmailHandler $systemEmails, UserHandler $users) : Response
     {
         // initialise the twig variables
         $twigs = ['page' => ['slug' => 'forgot', 'section' => 'security', 'title' => 'Forgot Credentials']];
@@ -122,7 +122,7 @@ class SecurityController extends AbstractController
             } else {
                 $user->setPasswordResetSecret();
                 $users->saveUser($user);
-                $emails->sendForgotCredentialsEmail($user);
+                $systemEmails->sendForgotCredentialsEmail($user);
                 $this->addFlash('success', 'An email has been sent to '.$email.' with further instructions.');
             }
         }

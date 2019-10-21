@@ -217,12 +217,15 @@ class Email
      */
     public function prepareRecipientContent(): self
     {
+        $username = $this->recipient->getUsername();
         $email = $this->recipient->getEmail();
         $firstname = $this->recipient->getFirstname();
         $lastname = $this->recipient->getLastname();
+        $this->subject = preg_replace('/{{ ?username ?}}/', $username, $this->subject);
         $this->subject = preg_replace('/{{ ?email ?}}/', $email, $this->subject);
         $this->subject = preg_replace('/{{ ?firstname ?}}/', $firstname, $this->subject);
         $this->subject = preg_replace('/{{ ?lastname ?}}/', $lastname, $this->subject);
+        $this->twigs['content'] = preg_replace('/{{ ?username ?}}/', $username, $this->twigs['content']);
         $this->twigs['content'] = preg_replace('/{{ ?email ?}}/', $email, $this->twigs['content']);
         $this->twigs['content'] = preg_replace('/{{ ?firstname ?}}/', $firstname, $this->twigs['content']);
         $this->twigs['content'] = preg_replace('/{{ ?lastname ?}}/', $lastname, $this->twigs['content']);

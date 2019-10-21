@@ -5,7 +5,7 @@ namespace App\Controller\Admin\Society;
 use App\Entity\EmailTemplate\EmailTemplateType;
 use App\Entity\EmailTemplate\EmailTemplateHandler;
 use App\Entity\Email\Email;
-use App\Entity\Email\EmailHandler;
+use App\Entity\Email\SocietyEmailHandler;
 use App\Entity\Email\EmailTypeMembership;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,11 +46,11 @@ class EmailController extends AbstractController
      * Route for sending a membership email.
      *
      * @param Request Symfony's request object.
-     * @param EmailHandler The email handler.
+     * @param SocietyEmailHandler The society email handler.
      * @return Response
      * @Route("/send", name="send")
      */
-    public function send(Request $request, EmailHandler $emails): Response
+    public function send(Request $request, SocietyEmailHandler $societyEmails): Response
     {
         // initialise the twig variables
         $twigs = [
@@ -67,7 +67,7 @@ class EmailController extends AbstractController
             $lapsed = $emailForm->get('lapsed')->getData();
             if ($current || $lapsed) {
                 $declining = $emailForm->get('declining')->getData();
-                $results = $emails->sendMembershipEmail($current, $lapsed, $declining, $email);
+                $results = $societyEmails->sendMembershipEmail($current, $lapsed, $declining, $email);
                 $this->addFlash('notice', 'Your email will be sent to '.$results['emailsSent'].' recipients.');
                 if (sizeof($results['badRecipients']) > 0) {
                     $error = 'Your email could not be sent to the following addresses: ';

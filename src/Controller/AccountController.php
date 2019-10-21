@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\DuesPayment\DuesPayment;
 use App\Entity\DuesPayment\DuesPaymentHandler;
-use App\Entity\Email\EmailHandler;
+use App\Entity\Email\SocietyEmailHandler;
 use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserTypeDetails;
@@ -117,7 +117,7 @@ class AccountController extends AbstractController
      *
      * @param Request Symfony's request object.
      * @param DuesPaymentHandler The dues payment handler.
-     * @param EmailHandler The email handler.
+     * @param SocietyEmailHandler The society email handler.
      * @param UserHandler The user handler.
      * @param string The PayPal order id.
      * @Route("/paid/{orderId}", name="paid")
@@ -126,7 +126,7 @@ class AccountController extends AbstractController
     public function paid(
         Request $request,
         DuesPaymentHandler $duesPayments,
-        EmailHandler $emails,
+        SocietyEmailHandler $societyEmails,
         UserHandler $users,
         string $orderId
     ): Response {
@@ -145,11 +145,11 @@ class AccountController extends AbstractController
             $duesPayment = $duesPayments->getDuesPaymentByPaypalOrderId($orderId);
             if (!$duesPayment) {
                 $newMember = ($this->getUser()->getDues() === null);
-                $duesPayment = $duesPayments->createFromOrder($this->getUser(), $oderId, $order);
+                $duesPayment = $duesPayments->createDuesPaymentFromOrder($this->getUser(), $orderId, $order);
                 $duesPayments->saveDuesPayment($duesPayment);
                 $users->updateDues($this->getUser(), $duesPayment);
                 if ($newMember) {
-                    $emails->sendSocietyEmail($this->getUser(), 'welcome');
+                    $societyEmails->sendSocietyEmail($this->getUser(), 'welcome');
                 }
             }
         } else {

@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\User\UserHandler;
-use App\Entity\Email\EmailHandler;
+use App\Entity\Email\SocietyEmailHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,13 +23,13 @@ class SendEmailsCommand extends Command
     /**
      * Constructor function.
      *
-     * @param EmailHandler The email handler.
+     * @param SocietyEmailHandler The society email handler.
      * @param UserHandler The user handler.
      * @return void
      */
-    public function __construct(EmailHandler $emails, UserHandler $users)
+    public function __construct(SocietyEmailHandler $societyEmails, UserHandler $users)
     {
-        $this->emails = $emails;
+        $this->societyEmails = $societyEmails;
         $this->users = $users;
         parent::__construct();
     }
@@ -60,7 +60,7 @@ class SendEmailsCommand extends Command
         $users = $this->users->getMembersExpiringThisMonth();
         $count = 0;
         foreach ($users as $user) {
-            $this->emails->sendSocietyEmail($user, 'reminder');
+            $this->societyEmails->sendSocietyEmail($user, 'reminder');
             $count += 1;
         }
         $output->writeln(sizeof($users).' member(s) will lapse at the end of this month.');
