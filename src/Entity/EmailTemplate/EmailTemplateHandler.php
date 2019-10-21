@@ -32,6 +32,13 @@ class EmailTemplateHandler
     private $emailTemplates;
 
     /**
+     * Conference email template group ids (from `services.yml`).
+     *
+     * @var object
+     */
+    private $conferenceEmailTemplateGroupIds;
+
+    /**
      * Constructor function.
      *
      * @param EntityManagerInterface The Doctrine entity manager.

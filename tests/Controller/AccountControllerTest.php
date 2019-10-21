@@ -28,12 +28,6 @@ class AccountControllerTest extends WebTestCase
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testResearch()
-    {
-        $this->client->request('GET', '/account/research');
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-    }
-
     public function testPay()
     {
         $this->client->request('GET', '/account/pay');

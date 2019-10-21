@@ -4,7 +4,7 @@ namespace App\Tests\Controller\Admin\Conference;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class VolunteerControllerTest extends WebTestCase
+class UserControllerTest extends WebTestCase
 {
     private $client;
 
@@ -18,7 +18,7 @@ class VolunteerControllerTest extends WebTestCase
 
     public function testIndex()
     {
-        $this->client->request('GET', '/admin/conference/volunteer');
+        $this->client->request('GET', '/admin/conference/user/');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

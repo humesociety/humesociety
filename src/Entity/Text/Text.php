@@ -38,6 +38,13 @@ class Text
     private $label;
 
     /**
+     * The text's group (from `services.yml`).
+     *
+     * @var string
+     */
+    private $group;
+
+    /**
      * The text itself.
      *
      * @var string
@@ -111,6 +118,28 @@ class Text
     public function setLabel(string $label): self
     {
         $this->label = $label;
+        return $this;
+    }
+
+    /**
+     * Get the text's group (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getGroup(): ?string
+    {
+        return $this->group;
+    }
+
+    /**
+     * Set the text's group.
+     *
+     * @param string The text's group.
+     * @return self
+     */
+    public function setGroup(string $group): self
+    {
+        $this->group = $group;
         return $this;
     }
 

@@ -11,13 +11,13 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class DuesPaymentTest extends WebTestCase
 {
-    private $now;
+    private $today;
     private $user;
     private $duesPayment;
 
     public function setUp()
     {
-        $this->now = new \DateTime();
+        $this->today = new \DateTime('today');
         $this->user = new User();
         $this->duesPayment = new DuesPayment($this->user, 'abcdefg');
     }
@@ -28,7 +28,7 @@ class DuesPaymentTest extends WebTestCase
         $this->assertSame(null, $this->duesPayment->getId());
         $this->assertSame('abcdefg', $this->duesPayment->getPaypalOrderId());
         $this->assertSame($this->user, $this->duesPayment->getUser());
-        $this->assertTrue((int) date_diff($this->now, $this->duesPayment->getDate())->format('%s%') < 1);
+        $this->assertEquals($this->today, $this->duesPayment->getDate());
         $this->assertSame(null, $this->duesPayment->getAmount());
         $this->assertSame(null, $this->duesPayment->getDescription());
     }

@@ -226,9 +226,9 @@ class Invitation
      *
      * @return \DateTimeInterface|null
      */
-    public function getLastSubmissionReminderEmail(): ?\DateTimeInterface
+    public function getDateLastSubmissionReminderSent(): ?\DateTimeInterface
     {
-        return $this->lastSubmissionReminderEmail;
+        return $this->dateLastSubmissionReminderSent;
     }
 
     /**
@@ -292,7 +292,7 @@ class Invitation
             case 'accepted':
                 return 'fas fa-check';
 
-            case 'rejected':
+            case 'declined':
                 return 'fas fa-times';
 
             case 'pending':

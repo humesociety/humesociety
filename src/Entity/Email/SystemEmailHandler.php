@@ -200,7 +200,7 @@ class SystemEmailHandler
         $email->setSubject("{$paper->getConference()}: Paper Received")
             ->setSender('web')
             ->setRecipient($this->conferenceOrganisers)
-            ->setTemplate('paper-recieved')
+            ->setTemplate('paper-received')
             ->addTwig('paper', $paper);
         $this->emails->sendEmail($email);
     }

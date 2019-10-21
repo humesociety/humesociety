@@ -2,7 +2,7 @@
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
-  <p>{{ user.fullname }}, you have been invited to give a talk at the {{ conference }}. Please upload your paper using the form below.</p>
+  <p>{{ paper.user.fullname }}, you have been invited to give a talk at the {{ conference }}. Please upload your paper using the form below.</p>
   {% if paperGuidance %}
     {{ paperGuidance|raw }}
   {% endif %}

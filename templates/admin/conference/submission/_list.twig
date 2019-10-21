@@ -10,12 +10,12 @@
             <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
           </div>
           {% if submission.status == 'accepted' and submission.decisionEmailed %}
-            <div class="right">
+            <div class="right reminder">
               <a href="{{ path('admin_conference_submission_email_submission_reminder', { submission: submission.id }) }}" class="button">email reminder</a>
               {% include 'admin/_include/reminder-summary.twig' with { invitation: submission } %}
             </div>
           {% endif %}
-          <div class="right"><i class="{{ submission.statusIcon }}"></i> {{ submission.status }}</div>
+          <div class="right status"><i class="{{ submission.statusIcon }}"></i> {{ submission.status }}</div>
         </div>
         <div class="body">
           <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">

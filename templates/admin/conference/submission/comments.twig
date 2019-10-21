@@ -27,12 +27,12 @@
                     <h3>{{ comment.user }}</h3>
                   </div>
                   {% if comment.status == 'pending' or comment.status == 'accepted' %}
-                    <div class="right">
+                    <div class="right reminder">
                       <a href="{{ path('admin_conference_submission_email_comment_reminder', { comment: comment.id }) }}" class="button">email reminder</a>
                       {% include 'admin/_include/reminder-summary.twig' with { invitation: comment } %}
                     </div>
                   {% endif %}
-                  <div class="right"><i class="{{ comment.statusIcon }}"></i> {{ comment.status }}</div>
+                  <div class="right status"><i class="{{ comment.statusIcon }}"></i> {{ comment.status }}</div>
                 </div>
               </div>
             {% endfor %}

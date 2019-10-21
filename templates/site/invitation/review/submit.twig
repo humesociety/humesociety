@@ -5,7 +5,7 @@
   <p><strong>Title:</strong> {{ review.submission.title }}</p>
   <p><strong>Paper: </strong> <a href="{{ path('uploads_submission', { submission: review.submission.id, secret: review.secret }) }}">{{ review.submission.filename }}</a></p>
   <p><strong>Abstract:</strong> {{ review.submission.abstract }}</p>
-  {% if reviewInstructions %}{{ reviewInstructions|raw }}{% endif %}
+  {% if reviewGuidance %}{{ reviewGuidance|raw }}{% endif %}
   {{ form_start(reviewForm) }}
     {{ form_row(reviewForm.grade) }}
     {{ form_row(reviewForm.comments) }}

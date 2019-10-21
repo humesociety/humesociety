@@ -7,10 +7,21 @@
     {% block title %}Custom Text{% endblock %}
     {% block body %}
       <p>From here you can edit some of the text that appears to users and reviewers on this site. Text should be marked up as HTML; if you are unfamiliar with HTML, please ask the technical director for help formatting this text appropriately.</p>
-      {% for text in texts %}
-        <h4><a href="{{ path('admin_conference_text_edit', { label: text.label }) }}">Edit {{ text.title }} Text</a></h4>
-        <p>{{ text.description }}</p>
-      {% endfor %}
+      <nav class="tabs">
+        {% for group, texts in textGroups %}
+          <a data-tab="{{ group }}"{% if tab == group %} class="is-active"{% endif %}>{{ group|capitalize }} Texts</a>
+        {% endfor %}
+      </nav>
+      <div class="tab-panes">
+        {% for group, texts in textGroups %}
+          <div class="tab-pane{% if tab == group %} is-active{% endif %}" id="{{ group }}">
+            {% for text in texts %}
+              <h4><a href="{{ path('admin_conference_text_edit', { label: text.label }) }}">Edit {{ text.title }} Text</a></h4>
+              <p>{{ text.description }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
     {% endblock %}
   {% endembed %}
 {% endblock %}

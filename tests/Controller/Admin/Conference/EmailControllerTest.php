@@ -18,7 +18,58 @@ class EmailControllerTest extends WebTestCase
 
     public function testIndex()
     {
-        $this->client->request('GET', '/admin/conference/email/');
+        $this->client->request('GET', '/admin/conference/email');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testEdit()
+    {
+        $this->client->request('GET', '/admin/conference/email/edit/submission-acknowledgement');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/submission-acceptance');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/submission-rejection');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/submission-reminder');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/submission-comments-submitted');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/review-invitation');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/review-invitation-reminder');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/review-submission-reminder');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/comment-invitation');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/comment-invitation-reminder');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/comment-paper-submitted');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/comment-submission-reminder');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/chair-invitation');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/chair-invitation-reminder');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/paper-invitation');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/email/edit/paper-invitation-reminder');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

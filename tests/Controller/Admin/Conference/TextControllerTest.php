@@ -4,7 +4,7 @@ namespace App\Tests\Controller\Admin\Conference;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class CustomControllerTest extends WebTestCase
+class TextControllerTest extends WebTestCase
 {
     private $client;
 
@@ -18,40 +18,37 @@ class CustomControllerTest extends WebTestCase
 
     public function testIndex()
     {
-        $this->client->request('GET', '/admin/conference/custom');
+        $this->client->request('GET', '/admin/conference/text');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testText()
+    public function testEdit()
     {
-        $this->client->request('GET', '/admin/conference/custom/text/submission');
+        $this->client->request('GET', '/admin/conference/text/edit/submission-guidance');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/text/review');
+        $this->client->request('GET', '/admin/conference/text/edit/review-guidance');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/text/thanks');
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-    }
-
-    public function testEmail()
-    {
-        $this->client->request('GET', '/admin/conference/custom/email/submission');
+        $this->client->request('GET', '/admin/conference/text/edit/review-acknowledgement');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/email/review');
+        $this->client->request('GET', '/admin/conference/text/edit/comment-guidance');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/email/pending-reminder');
+        $this->client->request('GET', '/admin/conference/text/edit/comment-acknowledgement');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/email/accepted-reminder');
+        $this->client->request('GET', '/admin/conference/text/edit/chair-guidance');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/email/accept');
+        $this->client->request('GET', '/admin/conference/text/edit/chair-acknowledgement');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/admin/conference/custom/email/reject');
+        $this->client->request('GET', '/admin/conference/text/edit/paper-guidance');
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/admin/conference/text/edit/paper-acknowledgement');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

@@ -217,7 +217,7 @@ class InvitationController extends AbstractController
     }
 
     /**
-     * Route for handling a comment invitation.
+     * Route for handling a chair invitation.
      *
      * @param Request Symfony's request object.
      * @param ConferenceHandler The conference handler.
@@ -226,7 +226,7 @@ class InvitationController extends AbstractController
      * @param TextHandler The text handler.
      * @param string The comment's secret.
      * @return Response
-     * @Route("/comment/{secret}/{reply}", name="comment", requirements={"reply": "accept|decline"})
+     * @Route("/chair/{secret}/{reply}", name="chair", requirements={"reply": "accept|decline"})
      */
     public function chair(
         Request $request,

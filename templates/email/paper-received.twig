@@ -2,10 +2,8 @@
 
 {% block image %}{{ image }}{% endblock %}
 
-{% set conference = submission.conference %}
-
 {% block content %}
-  <p>{{ paper.user }} has just submitted their paper for the {{ conference }}.</p>
+  <p>{{ paper.user }} has just submitted their paper for the {{ paper.conference }}.</p>
   <p><strong>Title:</strong> {{ paper.title }}</p>
   <p><strong>Abstract:</strong> {{ paper.abstract }}</p>
 {% endblock %}

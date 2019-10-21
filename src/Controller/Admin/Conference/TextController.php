@@ -23,15 +23,16 @@ class TextController extends AbstractController
      *
      * @param TextHandler The text handler.
      * @return Response
-     * @Route("/", name="index")
+     * @Route("/{tab}", name="index", requirements={"tab": "%conference_text_group_ids%"})
      */
-    public function index(TextHandler $texts): Response
+    public function index(TextHandler $texts, string $tab = 'submission'): Response
     {
         // initialise the twig variables
         $twigs = [
             'area' => 'conference',
             'subarea' => 'text',
-            'texts' => $texts->getConferenceTexts()
+            'tab' => $tab,
+            'textGroups' => $texts->getConferenceTextGroups()
         ];
 
         // render and return the page
@@ -65,7 +66,7 @@ class TextController extends AbstractController
         if ($textForm->isSubmitted() && $textForm->isValid()) {
             $texts->saveText($text);
             $this->addFlash('notice', $text.' text has been updated.');
-            return $this->redirectToRoute('admin_conference_text_index');
+            return $this->redirectToRoute('admin_conference_text_index', ['tab' => $text->getGroup()]);
         }
 
         // add additional twig variables

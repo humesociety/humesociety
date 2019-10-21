@@ -38,6 +38,12 @@
         border-left: 1px solid $grey;
         border-bottom: 1px solid $grey;
         margin-bottom: -1px;
+        &.reminder {
+          flex-basis: 14em;
+        }
+        &.status {
+          flex-basis: 6em;
+        }
         .button {
           padding: .25em .75em;
         }

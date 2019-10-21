@@ -10,12 +10,12 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class UserTest extends WebTestCase
 {
-    private $now;
+    private $today;
     private $user;
 
     public function setUp()
     {
-        $this->now = new \DateTime();
+        $this->today = new \DateTime('today');
         $this->user = new User();
     }
 
@@ -27,7 +27,7 @@ class UserTest extends WebTestCase
         $this->assertSame(null, $this->user->getEmail());
         $this->assertSame(['ROLE_USER'], $this->user->getRoles());
         $this->assertSame(null, $this->user->getPassword());
-        $this->assertTrue((int) date_diff($this->now, $this->user->getDateJoined())->format('%s%') < 1);
+        $this->assertEquals($this->today, $this->user->getDateJoined());
         $this->assertSame(false, $this->user->getRejoined());
         $this->assertSame(null, $this->user->getLastLogin());
         $this->assertSame(
@@ -58,7 +58,6 @@ class UserTest extends WebTestCase
             'Doctrine\Common\Collections\ArrayCollection',
             get_class($this->user->getSubmissions())
         );
-        $this->assertSame(null, $this->user->getReviewer());
         $this->assertSame(false, $this->user->isWillingToReview());
         $this->assertSame(false, $this->user->isWillingToComment());
         $this->assertSame(false, $this->user->isWillingToChair());
