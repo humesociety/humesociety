@@ -26,9 +26,9 @@ class Email
     /**
      * The recipient user.
      *
-     * @var string
+     * @var User
      */
-    private $user;
+    private $recipient;
 
     /**
      * The subject of the email.
@@ -70,11 +70,21 @@ class Email
     public function __construct()
     {
         $this->sender = null;
-        $this->user = null;
+        $this->recipient = null;
         $this->subject = null;
         $this->attachment = null;
         $this->twigs = ['content' => null];
         $this->template = 'base';
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->subject ? $this->subject : 'uninitialised email';
     }
 
     /**
@@ -102,9 +112,9 @@ class Email
     /**
      * Get the recipient (null when the object is created).
      *
-     * @return string|null
+     * @return User|null
      */
-    public function getRecipient(): User
+    public function getRecipient(): ?User
     {
         return $this->recipient;
     }
@@ -207,6 +217,28 @@ class Email
     public function setContent(string $content): self
     {
         $this->twigs['content'] = $content;
+        return $this;
+    }
+
+    /**
+     * Get the twig template to use when rendering the email.
+     *
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * Set the twig template to use when rendering the email.
+     *
+     * @param string The twig template to use when rendering the email.
+     * @return self
+     */
+    public function setTemplate(string $template): self
+    {
+        $this->template = $template;
         return $this;
     }
 
@@ -341,28 +373,6 @@ class Email
         $link = "<a href=\"{$link}\">{$link}</a>";
         $this->subject = preg_replace('/{{ ?link ?}}/', $link, $this->subject);
         $this->twigs['content'] = preg_replace('/{{ ?link ?}}/', $link, $this->twigs['content']);
-        return $this;
-    }
-
-    /**
-     * Get the twig template to use when rendering the email.
-     *
-     * @return string
-     */
-    public function getTemplate(): string
-    {
-        return $this->template;
-    }
-
-    /**
-     * Set the twig template to use when rendering the email.
-     *
-     * @param string The twig template to use when rendering the email.
-     * @return self
-     */
-    public function setTemplate(string $template): self
-    {
-        $this->template = $template;
         return $this;
     }
 }

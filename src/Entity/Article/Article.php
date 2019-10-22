@@ -152,6 +152,7 @@ class Article
      */
     public function __construct($issue)
     {
+        // persisted properties
         $this->id= null;
         $this->issue = $issue;
         $this->position = null;
@@ -161,7 +162,9 @@ class Article
         $this->endPage = null;
         $this->museId = null;
         $this->doi = null;
+        // temporary properties
         $this->file = null;
+        // derivative properties
         $this->filename = null;
         $this->path = null;
     }

@@ -10,7 +10,16 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class UploadTest extends WebTestCase
 {
-    public function testGettersAndSetters()
+    private $upload;
+
+    public function setUp()
     {
+        $this->upload = new Upload();
+    }
+
+    public function testConstructor()
+    {
+        $this->assertSame(null, $this->upload->getPath());
+        $this->assertSame(null, $this->upload->getFilename());
     }
 }

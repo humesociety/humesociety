@@ -143,7 +143,7 @@ parameters:
             title: Paper Invitation Reminder
             description: The paper invitation reminder email can be sent out at any time to users who have been invited to present at the Hume Conference, but have not yet submitted their paper.
 
-    news_category_ids: society|members|conferences|fellowships
+    news_category_ids: society|members|conferences|fellowships|jobs
     news_categories:
         society: Society News
         members: Members News

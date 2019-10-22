@@ -5,6 +5,7 @@ namespace App\Tests\Entity\Article;
 use App\Entity\Article\Article;
 use App\Entity\Issue\Issue;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Tests for the article entity.
@@ -13,12 +14,16 @@ class ArticleTest extends WebTestCase
 {
     private $issue;
     private $article;
+    private $pdf;
 
     public function setUp()
     {
+        self::bootKernel();
+        $uploadsDir = self::$container->getParameter('uploads_directory');
         $this->issue = new Issue();
         $this->issue->setVolume(1)->setNumber(1);
         $this->article = new Article($this->issue);
+        $this->pdf = new UploadedFile($uploadsDir.'test_pdf.pdf', 'test_pdf.pdf');
     }
 
     public function testConstructor()
@@ -45,7 +50,8 @@ class ArticleTest extends WebTestCase
             ->setStartPage(1)
             ->setEndPage(10)
             ->setMuseId(123456)
-            ->setDoi('doi');
+            ->setDoi('doi')
+            ->setFile($this->pdf);
         $this->assertSame('Article Title', (string) $this->article);
         $this->assertSame($this->issue, $this->article->getIssue());
         $this->assertSame(1, $this->article->getPosition());
@@ -55,6 +61,7 @@ class ArticleTest extends WebTestCase
         $this->assertSame(10, $this->article->getEndPage());
         $this->assertSame(123456, $this->article->getMuseId());
         $this->assertSame('doi', $this->article->getDoi());
+        $this->assertSame($this->pdf, $this->article->getFile());
         $this->assertSame('123456.pdf', $this->article->getFilename());
     }
 }

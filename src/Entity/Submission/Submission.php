@@ -105,28 +105,52 @@ class Submission
     private $keywords;
 
     /**
-     * The INITIAL uploaded file.
-     *
-     * @var UploadedFile|null
-     * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
-     * @Assert\File(
-     *     mimeTypes = {
-     *          "application/msword",
-     *          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-     *          "application/rtf"
-     *     },
-     *     mimeTypesMessage = "Please upload your paper in Word or RTF format."
-     * )
-     */
-    private $file;
-
-    /**
      * The name of the INITIAL uploaded file.
      *
      * @var string
      * @ORM\Column(type="string", length=255)
      */
     private $filename;
+
+    /**
+     * The name of the FINAL uploaded file.
+     *
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $finalFilename;
+
+    /**
+     * Whether the submission is accepted (null means decision pending; false means rejected).
+     *
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $accepted;
+
+    /**
+     * The date the user was emailed informing them of the decision (null if not yet emailed).
+     *
+     * @var \DateTimeInterface|null
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $dateDecisionEmailed;
+
+    /**
+     * The number of submission reminder emails sent.
+     *
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $submissionReminderEmails;
+
+    /**
+     * The date the last submission reminder email was sent.
+     *
+     * @var \DateTimeInterface|null
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $dateLastSubmissionReminderSent;
 
     /**
      * The reviews of the submission.
@@ -168,36 +192,20 @@ class Submission
     private $chairs;
 
     /**
-     * Whether the submission is accepted (null means decision pending; false means rejected).
+     * The INITIAL uploaded file.
      *
-     * @var bool|null
-     * @ORM\Column(type="boolean", nullable=true)
+     * @var UploadedFile|null
+     * @Assert\NotBlank(groups={"create"}, message="Please attach a file.")
+     * @Assert\File(
+     *     mimeTypes = {
+     *          "application/msword",
+     *          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     *          "application/rtf"
+     *     },
+     *     mimeTypesMessage = "Please upload your paper in Word or RTF format."
+     * )
      */
-    private $accepted;
-
-    /**
-     * The date the user was emailed informing them of the decision (null if not yet emailed).
-     *
-     * @var \DateTimeInterface|null
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $dateDecisionEmailed;
-
-    /**
-     * The number of submission reminder emails sent.
-     *
-     * @var int
-     * @ORM\Column(type="integer")
-     */
-    private $submissionReminderEmails;
-
-    /**
-     * The date the last submission reminder email was sent.
-     *
-     * @var \DateTimeInterface|null
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $dateLastSubmissionReminderSent;
+    private $file;
 
     /**
      * The FINAL uploaded file.
@@ -216,12 +224,48 @@ class Submission
     private $finalFile;
 
     /**
-     * The name of the FINAL uploaded file.
+     * The path to the files.
      *
-     * @var string|null
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string
      */
-    private $finalFilename;
+    private $path;
+
+    /**
+     * The accepted comment invitation.
+     *
+     * @var Comment
+     */
+    private $comment;
+
+    /**
+     * The accepted chair invitation.
+     *
+     * @var Comment
+     */
+    private $chair;
+
+    /**
+     * Whether the final version has been submitted.
+     *
+     * @var bool
+     */
+    private $submitted;
+
+    /**
+     * The status of the submission (pending|accepted|rejected|submitted).
+     *
+     * 'submitted' means the FINAL version is submitted; 'pending' means the decision is pending
+     *
+     * @var bool
+     */
+    private $status;
+
+    /**
+     * An icon representing the status.
+     *
+     * @var string
+     */
+    private $statusIcon;
 
     /**
      * Constructor function.
@@ -232,6 +276,7 @@ class Submission
      */
     public function __construct(User $user, Conference $conference)
     {
+        // persisted properties
         $this->id = null; // doctrine will take care of this
         $this->user = $user;
         $this->conference = $conference;
@@ -240,17 +285,26 @@ class Submission
         $this->authors = null;
         $this->abstract = null;
         $this->keywords = null;
-        $this->file = null;
         $this->filename = null;
-        $this->reviews = new ArrayCollection();
-        $this->comments = new ArrayCollection();
-        $this->chairs = new ArrayCollection();
+        $this->finalFilename = null;
         $this->accepted = null;
         $this->dateDecisionEmailed = null;
         $this->submissionReminderEmails = 0;
         $this->dateLastSubmissionReminderSent = null;
+        // relations
+        $this->reviews = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->chairs = new ArrayCollection();
+        // temporary properties
+        $this->file = null;
         $this->finalFile = null;
-        $this->finalFilename = null;
+        // derivative properties (entirely unnecessary, but I find it clearer to declare them)
+        $this->path = null;
+        $this->comment = null;
+        $this->chair = null;
+        $this->submitted = null;
+        $this->status = null;
+        $this->statusIcon = null;
     }
 
     /**
@@ -393,31 +447,6 @@ class Submission
     }
 
     /**
-     * Get the INITIAL uploaded file.
-     *
-     * @return UploadedFile|null
-     */
-    public function getFile(): ?UploadedFile
-    {
-        return $this->file;
-    }
-
-    /**
-     * Set the INITIAL uploaded file (and the filename at the same time).
-     *
-     * @param UploadedFile|null The INITIAL uploaded file.
-     * @return self
-     */
-    public function setFile(?UploadedFile $file): self
-    {
-        if ($file !== null) {
-            $this->filename = $file->getClientOriginalName();
-        }
-        $this->file = $file;
-        return $this;
-    }
-
-    /**
      * Get the name of the INITIAL uploaded file (null when the object is first created).
      *
      * @return string|null
@@ -428,7 +457,17 @@ class Submission
     }
 
     /**
-     * Get the reviews of this submission.
+     * Get the name of the FINAL uploaded file (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFinalFilename(): ?string
+    {
+        return $this->finalFilename;
+    }
+
+    /**
+     * Get the review invitations for this submission.
      *
      * @return Review[]
      */
@@ -438,19 +477,7 @@ class Submission
     }
 
     /**
-     * Get the submitted reviews of this submission.
-     *
-     * @return Review[]
-     */
-    public function getSubmittedReviews(): Collection
-    {
-        return $this->reviews->filter(function ($review) {
-            return $review->isSubmitted();
-        });
-    }
-
-    /**
-     * Get the (invited) comments on this submission.
+     * Get the comment invitations for this submission.
      *
      * @return Comment[]
      */
@@ -460,43 +487,13 @@ class Submission
     }
 
     /**
-     * Get the accepted comment comment invitation for this submission.
-     *
-     * @return Comment|null
-     */
-    public function getComment(): ?Comment
-    {
-        foreach ($this->comments as $comment) {
-            if ($comment->isAccepted()) {
-                return $comment;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the (invited) chairs for the session.
+     * Get the chair invitations for the subission.
      *
      * @return Chair[]
      */
     public function getChairs(): Collection
     {
         return $this->chairs;
-    }
-
-    /**
-     * Get the accepted chair for the session.
-     *
-     * @return Chair|null
-     */
-    public function getChair(): ?Chair
-    {
-        foreach ($this->chairs as $chair) {
-            if ($chair->isAccepted()) {
-                return $chair;
-            }
-        }
-        return null;
     }
 
     /**
@@ -519,47 +516,6 @@ class Submission
     {
         $this->accepted = $accepted;
         return $this;
-    }
-
-    /**
-     * Get the status of the submission.
-     *
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        if ($this->finalFilename !== null) {
-            return 'submitted';
-        }
-        if ($this->accepted === true) {
-            return 'accepted';
-        }
-        if ($this->accepted === false) {
-            return 'rejected';
-        }
-        return 'pending';
-    }
-
-    /**
-     * Get the status icon.
-     *
-     * @return string
-     */
-    public function getStatusIcon(): string
-    {
-        switch ($this->getStatus()) {
-            case 'submitted':
-                return 'fas fa-check-double';
-
-            case 'accepted':
-                return 'fas fa-check';
-
-            case 'rejected':
-                return 'fas fa-times';
-
-            case 'pending':
-                return 'fas fa-hourglass-half';
-        }
     }
 
     /**
@@ -626,6 +582,31 @@ class Submission
     }
 
     /**
+     * Get the INITIAL uploaded file.
+     *
+     * @return UploadedFile|null
+     */
+    public function getFile(): ?UploadedFile
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set the INITIAL uploaded file (and the filename at the same time).
+     *
+     * @param UploadedFile|null The INITIAL uploaded file.
+     * @return self
+     */
+    public function setFile(?UploadedFile $file): self
+    {
+        if ($file !== null) {
+            $this->filename = $file->getClientOriginalName();
+        }
+        $this->file = $file;
+        return $this;
+    }
+
+    /**
      * Get the FINAL uploaded file.
      *
      * @return UploadedFile|null
@@ -651,13 +632,43 @@ class Submission
     }
 
     /**
-     * Get the name of the FINAL uploaded file (null when the object is first created).
+     * Get path to the files fpr this submission in the uploads subdirectory.
      *
-     * @return string|null
+     * @return string
      */
-    public function getFinalFilename(): ?string
+    public function getPath(): string
     {
-        return $this->finalFilename;
+        return "submissions/user{$this->getUser()->getId()}/{$this->getConference()->getNumber()}/";
+    }
+
+    /**
+     * Get the accepted comment invitation for this submission.
+     *
+     * @return Comment|null
+     */
+    public function getComment(): ?Comment
+    {
+        foreach ($this->comments as $comment) {
+            if ($comment->isAccepted()) {
+                return $comment;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the accepted chair finvitation or this submission.
+     *
+     * @return Chair|null
+     */
+    public function getChair(): ?Chair
+    {
+        foreach ($this->chairs as $chair) {
+            if ($chair->isAccepted()) {
+                return $chair;
+            }
+        }
+        return null;
     }
 
     /**
@@ -671,13 +682,44 @@ class Submission
     }
 
     /**
-     * Get path to the files fpr this submission in the uploads subdirectory.
+     * Get the status of the submission.
      *
      * @return string
      */
-    public function getPath(): string
+    public function getStatus(): string
     {
-        return "submissions/user{$this->getUser()->getId()}/{$this->getConference()->getNumber()}/";
+        if ($this->finalFilename !== null) {
+            return 'submitted';
+        }
+        if ($this->accepted === true) {
+            return 'accepted';
+        }
+        if ($this->accepted === false) {
+            return 'rejected';
+        }
+        return 'pending';
+    }
+
+    /**
+     * Get the status icon.
+     *
+     * @return string
+     */
+    public function getStatusIcon(): string
+    {
+        switch ($this->getStatus()) {
+            case 'submitted':
+                return 'fas fa-check-double';
+
+            case 'accepted':
+                return 'fas fa-check';
+
+            case 'rejected':
+                return 'fas fa-times';
+
+            case 'pending':
+                return 'fas fa-hourglass-half';
+        }
     }
 
     /**

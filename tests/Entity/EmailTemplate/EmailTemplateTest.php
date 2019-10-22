@@ -10,7 +10,22 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class EmailTemplateTest extends WebTestCase
 {
-    public function testGettersAndSetters()
+    private $emailTemplate;
+
+    public function setUp()
     {
+        $this->emailTemplate = new EmailTemplate();
+    }
+
+    public function testConstructor()
+    {
+        $this->assertSame(null, $this->emailTemplate->getId());
+        $this->assertSame(null, $this->emailTemplate->getLabel());
+        $this->assertSame(null, $this->emailTemplate->getGroup());
+        $this->assertSame(null, $this->emailTemplate->getTitle());
+        $this->assertSame(null, $this->emailTemplate->getDescription());
+        $this->assertSame(null, $this->emailTemplate->getSender());
+        $this->assertSame(null, $this->emailTemplate->getSubject());
+        $this->assertSame(null, $this->emailTemplate->getContent());
     }
 }

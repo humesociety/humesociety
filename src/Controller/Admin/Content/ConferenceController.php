@@ -25,14 +25,14 @@ class ConferenceController extends AbstractController
     /**
      * @Route("/{decade}", name="index", requirements={"decade": "\d{4}"})
      */
-    public function index(ConferenceHandler $conferenceHandler, $decade = null): Response
+    public function index(ConferenceHandler $conferences, $decade = null): Response
     {
         return $this->render('admin/content/conference/view.twig', [
             'area' => 'content',
             'subarea' => 'conference',
             'decade' => $decade,
-            'decades' => $conferenceHandler->getDecades(),
-            'conferences' => $conferenceHandler->getConferences()
+            'decades' => $conferences->getDecades(),
+            'conferences' => $conferences->getConferences()
         ]);
     }
 
@@ -41,13 +41,13 @@ class ConferenceController extends AbstractController
      */
     public function edit(
         Conference $conference,
-        ConferenceHandler $conferenceHandler,
+        ConferenceHandler $conferences,
         UploadHandler $uploadHandler,
         Request $request,
         string $tab = 'details'
     ): Response {
         // the conference form
-        $conference = $conferenceHandler->enrich($conference);
+        $conference = $conferences->enrichConference($conference);
         $conferenceForm = $this->createForm(ConferenceType::class, $conference);
         $conferenceForm->handleRequest($request);
 

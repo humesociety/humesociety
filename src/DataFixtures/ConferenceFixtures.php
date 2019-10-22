@@ -12,7 +12,7 @@ class ConferenceFixtures extends Fixture
     {
         $conference = new Conference();
         $conference->setNumber(1)
-            ->setYear(2020)
+            ->setYear(idate('Y') + 1)
             ->setTown('Oxford')
             ->setCountry('GBR')
             ->setInstitution('University of Oxford');

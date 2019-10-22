@@ -10,7 +10,19 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class TextTest extends WebTestCase
 {
-    public function testGettersAndSetters()
+    private $text;
+
+    public function setUp()
     {
+        $this->text = new Text('label');
+    }
+
+    public function testConstructor()
+    {
+        $this->assertSame(null, $this->text->getId());
+        $this->assertSame('label', $this->text->getLabel());
+        $this->assertSame(null, $this->text->getContent());
+        $this->assertSame(null, $this->text->getTitle());
+        $this->assertSame(null, $this->text->getDescription());
     }
 }
