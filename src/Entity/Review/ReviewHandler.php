@@ -3,9 +3,8 @@
 namespace App\Entity\Review;
 
 use App\Entity\Conference\Conference;
-use App\Entity\Reviewer\Reviewer;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The review handler contains the main business logic for reading and writing review data.
@@ -22,14 +21,14 @@ class ReviewHandler
     /**
      * The review repository.
      *
-     * @var ReviewRepository
+     * @var EntityRepository
      */
     private $repository;
 
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager)
@@ -41,14 +40,14 @@ class ReviewHandler
     /**
      * Get all review invitations.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Review[]
      */
     public function getReviews(?Conference $conference = null): array
     {
         $reviews = $this->repository->findAll();
         if ($conference === null) {
-            return $comments;
+            return $reviews;
         }
         return array_filter($reviews, function ($review) use ($conference) {
             return $review->getSubmission()->getConference() === $conference;
@@ -58,7 +57,7 @@ class ReviewHandler
     /**
      * Get a review from its secret.
      *
-     * @param string The review secret.
+     * @param string $secret The review secret.
      * @return Review|null
      */
     public function getReviewBySecret(string $secret): ?Review
@@ -69,7 +68,7 @@ class ReviewHandler
     /**
      * Save/update a review in the database.
      *
-     * @param Review The review to save/update.
+     * @param Review $review The review to save/update.
      */
     public function saveReview(Review $review)
     {

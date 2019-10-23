@@ -21,123 +21,182 @@ use Symfony\Component\Routing\Annotation\Route;
 class ElectionController extends AbstractController
 {
     /**
+     * Route for viewing elections.
+     *
+     * @param ElectionHandler $elections The election handler.
+     * @param string $decade The initial decade to show.
+     * @return Response
      * @Route("/{decade}", name="index", requirements={"deacde": "\d{4}"})
      */
-    public function index(ElectionHandler $electionHandler, string $decade = null): Response
+    public function index(ElectionHandler $elections, string $decade = null): Response
     {
-        return $this->render('admin/society/election/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'election',
             'decade' => $decade,
-            'decades' => $electionHandler->getDecades(),
-            'elections' => $electionHandler->getElections()
-        ]);
+            'decades' => $elections->getDecades(),
+            'elections' => $elections->getElections()
+        ];
+
+        // render and return the page
+        return $this->render('admin/society/election/view.twig', $twigs);
     }
 
     /**
+     * Route for creating an election.
+     *
+     * @param Request $request Symfony's request object.
+     * @param ElectionHandler $elections The election handler.
+     * @return Response
+     * @Route("/create", name="create")
+     */
+    public function create(Request $request, ElectionHandler $elections): Response
+    {
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'society',
+            'subarea' => 'election'
+        ];
+
+        // create and handle the election form
+        $election = new Election();
+        $form = $this->createForm(ElectionType::class, $election);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $elections->saveElection($election);
+            $this->addFlash('notice', 'Election for '.$election.' has been created.');
+            return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
+        }
+
+        // add additional twig variables
+        $twigs['electionForm'] = $form->createView();
+
+        // render and return the page
+        return $this->render('admin/society/election/create.twig', $twigs);
+    }
+
+    /**
+     * Route for opening an election.
+     *
+     * @param ElectionHandler $elections The election handler.
+     * @param Election $election The election to open.
+     * @return Response
      * @Route("/open/{id}", name="open")
      */
-    public function open(Election $election, ElectionHandler $electionHandler): Response
+    public function open(ElectionHandler $elections, Election $election): Response
     {
         $election->setOpen(true);
-        $electionHandler->saveElection($election);
+        $elections->saveElection($election);
         $this->addFlash('notice', 'Election for '.$election.' has been opened. Editing of this election has been disabled.');
         return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
     }
 
     /**
+     * Route for closing an election.
+     *
+     * @param ElectionHandler $elections The election handler.
+     * @param Election $election The election to open.
+     * @return Response
      * @Route("/close/{id}", name="close")
      */
-    public function close(Election $election, ElectionHandler $electionHandler): Response
+    public function close(ElectionHandler $elections, Election $election): Response
     {
         $election->setOpen(false);
-        $electionHandler->saveElection($election);
+        $elections->saveElection($election);
         $this->addFlash('notice', 'Election for '.$election.' has been closed. Editing of this election is now possible.');
         return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
     }
 
     /**
+     * Route for editing an election.
+     *
+     * @param Request $request Symfony's request object.
+     * @param ElectionHandler $elections The election handler.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param Election $election The election to edit.
+     * @return Response
      * @Route("/edit/{id}", name="edit")
      */
-    public function edit(
-        Election $election,
-        ElectionHandler $electionHandler,
-        CandidateHandler $candidateHandler,
-        Request $request
-    ): Response {
+    public function edit(Request $request, ElectionHandler $elections, CandidateHandler $candidates, Election $election): Response
+    {
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'society',
+            'subarea' => 'election',
+            'election' => $election,
+            'candidates' => $candidates->getCandidatesByYear($election->getYear())
+        ];
+
+        // create and handle the election form
         $form = $this->createForm(ElectionType::class, $election);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $electionHandler->saveElection($election);
+            $elections->saveElection($election);
             $this->addFlash('notice', 'Election for '.$election.' has been updated.');
             return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
         }
 
-        return $this->render('admin/society/election/edit.twig', [
-            'area' => 'society',
-            'subarea' => 'election',
-            'election' => $election,
-            'electionForm' => $form->createView(),
-            'candidates' => $candidateHandler->getCandidatesByYear($election->getYear())
-        ]);
+        // add additional twig variables
+        $twigs['electionForm'] = $form->createView();
+
+        // render and return the page
+        return $this->render('admin/society/election/edit.twig', $twigs);
     }
 
     /**
+     * Route for viewing the candidate for an election.
+     *
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param Election $election The election.
+     * @return Response
      * @Route("/candidates/{id}", name="candidates")
      */
-    public function candidates(Election $election, CandidateHandler $candidateHandler): Response
+    public function candidates(CandidateHandler $candidates, Election $election): Response
     {
-        return $this->render('admin/society/election/candidates.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'election',
             'election' => $election,
-            'candidates' => $candidateHandler->getCandidatesByYear($election->getYear())
-        ]);
+            'candidates' => $candidates->getCandidatesByYear($election->getYear())
+        ];
+
+        // render and return the page
+        return $this->render('admin/society/election/candidates.twig', $twigs);
     }
 
     /**
+     * Route for deleting an election.
+     *
+     * @param Request $request Symfony's request object.
+     * @param ElectionHandler $elections The election handler.
+     * @param Election $election The election to delete.
+     * @return Response
      * @Route("/delete/{id}", name="delete")
      */
-    public function delete(Election $election, ElectionHandler $electionHandler, Request $request): Response
+    public function delete(Request $request, ElectionHandler $elections, Election $election): Response
     {
-        $form = $this->createFormBuilder()->getForm();
-        $form->handleRequest($request);
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'society',
+            'subarea' => 'election',
+            'election' => $election
+        ];
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $electionHandler->deleteElection($election);
+        // create and handle the delete election form
+        $electionForm = $this->createFormBuilder()->getForm();
+        $electionForm->handleRequest($request);
+        if ($electionForm->isSubmitted() && $electionForm->isValid()) {
+            $elections->deleteElection($election);
             $this->addFlash('notice', 'Election for '.$election.' has been deleted.');
             return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
         }
 
-        return $this->render('admin/society/election/delete.twig', [
-            'area' => 'society',
-            'subarea' => 'election',
-            'election' => $election,
-            'electionForm' => $form->createView()
-        ]);
-    }
+        // add additional twig variables
+        $twigs['electionForm'] = $electionForm->createView();
 
-    /**
-     * @Route("/create", name="create")
-     */
-    public function create(ElectionHandler $electionHandler, Request $request): Response
-    {
-        $election = new Election();
-
-        $form = $this->createForm(ElectionType::class, $election);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $electionHandler->saveElection($election);
-            $this->addFlash('notice', 'Election for '.$election.' has been created.');
-            return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
-        }
-
-        return $this->render('admin/society/election/create.twig', [
-            'area' => 'society',
-            'subarea' => 'election',
-            'electionForm' => $form->createView()
-        ]);
+        // render and return the page
+        return $this->render('admin/society/election/delete.twig', $twigs);
     }
 }

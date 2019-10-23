@@ -5,7 +5,6 @@ namespace App\Entity\Submission;
 use App\Entity\Chair\Chair;
 use App\Entity\Comment\Comment;
 use App\Entity\Conference\Conference;
-use App\Entity\Paper\Paper;
 use App\Entity\Review\Review;
 use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,7 +12,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -245,6 +243,13 @@ class Submission
     private $chair;
 
     /**
+     * Whether the decision email has been sent.
+     *
+     * @var bool
+     */
+    private $decisionEmailed;
+
+    /**
      * Whether the final version has been submitted.
      *
      * @var bool
@@ -270,8 +275,9 @@ class Submission
     /**
      * Constructor function.
      *
-     * @param User The user who submitted the paper.
-     * @param Conference The conference the paper is submitted to.
+     * @param User $user The user who submitted the paper.
+     * @param Conference $conference The conference the paper is submitted to.
+     * @throws \Exception
      * @return void
      */
     public function __construct(User $user, Conference $conference)
@@ -298,10 +304,11 @@ class Submission
         // temporary properties
         $this->file = null;
         $this->finalFile = null;
-        // derivative properties (entirely unnecessary, but I find it clearer to declare them)
+        // derivative properties
         $this->path = null;
         $this->comment = null;
         $this->chair = null;
+        $this->decisionEmailed = false;
         $this->submitted = null;
         $this->status = null;
         $this->statusIcon = null;
@@ -370,7 +377,7 @@ class Submission
     /**
      * Set the title of the paper.
      *
-     * @param string The title of the paper.
+     * @param string $title The title of the paper.
      * @return self
      */
     public function setTitle(string $title): self
@@ -392,7 +399,7 @@ class Submission
     /**
      * Set the authors of the paper.
      *
-     * @param string The authors of the paper.
+     * @param string $authors The authors of the paper.
      * @return self
      */
     public function setAuthors(string $authors): self
@@ -414,7 +421,7 @@ class Submission
     /**
      * Set the abstract of the paper.
      *
-     * @param string The abstract of the paper.
+     * @param string $abstract The abstract of the paper.
      * @return self
      */
     public function setAbstract(string $abstract): self
@@ -436,7 +443,7 @@ class Submission
     /**
      * Set the keywords for the paper.
      *
-     * @param string The keywords for the paper.
+     * @param string $keywords The keywords for the paper.
      * @return self
      */
     public function setKeywords(string $keywords): self
@@ -487,7 +494,7 @@ class Submission
     }
 
     /**
-     * Get the chair invitations for the subission.
+     * Get the chair invitations for the submission.
      *
      * @return Chair[]
      */
@@ -509,7 +516,7 @@ class Submission
     /**
      * Set whether the submission is accepted.
      *
-     * @param bool|null Whether the submission is accepted.
+     * @param bool|null $accepted Whether the submission is accepted.
      * @return self
      */
     public function setAccepted(?bool $accepted): self
@@ -531,6 +538,7 @@ class Submission
     /**
      * Set the date when the user was emailed the decision (set it to today's date).
      *
+     * @throws \Exception
      * @return self
      */
     public function setDateDecisionEmailed(): self
@@ -562,6 +570,7 @@ class Submission
     /**
      * Increment the number of final submission reminder emails sent.
      *
+     * @throws \Exception
      * @return self
      */
     public function incrementSubmissionReminderEmails(): self
@@ -594,7 +603,7 @@ class Submission
     /**
      * Set the INITIAL uploaded file (and the filename at the same time).
      *
-     * @param UploadedFile|null The INITIAL uploaded file.
+     * @param UploadedFile|null $file The INITIAL uploaded file.
      * @return self
      */
     public function setFile(?UploadedFile $file): self
@@ -619,7 +628,7 @@ class Submission
     /**
      * Set the FINAL uploaded file (and the filename at the same time).
      *
-     * @param UploadedFile|null The FINAL uploaded file.
+     * @param UploadedFile|null $finalFile The FINAL uploaded file.
      * @return self
      */
     public function setFinalFile(?UploadedFile $finalFile): self
@@ -657,7 +666,7 @@ class Submission
     }
 
     /**
-     * Get the accepted chair finvitation or this submission.
+     * Get the accepted chair invitation for this submission.
      *
      * @return Chair|null
      */
@@ -725,8 +734,8 @@ class Submission
     /**
      * Get whether the given user has permission to view this submission.
      *
-     * @param User|null The currently logged in user (if any).
-     * @param string|null The secret provided (if any).
+     * @param User|null $user The currently logged in user (if any).
+     * @param string|null $secret The secret provided (if any).
      * @return bool
      */
     public function userCanView(?User $user, ?string $secret): bool

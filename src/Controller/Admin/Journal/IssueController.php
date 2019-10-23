@@ -26,8 +26,8 @@ class IssueController extends AbstractController
     /**
      * Route for viewing all issues.
      *
-     * @param IssueHandler The issue handler.
-     * @param string|null The decade to show.
+     * @param IssueHandler $issues The issue handler.
+     * @param string|null $decade The decade of issues to show.
      * @return Response
      * @Route("/{decade}", name="index", requirements={"decade": "\d{4}"})
      */
@@ -49,8 +49,8 @@ class IssueController extends AbstractController
     /**
      * Route for creating an issue.
      *
-     * @param Request Symfony's request object.
-     * @param IssueHandler The issue handler.
+     * @param Request $request Symfony's request object.
+     * @param IssueHandler $issues The issue handler.
      * @return Response
      * @Route("/create", name="create")
      */
@@ -82,10 +82,11 @@ class IssueController extends AbstractController
     /**
      * Route for editing an issue.
      *
-     * @param Request Symfony's request object.
-     * @param IssueHandler The issue handler.
-     * @param Issue The issue to edit.
+     * @param Request $request Symfony's request object.
+     * @param IssueHandler $issues The issue handler.
+     * @param Issue $issue The issue to edit.
      * @param string The initially visible tab.
+     * @return Response
      * @Route("/edit/{id}/{tab}", name="edit", requirements={"tab"="details|articles"})
      */
     public function edit(Request $request, IssueHandler $issues, Issue $issue, string $tab = 'details'): Response
@@ -120,9 +121,10 @@ class IssueController extends AbstractController
     /**
      * Route for creating an article in an issue.
      *
-     * @param Request Symfony's request object.
-     * @param ArticleHandler The article handler.
-     * @param Issue The issue.
+     * @param Request $request Symfony's request object.
+     * @param ArticleHandler $articles The article handler.
+     * @param Issue $issue The issue.
+     * @return Response
      * @Route("/edit/{id}/create-article", name="create_article")
      */
     public function createArticle(Request $request, ArticleHandler $articles, Issue $issue): Response
@@ -157,9 +159,9 @@ class IssueController extends AbstractController
     /**
      * Route for editing an article in an issue.
      *
-     * @param Request Symfony's request object.
-     * @param ArticleHandler The article handler.
-     * @param Issue The issue.
+     * @param Request $request Symfony's request object.
+     * @param ArticleHandler $articles The article handler.
+     * @param Article $article The article.
      * @return Response
      * @Route("/edit/edit-article/{id}", name="edit_article")
      */
@@ -200,8 +202,8 @@ class IssueController extends AbstractController
     /**
      * Route for moving an article up in an issue.
      *
-     * @param ArticleHandler The article handler.
-     * @param Article The article to move.
+     * @param ArticleHandler $articles The article handler.
+     * @param Article $article The article to move.
      * @return Response
      * @Route("/edit/move-article-up/{id}", name="move_article_up")
      */
@@ -220,8 +222,8 @@ class IssueController extends AbstractController
     /**
      * Route for moving an article down in an issue.
      *
-     * @param ArticleHandler The article handler.
-     * @param Article The article to move.
+     * @param ArticleHandler $articles The article handler.
+     * @param Article $article The article to move.
      * @return Response
      * @Route("/edit/move-article-down/{id}", name="move_article_down")
      */
@@ -240,9 +242,9 @@ class IssueController extends AbstractController
     /**
      * Route for deleting an article.
      *
-     * @param Request Symfony's request object.
-     * @param ArticleHandler The article handler.
-     * @param Article The article to delete.
+     * @param Request $request Symfony's request object.
+     * @param ArticleHandler $articles The article handler.
+     * @param Article $article The article to delete.
      * @return Response
      * @Route("/edit/delete-article/{id}", name="delete_article")
      */
@@ -277,9 +279,9 @@ class IssueController extends AbstractController
     /**
      * Route for deleting an issue.
      *
-     * @param Request Symfony's request object.
-     * @param IssueHandler The issue handler.
-     * @param Issue The issue to delete.
+     * @param Request $request Symfony's request object.
+     * @param IssueHandler $issues The issue handler.
+     * @param Issue $issue The issue to delete.
      * @return Response
      * @Route("/delete/{id}", name="delete")
      */

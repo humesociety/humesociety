@@ -102,12 +102,35 @@ class Invitation
     private $email;
 
     /**
+     * Whether the invitation file is submitted.
+     *
+     * @var bool
+     */
+    private $submitted;
+
+    /**
+     * The invitation's status.
+     *
+     * @var string
+     */
+    private $status;
+
+    /**
+     * Icon representing the invitation's status.
+     *
+     * @var string
+     */
+    private $statusIcon;
+
+    /**
      * Constructor function.
      *
+     * @throws \Exception
      * @return void
      */
     public function __construct()
     {
+        // persisted properties
         $this->dateInvitationSent = new \DateTime('today');
         $this->secret = '';
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -120,9 +143,14 @@ class Invitation
         $this->submissionReminderEmails = 0;
         $this->dateLastSubmissionReminderSent = null;
         $this->dateSubmitted = null;
+        // temporary properties
         $this->firstname = null;
         $this->lastname = null;
         $this->email = null;
+        // derivative properties
+        $this->submitted = null;
+        $this->status = null;
+        $this->statusIcon = null;
     }
 
     /**
@@ -158,7 +186,7 @@ class Invitation
     /**
      * Set whether the invitation is accepted.
      *
-     * @param bool|null Whether the submission is accepted.
+     * @param bool|null $accepted Whether the submission is accepted.
      * @return self
      */
     public function setAccepted(?bool $accepted): self
@@ -180,6 +208,7 @@ class Invitation
     /**
      * Increment the number of invitation reminder emails sent.
      *
+     * @throws \Exception
      * @return self
      */
     public function incrementInvitationReminderEmails(): self
@@ -212,12 +241,13 @@ class Invitation
     /**
      * Increment the number of submission reminder emails sent.
      *
+     * @throws \Exception
      * @return self
      */
     public function incrementSubmissionReminderEmails(): self
     {
         $this->submissionReminderEmails += 1;
-        $this->lastSubmissionReminderEmail = new \DateTime('today');
+        $this->dateLastSubmissionReminderSent = new \DateTime('today');
         return $this;
     }
 
@@ -244,11 +274,78 @@ class Invitation
     /**
      * Set when whatever was invited was submitted.
      *
+     * @throws \Exception
      * @return self
      */
     public function setDateSubmitted(): self
     {
         $this->dateSubmitted = new \DateTime('today');
+        return $this;
+    }
+
+    /**
+     * Get the new user's firstname.
+     *
+     * @return string|null
+     */
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Set the new user's firstname.
+     *
+     * @param string $firstname The new user's firstname.
+     * @return self
+     */
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+        return $this;
+    }
+
+    /**
+     * Get the new user's lastmame.
+     *
+     * @return string|null
+     */
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Set the new user's lastname.
+     *
+     * @param string $lastname The new user's lastname.
+     * @return self
+     */
+    public function setLastname(string $lastname): self
+    {
+        $this->lastname = $lastname;
+        return $this;
+    }
+
+    /**
+     * Get the new user's email.
+     *
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set the new user's email.
+     *
+     * @param string $email The new user's email.
+     * @return self
+     */
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
         return $this;
     }
 
@@ -298,71 +395,5 @@ class Invitation
             case 'pending':
                 return 'fas fa-hourglass-half';
         }
-    }
-
-    /**
-     * Get the new user's firstname.
-     *
-     * @return string|null
-     */
-    public function getFirstname(): ?string
-    {
-        return $this->firstname;
-    }
-
-    /**
-     * Set the new user's firstname.
-     *
-     * @param string The new user's firstname.
-     * @return self
-     */
-    public function setFirstname(string $firstname): self
-    {
-        $this->firstname = $firstname;
-        return $this;
-    }
-
-    /**
-     * Get the new user's lastmame.
-     *
-     * @return string|null
-     */
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
-    /**
-     * Set the new user's lastname.
-     *
-     * @param string The new user's lastname.
-     * @return self
-     */
-    public function setLastname(string $lastname): self
-    {
-        $this->lastname = $lastname;
-        return $this;
-    }
-
-    /**
-     * Get the new user's email.
-     *
-     * @return string|null
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set the new user's email.
-     *
-     * @param string The new user's email.
-     * @return self
-     */
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-        return $this;
     }
 }

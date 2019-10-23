@@ -3,7 +3,11 @@
 namespace App\Entity\User;
 
 use App\Entity\Candidate\Candidate;
+use App\Entity\Chair\Chair;
+use App\Entity\Comment\Comment;
 use App\Entity\Conference\Conference;
+use App\Entity\Paper\Paper;
+use App\Entity\Review\Review;
 use App\Entity\Submission\Submission;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -447,10 +451,12 @@ class User implements UserInterface
     /**
      * Constructor function.
      *
+     * @throws \Exception
      * @return void
      */
     public function __construct()
     {
+        // persisted properties
         $this->id = null; // Doctrine takes care of this
         $this->username = null;
         $this->email = null;
@@ -482,15 +488,18 @@ class User implements UserInterface
         $this->mailingAddress = null;
         $this->active = false;
         $this->invited = false;
+        $this->willingToReview = false;
+        $this->willingToComment = false;
+        $this->willingToChair = false;
+        $this->keywords = null;
+        // relations
         $this->submissions = new ArrayCollection();
         $this->papers = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->chairs = new ArrayCollection();
-        $this->willingToReview = false;
-        $this->willingToComment = false;
-        $this->willingToChair = false;
-        $this->keywords = null;
+        // derivative properties
+        $this->fullname = null;
         $this->member = false;
         $this->memberInGoodStanding = false;
         $this->memberInArrears = false;
@@ -531,7 +540,7 @@ class User implements UserInterface
     /**
      * Set the user's (unique) username.
      *
-     * @param string The user's (unique) username.
+     * @param string $username The user's (unique) username.
      * @return self
      */
     public function setUsername(string $username): self
@@ -553,7 +562,8 @@ class User implements UserInterface
     /**
      * Set the user's (unique) email address.
      *
-     * @param string The user's (unique) email address.
+     * @param string $email The user's (unique) email address.
+     * @return self
      */
     public function setEmail(string $email): self
     {
@@ -582,7 +592,7 @@ class User implements UserInterface
     /**
      * Add a security role for this user.
      *
-     * @param string The security role to add.
+     * @param string $role The security role to add.
      * @return self
      */
     public function addRole(string $role): self
@@ -606,7 +616,7 @@ class User implements UserInterface
     /**
      * Remove a security role for this user.
      *
-     * @param string The security role to remove.
+     * @param string $role The security role to remove.
      * @return self
      */
     public function removeRole(string $role): self
@@ -632,7 +642,7 @@ class User implements UserInterface
     /**
      * Set the user's encrypted password.
      *
-     * @var string The user's encrypted password.
+     * @var string $password The user's encrypted password.
      * @return self
      */
     public function setPassword(string $password): self
@@ -664,7 +674,7 @@ class User implements UserInterface
     /**
      * Set whether the user was rejoining when they created this account.
      *
-     * @param bool Whether the user was rejoining when they created this account.
+     * @param bool $rejoined Whether the user was rejoining when they created this account.
      * @return self
      */
     public function setRejoined(bool $rejoined): self
@@ -686,7 +696,7 @@ class User implements UserInterface
     /**
      * Set when the user last logged in.
      *
-     * @param \DateTimeInterface When the user last logged in.
+     * @param \DateTimeInterface $lastLogin When the user last logged in.
      * @return self
      */
     public function setLastLogin(\DateTimeInterface $lastLogin): self
@@ -718,7 +728,7 @@ class User implements UserInterface
     /**
      * Set whether the user has voted in the current election.
      *
-     * @param bool Whether the user has voted in the current election.
+     * @param bool $voted Whether the user has voted in the current election.
      * @return self
      */
     public function setVoted(bool $voted): self
@@ -740,7 +750,7 @@ class User implements UserInterface
     /**
      * Set notes about this user.
      *
-     * @param string|null Notes about this user.
+     * @param string|null $notes Notes about this user.
      * @return self
      */
     public function setNotes(?string $notes): self
@@ -764,7 +774,8 @@ class User implements UserInterface
      *
      * Membership expires at the end of June or the end of December.
      *
-     * @param int How many years to add to this user's membership, starting from today's date.
+     * @param int $yearsToAdd How many years to add to this user's membership, starting from today's date.
+     * @throws \Exception
      * @return self
      */
     public function setDues(int $yearsToAdd): self
@@ -774,7 +785,7 @@ class User implements UserInterface
         $lastYear = (string) ((int) $currentYear - 1);
         $this->dues = ($currentMonth > 6)
             ? new \DateTime($currentYear.'-06-30')
-            : new \DateTime($currentYear.'-12-31');
+            : new \DateTime($lastYear.'-12-31');
         if ($yearsToAdd > 0) {
             $this->dues->add(new \DateInterval('P'.$yearsToAdd.'Y'));
         }
@@ -794,7 +805,7 @@ class User implements UserInterface
     /**
      * Set whether this user is a lifetime member of the society.
      *
-     * @param bool Whether this user is a lifetime member of the society.
+     * @param bool $lifetimeMember Whether this user is a lifetime member of the society.
      * @return self
      */
     public function setLifetimeMember(bool $lifetimeMember): self
@@ -816,6 +827,7 @@ class User implements UserInterface
     /**
      * Randomly set this user's password reset secret (and when it expires).
      *
+     * @throws \Exception
      * @return self
      */
     public function setPasswordResetSecret(): self
@@ -832,7 +844,7 @@ class User implements UserInterface
     /**
      * Get when this user's password reset secret expires.
      *
-     * @return string|null
+     * @return \DateTimeInterface|null
      */
     public function getPasswordResetSecretExpires(): ?\DateTimeInterface
     {
@@ -852,7 +864,7 @@ class User implements UserInterface
     /**
      * Set the user's first name.
      *
-     * @param string The user's first name.
+     * @param string $firstname The user's first name.
      * @return self
      */
     public function setFirstname(string $firstname): self
@@ -874,23 +886,13 @@ class User implements UserInterface
     /**
      * Set the user's last name.
      *
-     * @param string The user's last name.
+     * @param string $lastname The user's last name.
      * @return self
      */
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
         return $this;
-    }
-
-    /**
-     * Get the user's full name (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getFullname(): ?string
-    {
-        return $this->firstname && $this->lastname ? "{$this->firstname} {$this->lastname}" : null;
     }
 
     /**
@@ -906,7 +908,7 @@ class User implements UserInterface
     /**
      * Set the user's department.
      *
-     * @param string|null The user's department.
+     * @param string|null $department The user's department.
      * @return self
      */
     public function setDepartment(?string $department): self
@@ -928,7 +930,7 @@ class User implements UserInterface
     /**
      * Set the user's institution.
      *
-     * @param string|null The user's institution.
+     * @param string|null $institution The user's institution.
      * @return self
      */
     public function setInstitution(?string $institution): self
@@ -950,7 +952,7 @@ class User implements UserInterface
     /**
      * Set the user's city.
      *
-     * @param string|null The user's city.
+     * @param string|null $city The user's city.
      * @return self
      */
     public function setCity(?string $city): self
@@ -972,7 +974,7 @@ class User implements UserInterface
     /**
      * Set the user's state.
      *
-     * @param string|null The user's state.
+     * @param string|null $state The user's state.
      * @return self
      */
     public function setState(?string $state): self
@@ -994,7 +996,7 @@ class User implements UserInterface
     /**
      * Set the three-letter country code of the user's country.
      *
-     * @param string|null The three-letter country code of the user's country.
+     * @param string|null $country The three-letter country code of the user's country.
      * @return self
      */
     public function setCountry(?string $country): self
@@ -1016,7 +1018,7 @@ class User implements UserInterface
     /**
      * Set the user's office phone number.
      *
-     * @param string|null The user's office phone number.
+     * @param string|null $officePhone The user's office phone number.
      * @return self
      */
     public function setOfficePhone(?string $officePhone): self
@@ -1038,7 +1040,7 @@ class User implements UserInterface
     /**
      * Set the user's home phone number.
      *
-     * @param string|null The user's home phone number.
+     * @param string|null $homePhone The user's home phone number.
      * @return self
      */
     public function setHomePhone(?string $homePhone): self
@@ -1060,7 +1062,7 @@ class User implements UserInterface
     /**
      * Set the user's fax number.
      *
-     * @param string|null The user's fax number.
+     * @param string|null $fax The user's fax number.
      * @return self
      */
     public function setFax(?string $fax): self
@@ -1082,7 +1084,7 @@ class User implements UserInterface
     /**
      * Set the user's web page.
      *
-     * @param string|null The user's web page.
+     * @param string|null $webpage The user's web page.
      * @return self
      */
     public function setWebpage(?string $webpage): self
@@ -1104,7 +1106,7 @@ class User implements UserInterface
     /**
      * Set whether the user wishes to receive general emails.
      *
-     * @param bool Whether the user wishes to receive general emails.
+     * @param bool $receiveEmail Whether the user wishes to receive general emails.
      * @return self
      */
     public function setReceiveEmail(bool $receiveEmail): self
@@ -1126,7 +1128,7 @@ class User implements UserInterface
     /**
      * Set whether the user wishes to receive a copy of Hume Studies in the post.
      *
-     * @param bool Whether the user wishes to receive a copy of Hume Studies in the post.
+     * @param bool $receiveHumeStudies Whether the user wishes to receive a copy of Hume Studies in the post.
      * @return self
      */
     public function setReceiveHumeStudies(bool $receiveHumeStudies): self
@@ -1148,7 +1150,7 @@ class User implements UserInterface
     /**
      * Set the user's mailing address.
      *
-     * @param string|null The user's mailing address.
+     * @param string|null $mailingAddress The user's mailing address.
      * @return self
      */
     public function setMailingAddress(?string $mailingAddress): self
@@ -1170,7 +1172,7 @@ class User implements UserInterface
     /**
      * Set whether the user is "active".
      *
-     * @param bool Whether the user is "active".
+     * @param bool $active Whether the user is "active".
      * @return self
      */
     public function setActive(bool $active): self
@@ -1192,7 +1194,7 @@ class User implements UserInterface
     /**
      * Set whether the user is invited.
      *
-     * @param bool Whether the user is invited.
+     * @param bool $invited Whether the user is invited.
      * @return self
      */
     public function setInvited(bool $invited): self
@@ -1204,7 +1206,7 @@ class User implements UserInterface
     /**
      * Get the user's papers submitted to the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Submission[]
      */
     public function getSubmissions(?Conference $conference = null): Collection
@@ -1220,7 +1222,7 @@ class User implements UserInterface
     /**
      * Get the user's invited papers for the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Paper[]
      */
     public function getPapers(?Conference $conference = null): Collection
@@ -1236,7 +1238,7 @@ class User implements UserInterface
     /**
      * Get the user's invitations to review a paper submitted to the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Review[]
      */
     public function getReviews(?Conference $conference = null): Collection
@@ -1252,7 +1254,7 @@ class User implements UserInterface
     /**
      * Get the user's accepted invitations to review a paper submitted to the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Review[]
      */
     public function getAcceptedReviews(?Conference $conference = null): Collection
@@ -1265,7 +1267,7 @@ class User implements UserInterface
     /**
      * Get the user's submitted reviews of papers submitted to the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Review[]
      */
     public function getSubmittedReviews(?Conference $conference = null): Collection
@@ -1278,7 +1280,7 @@ class User implements UserInterface
     /**
      * Get the user's invitations to comment on a paper given at the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Comment[]
      */
     public function getComments(?Conference $conference = null): Collection
@@ -1294,7 +1296,7 @@ class User implements UserInterface
     /**
      * Get the user's accepted invitations to comment on a paper submitted to the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Comment[]
      */
     public function getAcceptedComments(?Conference $conference = null): Collection
@@ -1307,7 +1309,7 @@ class User implements UserInterface
     /**
      * Get the user's submitted comments on a paper submitted to the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Comment[]
      */
     public function getSubmittedComments(?Conference $conference = null): Collection
@@ -1320,7 +1322,7 @@ class User implements UserInterface
     /**
      * Get the user's invitations to chair a session at the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Chair[]
      */
     public function getChairs(?Conference $conference = null): Collection
@@ -1336,7 +1338,7 @@ class User implements UserInterface
     /**
      * Get the user's accepted invitations to chair a session at the Hume Conference.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Chair[]
      */
     public function getAcceptedChairs(?Conference $conference = null): Collection
@@ -1359,7 +1361,7 @@ class User implements UserInterface
     /**
      * Set whether the user is willing to receive requests to review articles.
      *
-     * @param bool Whether the user is willing to receive requests to review articles.
+     * @param bool $willingToReview Whether the user is willing to receive requests to review articles.
      * @return self
      */
     public function setWillingToReview(bool $willingToReview): self
@@ -1381,7 +1383,7 @@ class User implements UserInterface
     /**
      * Set whether the user is willing to comment on a paper for the current Hume Conference.
      *
-     * @param bool Whether the user is willing to comment on a paper for the current Hume Conference.
+     * @param bool $willingToComment Whether the user is willing to comment on a paper for the current Hume Conference.
      * @return self
      */
     public function setWillingToComment(bool $willingToComment): self
@@ -1403,7 +1405,7 @@ class User implements UserInterface
     /**
      * Set whether the user is willing to chair a session at the current Hume Conference.
      *
-     * @param bool Whether the user is willing to chair a session at the current Hume Conference.
+     * @param bool $willingToChair Whether the user is willing to chair a session at the current Hume Conference.
      * @return self
      */
     public function setWillingToChair(bool $willingToChair): self
@@ -1425,13 +1427,23 @@ class User implements UserInterface
     /**
      * Set the comma-separated list of keywords representing the user's areas of expertise.
      *
-     * @param string|null The comma-separated list of keywords representing the user's areas of expertise.
+     * @param string|null $keywords The comma-separated list of keywords representing the user's areas of expertise.
      * @return self
      */
     public function setKeywords(?string $keywords): self
     {
         $this->keywords = $keywords;
         return $this;
+    }
+
+    /**
+     * Get the user's full name (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFullname(): ?string
+    {
+        return $this->firstname && $this->lastname ? "{$this->firstname} {$this->lastname}" : null;
     }
 
     /**
@@ -1447,6 +1459,7 @@ class User implements UserInterface
     /**
      * Get whether the user is a member in good standing.
      *
+     * @throws \Exception
      * @return bool
      */
     public function isMemberInGoodStanding(): bool
@@ -1457,6 +1470,7 @@ class User implements UserInterface
     /**
      * Get whether the user is a member in arrears.
      *
+     * @throws \Exception
      * @return bool
      */
     public function isMemberInArrears(): bool
@@ -1467,7 +1481,7 @@ class User implements UserInterface
     /**
      * Get whether the user has submitted a paper for the given conference.
      *
-     * @param Conference The conference to check.
+     * @param Conference $conference The conference to check.
      * @return bool
      */
     public function hasSubmittedToConference(Conference $conference)

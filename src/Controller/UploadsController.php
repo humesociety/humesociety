@@ -5,8 +5,6 @@ namespace App\Controller;
 use App\Entity\Issue\IssueHandler;
 use App\Entity\Paper\Paper;
 use App\Entity\Submission\Submission;
-use App\Entity\Upload\UploadHandler;
-use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -26,7 +24,7 @@ class UploadsController extends AbstractController
     /**
      * Show uploaded images.
      *
-     * @param string The filename of the image to show.
+     * @param string $filename The filename of the image to show.
      * @return Response
      * @Route("/images/{filename}", name="page_image")
      */
@@ -48,8 +46,8 @@ class UploadsController extends AbstractController
     /**
      * Show uploaded conference files.
      *
-     * @param string The year of the conference.
-     * @param string The filename of the file to show.
+     * @param string $year The year of the conference.
+     * @param string $file The path of the file to show.
      * @return Response
      * @Route("/conferences/{year}/{file}", name="conference_file", requirements={"file"=".+"})
      */
@@ -70,8 +68,8 @@ class UploadsController extends AbstractController
     /**
      * Show uplaoded society reports.
      *
-     * @param string The year of the report.
-     * @param string The filename of the file to show.
+     * @param string $year The year of the report.
+     * @param string $filename The filename of the file to show.
      * @return Response
      * @Route("/reports/{year}/{filename}", name="report")
      * @IsGranted("ROLE_MEMBER")
@@ -98,10 +96,10 @@ class UploadsController extends AbstractController
     /**
      * Show uploaded Hume Studies articles.
      *
-     * @param IssueHandler The issue handler.
-     * @param int The Hume Studies volume.
-     * @param int The Hume Stuides volume number.
-     * @param string The article's filename.
+     * @param IssueHandler $issues The issue handler.
+     * @param int $volume The Hume Studies volume.
+     * @param int $number The Hume Studies volume number.
+     * @param string $filename The article's filename.
      * @return Response
      * @Route("/issues/v{volume}n{number}/{filename}", name="article_file")
      */
@@ -140,12 +138,12 @@ class UploadsController extends AbstractController
     /**
      * Show conference submission file.
      *
-     * @param Submission The submission to download.
-     * @param string A secret to allow downloading the file.
+     * @param Submission $submission The submission to download.
+     * @param string|null $secret A secret to allow downloading the file.
      * @return Response
      * @Route("/submissions/{submission}/{secret}", name="submission")
      */
-    public function submission(Submission $submission, string $secret = null): Response
+    public function submission(Submission $submission, ?string $secret = null): Response
     {
         // look for the file
         $path = $this->container->get('parameter_bag')->get('uploads_directory');
@@ -168,7 +166,7 @@ class UploadsController extends AbstractController
     /**
      * Show conference submission file FINAL version.
      *
-     * @param Submission The submission to download.
+     * @param Submission $submission The submission to download.
      * @return Response
      * @Route("/final-submissions/{submission}", name="final_submission")
      */
@@ -190,7 +188,7 @@ class UploadsController extends AbstractController
     /**
      * Show invited paper file.
      *
-     * @param Paper The invited paper to download.
+     * @param Paper $paper The invited paper to download.
      * @return Response
      * @Route("/paper/{paper}", name="paper")
      */

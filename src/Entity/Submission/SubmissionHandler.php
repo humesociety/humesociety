@@ -5,11 +5,12 @@ namespace App\Entity\Submission;
 use App\Entity\Conference\Conference;
 use App\Entity\User\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * The sumission handler contains the main business logic for reading and writing submission data.
+ * The submission handler contains the main business logic for reading and writing submission data.
  */
 class SubmissionHandler
 {
@@ -23,7 +24,7 @@ class SubmissionHandler
     /**
      * The submission repository.
      *
-     * @var SubmissionRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -37,8 +38,8 @@ class SubmissionHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param ParameterBagInterface Symfony's paramater bag interface.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param ParameterBagInterface $params Symfony's paramater bag interface.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
@@ -51,8 +52,9 @@ class SubmissionHandler
     /**
      * Get the submission for a given user and conference (possibly null).
      *
-     * @param User The user.
-     * @param Conference The conference.
+     * @param User $user The user.
+     * @param Conference $conference The conference.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Submission|null
      */
     public function getSubmission(User $user, Conference $conference): ?Submission
@@ -69,7 +71,7 @@ class SubmissionHandler
     /**
      * Get the accepted submissions for the given conference.
      *
-     * @param Conference The conference.
+     * @param Conference $conference The conference.
      * @return Submission[]
      */
     public function getAcceptedSubmissions(Conference $conference): array
@@ -86,6 +88,7 @@ class SubmissionHandler
      * Save/update a submission in the database.
      *
      * @param Submission The submission to save/update.
+     * @return void
      */
     public function saveSubmission(Submission $submission)
     {
@@ -104,27 +107,17 @@ class SubmissionHandler
     }
 
     /**
-     * Refresh a submission.
-     *
-     * @var Submission The submission to refresh.
-     * @return void
-     */
-    public function refreshSubmission(Submission $submission)
-    {
-        $this->manager->refresh($submission);
-    }
-
-    /**
      * Delete a submission from the database.
      *
-     * @param Submission The submission to delete.
+     * @param Submission $submission The submission to delete.
+     * @return void
      */
     public function deleteSubmission(Submission $submission)
     {
-        $fullpath = $this->uploadsDirectory.$submission->getPath().$submission->getFilename();
-        if (file_exists($fullpath)) {
+        $fullPath = $this->uploadsDirectory.$submission->getPath().$submission->getFilename();
+        if (file_exists($fullPath)) {
             $fs = new FileSystem();
-            $fs->remove($fullpath);
+            $fs->remove($fullPath);
         }
         $this->manager->remove($submission);
         $this->manager->flush();

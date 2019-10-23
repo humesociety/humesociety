@@ -21,113 +21,169 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
+     * Route for viewing pages.
+     *
+     * @param PageHandler $pages The page handler.
+     * @param string $section The initial section to show.
+     * @return Response
      * @Route("/{section}", name="index", requirements={"section": "%section_ids%"})
      */
-    public function index(PageHandler $pageHandler, $section = 'about'): Response
+    public function index(PageHandler $pages, $section = 'about'): Response
     {
-        return $this->render('admin/content/page/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'content',
             'subarea' => 'page',
             'section' => $section,
-            'pages' => $pageHandler->getPages()
-        ]);
+            'pages' => $pages->getPages()
+        ];
+
+        // render and return the page
+        return $this->render('admin/content/page/view.twig', $twigs);
     }
 
     /**
+     * Route for creating a page.
+     *
+     * @param Request $request Symfony's request object.
+     * @param PageHandler $pages The page handler.
+     * @param string $section The initial section to set.
+     * @return Response
+     * @Route("/create/{section}", name="create")
+     */
+    public function create(Request $request, PageHandler $pages, string $section = 'about'): Response
+    {
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'content',
+            'subarea' => 'page'
+        ];
+
+        // create and handle the page form
+        $page = $pages->createNextPage($section);
+        $pageForm = $this->createForm(PageType::class, $page);
+        $pageForm->handleRequest($request);
+        if ($pageForm->isSubmitted() && $pageForm->isValid()) {
+            $pages->savePage($page);
+            $this->addFlash('notice', 'Page "'.$page.'" has been created.');
+            return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
+        }
+
+        // add additional twig variables
+        $twigs['pageForm'] = $pageForm->createView();
+        $twigs['formName'] = $pageForm->getName();
+
+        // render and return the page
+        return $this->render('admin/content/page/create.twig', $twigs);
+    }
+
+    /**
+     * Route for moving a page up in its section.
+     *
+     * @param PageHandler $pages The page handler.
+     * @param Page $page The page to move.
+     * @return Response
      * @Route("/up/{id}", name="up")
      */
-    public function up(Page $page, PageHandler $pageHandler): Response
+    public function up(PageHandler $pages, Page $page): Response
     {
-        $pageHandler->movePageUp($page);
+        $pages->movePageUp($page);
         $this->addFlash('notice', 'Page "'.$page.'" has been moved up.');
         return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
     }
 
     /**
+     * Route for moving a page down in its section.
+     *
+     * @param PageHandler $pages The page handler.
+     * @param Page $page The page to move.
+     * @return Response
      * @Route("/down/{id}", name="down")
      */
-    public function down(Page $page, PageHandler $pageHandler): Response
+    public function down(PageHandler $pages, Page $page): Response
     {
-        $pageHandler->movePageDown($page);
+        $pages->movePageDown($page);
         $this->addFlash('notice', 'Page "'.$page.'" has been moved down.');
         return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
     }
 
     /**
+     * Route for editing a page.
+     *
+     * @param Request $request Symfony's request object.
+     * @param PageHandler $pages The page handler.
+     * @param Page $page The page to edit.
+     * @return Response
      * @Route("/edit/{id}", name="edit")
      */
-    public function edit(Page $page, PageHandler $pageHandler, Request $request): Response
+    public function edit(Request $request, PageHandler $pages, Page $page): Response
     {
-        $isIndexPage = ($page->getSlug() === 'index');
-        $form = $this->createForm(PageType::class, $page);
-        $form->handleRequest($request);
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'content',
+            'subarea' => 'page',
+            'page' => $page
+        ];
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        // create and handle the page form
+        $isIndexPage = ($page->getSlug() === 'index');
+        $pageForm = $this->createForm(PageType::class, $page);
+        $pageForm->handleRequest($request);
+        if ($pageForm->isSubmitted() && $pageForm->isValid()) {
             if ($isIndexPage && ($page->getSlug() !== 'index')) {
                 $error = new FormError('The slug for index pages cannot be changed.');
-                $form->get('slug')->addError($error);
+                $pageForm->get('slug')->addError($error);
             } else {
-                $pageHandler->savePage($page);
+                $pages->savePage($page);
                 $this->addFlash('notice', 'Page "'.$page.'" has been updated.');
                 return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
             }
         }
 
-        return $this->render('admin/content/page/edit.twig', [
-            'area' => 'content',
-            'subarea' => 'page',
-            'page' => $page,
-            'pageForm' => $form->createView(),
-            'formName' => $form->getName()
-        ]);
+        // add additional twig variables
+        $twigs['pageForm'] = $pageForm->createView();
+        $twigs['formName'] = $pageForm->getName();
+
+        // render and return the page
+        return $this->render('admin/content/page/edit.twig', $twigs);
     }
 
     /**
+     * Route for deleting a page.
+     *
+     * @param Request $request Symfony's request object.
+     * @param PageHandler $pages The page handler.
+     * @param Page $page The page to delete.
+     * @return Response
      * @Route("/delete/{id}", name="delete")
      */
-    public function delete(Page $page, PageHandler $pageHandler, Request $request) : Response
+    public function delete(Request $request, PageHandler $pages, Page $page) : Response
     {
+        // don't allow index pages to be deleted
         if ($page->getSlug() === 'index') {
             throw $this->createNotFoundException(); // index pages cannot be deleted
         }
 
-        $form = $this->createFormBuilder()->getForm();
-        $form->handleRequest($request);
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'content',
+            'subarea' => 'page'
+        ];
 
-        if ($form->isSubmitted()) {
-            $pageHandler->deletePage($page);
+        // create and handle the delete page form
+        $deleteForm = $this->createFormBuilder()->getForm();
+        $deleteForm->handleRequest($request);
+        if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
+            $pages->deletePage($page);
             $this->addFlash('notice', 'Page "'.$page.'" has been deleted.');
             return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
         }
 
-        return $this->render('admin/content/page/delete.twig', [
-            'area' => 'content',
-            'subarea' => 'page',
-            'page' => $page,
-            'deleteForm' => $form->createView()
-        ]);
-    }
+        // add additional twig variables
+        $twigs['page'] = $page;
+        $twigs['deleteForm'] = $deleteForm->createView();
 
-    /**
-     * @Route("/create/{section}", name="create")
-     */
-    public function create(PageHandler $pageHandler, Request $request, string $section = 'about'): Response
-    {
-        $page = $pageHandler->createNextPage($section);
-        $form = $this->createForm(PageType::class, $page);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $pageHandler->savePage($page);
-            $this->addFlash('notice', 'Page "'.$page.'" has been created.');
-            return $this->redirectToRoute('admin_content_page_index', ['section' => $page->getSection()]);
-        }
-
-        return $this->render('admin/content/page/create.twig', [
-            'area' => 'content',
-            'subarea' => 'page',
-            'pageForm' => $form->createView(),
-            'formName' => $form->getName()
-        ]);
+        // render and return the page
+        return $this->render('admin/content/page/delete.twig', $twigs);
     }
 }

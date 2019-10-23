@@ -3,7 +3,6 @@
 namespace App\Entity\Issue;
 
 use App\Entity\Article\Article;
-use App\Entity\Note\Note;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,22 +41,6 @@ class Issue
     private $volume;
 
     /**
-     * The year the issue was officially published (derived from its volume).
-     *
-     * @var int
-     * @Groups("json")
-     */
-    private $year;
-
-    /**
-     * The decade the issue was officially published (derived from its number).
-     *
-     * @var int
-     * @Groups("json")
-     */
-    private $decade;
-
-    /**
      * The issue's number.
      *
      * Typically each volume has two issues, numbered 1 and 2. Some volumes only have one issue;
@@ -69,14 +52,6 @@ class Issue
      * @Groups("json")
      */
     private $number;
-
-    /**
-     * The month the issue was officially published (derived from its number).
-     *
-     * @var string
-     * @Groups("json")
-     */
-    private $month;
 
     /**
      * The issue's name (for special issues).
@@ -120,22 +95,48 @@ class Issue
     private $articles;
 
     /**
+     * The year the issue was officially published (derived from its volume).
+     *
+     * @var int
+     * @Groups("json")
+     */
+    private $year;
+
+    /**
+     * The decade the issue was officially published (derived from its year).
+     *
+     * @var int
+     * @Groups("json")
+     */
+    private $decade;
+
+    /**
+     * The month the issue was officially published (derived from its number).
+     *
+     * @var string
+     * @Groups("json")
+     */
+    private $month;
+
+    /**
      * Constructor function.
      *
      * @return void
      */
     public function __construct()
     {
-        $this->id = null; // doctrine take's care of this
+        // persisted properties
+        $this->id = null; // doctrine takes care of this
         $this->volume = null;
-        $this->year = null;
-        $this->decade = null;
         $this->number = null;
-        $this->month = null;
         $this->name = null;
         $this->museId = null;
         $this->editors = null;
         $this->articles = new ArrayCollection();
+        // derivative properties
+        $this->year = null;
+        $this->decade = null;
+        $this->month = null;
     }
 
     /**
@@ -147,7 +148,7 @@ class Issue
     {
         return ($this->volume && $this->number)
             ? "volume {$this->volume}, number {$this->number}"
-            : 'uninitiialised issue';
+            : 'uninitialised issue';
     }
 
     /**
@@ -173,13 +174,111 @@ class Issue
     /**
      * Set the issue's volume.
      *
-     * @param int The issue's volume.
+     * @param int $volume The issue's volume.
      * @return self
      */
     public function setVolume(int $volume): self
     {
         $this->volume = $volume;
         return $this;
+    }
+
+    /**
+     * Get the issue's number (null when the object is first created).
+     *
+     * @return int|null
+     */
+    public function getNumber(): ?int
+    {
+        return $this->number;
+    }
+
+    /**
+     * Set the issue's number.
+     *
+     * @param int $number The issue's number.
+     * @return self
+     */
+    public function setNumber(int $number): self
+    {
+        $this->number = $number;
+        return $this;
+    }
+
+    /**
+     * Get the issue's name.
+     *
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set the issue's name.
+     *
+     * @param string|null $name The issue's name.
+     * @return self
+     */
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get the issue's identifier on Project MUSE (null when the object is first created).
+     *
+     * @return int|null
+     */
+    public function getMuseId(): ?int
+    {
+        return $this->museId;
+    }
+
+    /**
+     * Set the issue's identifier on Project MUSE.
+     *
+     * @param int $mudeId The issue's identifier on Project MUSE.
+     * @return self
+     */
+    public function setMuseId(int $museId): self
+    {
+        $this->museId = $museId;
+        return $this;
+    }
+
+    /**
+     * Get the issue's editors (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getEditors(): ?string
+    {
+        return $this->editors;
+    }
+
+    /**
+     * Set the issue's editors.
+     *
+     * @param string $editors The issue's editors.
+     * @return self
+     */
+    public function setEditors(string $editors): self
+    {
+        $this->editors = $editors;
+        return $this;
+    }
+
+    /**
+     * Get the issue's articles.
+     *
+     * @return Article[]
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
     }
 
     /**
@@ -203,28 +302,6 @@ class Issue
     }
 
     /**
-     * Get the issue's number (null when the object is first created).
-     *
-     * @return int|null
-     */
-    public function getNumber(): ?int
-    {
-        return $this->number;
-    }
-
-    /**
-     * Set the issue's number.
-     *
-     * @param int The issue's number.
-     * @return self
-     */
-    public function setNumber(int $number): self
-    {
-        $this->number = $number;
-        return $this;
-    }
-
-    /**
      * Get the issue's official publication month (null when the object is first created).
      *
      * @return string|null
@@ -233,81 +310,5 @@ class Issue
     {
         $months = ['April/November', 'April', 'November', $this->name];
         return $this->number ? $months[$this->number] : null;
-    }
-
-    /**
-     * Get the issue's name.
-     *
-     * @return string|null
-     */
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set the issue's name.
-     *
-     * @param string|null The issue's name.
-     * @return self
-     */
-    public function setName(?string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * Get the issue's identifier on Project MUSE (null when the object is first created).
-     *
-     * @return int|null
-     */
-    public function getMuseId(): ?int
-    {
-        return $this->museId;
-    }
-
-    /**
-     * Set the issue's identifier on Project MUSE.
-     *
-     * @param int The issue's identifier on Project MUSE.
-     * @return self
-     */
-    public function setMuseId(int $museId): self
-    {
-        $this->museId = $museId;
-        return $this;
-    }
-
-    /**
-     * Get the issue's editors (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getEditors(): ?string
-    {
-        return $this->editors;
-    }
-
-    /**
-     * Set the issue's editors.
-     *
-     * @param string The issue's editors.
-     * @return self
-     */
-    public function setEditors(string $editors): self
-    {
-        $this->editors = $editors;
-        return $this;
-    }
-
-    /**
-     * Get the issue's articles.
-     *
-     * @return Article[]
-     */
-    public function getArticles(): Collection
-    {
-        return $this->articles;
     }
 }

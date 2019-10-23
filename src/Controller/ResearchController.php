@@ -2,13 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment\CommentHandler;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Email\ConferenceEmailHandler;
 use App\Entity\Email\SystemEmailHandler;
-use App\Entity\Paper\PaperHandler;
-use App\Entity\Paper\PaperType;
-use App\Entity\Review\ReviewHandler;
 use App\Entity\Submission\Submission;
 use App\Entity\Submission\SubmissionHandler;
 use App\Entity\Submission\SubmissionType;
@@ -33,9 +29,9 @@ class ResearchController extends AbstractController
     /**
      * Route for updating review/comment/chair availability.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param UserHandler The user handler.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/research/availability", name="availability")
      * @IsGranted("ROLE_USER")
@@ -72,10 +68,12 @@ class ResearchController extends AbstractController
     /**
      * Route for submitting a paper to the Hume Conference.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param EmailHandler The email handler.
-     * @param SubmissionHandler The submission handler.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param SystemEmailHandler $systemEmails The system email handler.
+     * @param SubmissionHandler $submissions The submission handler.
+     * @param TextHandler $texts The text handler.
      * @return Response
      * @Route("/submissions", name="submissions")
      * @IsGranted("ROLE_USER")

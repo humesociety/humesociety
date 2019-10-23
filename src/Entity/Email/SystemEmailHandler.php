@@ -2,6 +2,8 @@
 
 namespace App\Entity\Email;
 
+use App\Entity\Chair\Chair;
+use App\Entity\Comment\Comment;
 use App\Entity\Review\Review;
 use App\Entity\Paper\Paper;
 use App\Entity\Submission\Submission;
@@ -18,6 +20,13 @@ class SystemEmailHandler
      * @var EmailHandler
      */
     private $emails;
+
+    /**
+     * Dummy user representing the conference organisers; to use as the recipient of the conference emails.
+     *
+     * @var User
+     */
+    private $conferenceOrganisers;
 
     /**
      * Constructor function.
@@ -37,7 +46,10 @@ class SystemEmailHandler
     /**
      * Send forgotten credentials email.
      *
-     * @param User The recipient of the email.
+     * @param User $user The recipient of the email.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendForgotCredentialsEmail(User $user)
@@ -54,7 +66,10 @@ class SystemEmailHandler
     /**
      * Send submission notification email to conference organisers.
      *
-     * @param Submission The submission.
+     * @param Submission $submission The submission concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendSubmissionNotification(Submission $submission)
@@ -71,7 +86,10 @@ class SystemEmailHandler
     /**
      * Send submission final version notification email to conference organisers.
      *
-     * @param Submission The submission.
+     * @param Submission $submission The submission concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendSubmissionFinalNotification(Submission $submission)
@@ -88,7 +106,10 @@ class SystemEmailHandler
     /**
      * Send review invitation response notification email to conference organisers.
      *
-     * @param Review The review.
+     * @param Review $review The review invitation concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendReviewResponseNotification(Review $review)
@@ -111,7 +132,10 @@ class SystemEmailHandler
     /**
      * Send review submission notification email to conference organisers.
      *
-     * @param Review The review.
+     * @param Review $review The review invitation concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendReviewSubmissionNotification(Review $review)
@@ -128,7 +152,10 @@ class SystemEmailHandler
     /**
      * Send comment invitation response notification email to conference organisers.
      *
-     * @param Comment The comment.
+     * @param Comment $comment The comment invitation concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendCommentResponseNotification(Comment $comment)
@@ -151,7 +178,10 @@ class SystemEmailHandler
     /**
      * Send comment submission notification email to conference organisers.
      *
-     * @param Comment The comment.
+     * @param Comment $comment The comment invitation concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendCommentSubmissionNotification(Comment $comment)
@@ -168,7 +198,10 @@ class SystemEmailHandler
     /**
      * Send chair invitation response notification email to conference organisers.
      *
-     * @param Chair The chair invitation.
+     * @param Chair $chair The chair invitation concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendChairResponseNotification(Chair $chair)
@@ -178,7 +211,7 @@ class SystemEmailHandler
             $email->setSubject("{$chair->getSubmission()->getConference()}: Chair Invitation Accepted")
                 ->addTwig('response', 'accepted');
         } else {
-            $email->setSubject("{$comment->getSubmission()->getConference()}: Chair Invitation Declined")
+            $email->setSubject("{$chair->getSubmission()->getConference()}: Chair Invitation Declined")
                 ->addTwig('response', 'declined');
         }
         $email->setSender('web')
@@ -191,7 +224,10 @@ class SystemEmailHandler
     /**
      * Send invited paper submission notification email to conference organisers.
      *
-     * @param Paper The paper.
+     * @param Paper $paper The paper invitation concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendPaperSubmissionNotification(Paper $paper)

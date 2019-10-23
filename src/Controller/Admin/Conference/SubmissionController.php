@@ -35,7 +35,7 @@ class SubmissionController extends AbstractController
     /**
      * Route for viewing all submissions to the current conference.
      *
-     * @param ConferenceHandler The conference handler.
+     * @param ConferenceHandler $conferences The conference handler.
      * @return Response
      * @Route("/", name="index")
      */
@@ -67,9 +67,9 @@ class SubmissionController extends AbstractController
     /**
      * Route for updating the keywords for a submission.
      *
-     * @param SubmissionHandler The submission handler.
-     * @param Submission The submission to edit.
-     * @param string The new keywords.
+     * @param SubmissionHandler $submissions The submission handler.
+     * @param Submission $submission The submission to edit.
+     * @param string $keywords The new keywords.
      * @return JsonResponse
      * @Route("/keywords/{submission}/{keywords}", name="keywords")
      */
@@ -86,9 +86,9 @@ class SubmissionController extends AbstractController
     /**
     * Create the initial twig variables for a submission-related page (used in subsequent routes).
     *
-    * @param Submission The submission.
-    * @param string The tab/page on display.
-    * @return object
+    * @param Submission $submission The submission.
+    * @param string $tab The tab/page on display.
+    * @return array
     */
     private function createSubmissionTwigs(Submission $submission, string $tab): array
     {
@@ -104,8 +104,8 @@ class SubmissionController extends AbstractController
     /**
      * Route for viewing submission details.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param Submission The submission.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/details/{submission}", name="view")
      */
@@ -131,10 +131,10 @@ class SubmissionController extends AbstractController
     /**
      * Route for recording the decision for a submission.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param SubmissionHandler The submission handler.
-     * @param Submission The submission.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param SubmissionHandler $submissions The submission handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/details/{submission}/decision", name="decision")
      */
@@ -173,12 +173,12 @@ class SubmissionController extends AbstractController
     /**
      * Route for handling reviews for a submission.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmails The conference email handler.
-     * @param ReviewHandler The review handler.
-     * @param UserHandler The user handler.
-     * @param Submission The submission.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param ReviewHandler $reviews The review handler.
+     * @param UserHandler $users The user handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/details/{submission}/reviews", name="reviews")
      */
@@ -241,11 +241,12 @@ class SubmissionController extends AbstractController
     /**
      * Route for handling comments for a submission.
      *
-     * @param Request Symfony's request object.
-     * @param CommentHandler The comment handler.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Submission The submission.
+     * @param Request $request Symfony's request object.
+     * @param CommentHandler $comments The comment handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param UserHandler $users The user handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/details/{submission}/comments", name="comments")
      */
@@ -308,11 +309,12 @@ class SubmissionController extends AbstractController
     /**
      * Route for handling chairs for a submission.
      *
-     * @param Request Symfony's request object.
-     * @param ChairHandler The chair handler.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Submission The submission.
+     * @param Request $request Symfony's request object.
+     * @param ChairHandler $chairs The chair handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param UserHandler $users The user handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/details/{submission}/chair", name="chair")
      */

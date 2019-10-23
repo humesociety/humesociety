@@ -3,9 +3,9 @@
 namespace App\Entity\Paper;
 
 use App\Entity\Conference\Conference;
-use App\Entity\Submission\Submission;
 use App\Entity\User\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -24,7 +24,7 @@ class PaperHandler
     /**
      * The paper repository.
      *
-     * @var PaperRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -38,8 +38,8 @@ class PaperHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param ParameterBagInterface Symfony's paramater bag interface.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param ParameterBagInterface $params Symfony's paramater bag interface.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
@@ -52,7 +52,7 @@ class PaperHandler
     /**
      * Get all papers.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Paper[]
      */
     public function getPapers(?Conference $conference = null): array
@@ -70,8 +70,9 @@ class PaperHandler
     /**
      * Get the paper for a given user and conference (possibly null).
      *
-     * @param User The user.
-     * @param Conference The conference.
+     * @param User $user The user.
+     * @param Conference $conference The conference.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Paper|null
      */
     public function getPaper(User $user, Conference $conference): ?Paper
@@ -88,7 +89,8 @@ class PaperHandler
     /**
      * Get a paper by its secret.
      *
-     * @param string The secret.
+     * @param string $secret The secret.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Paper|null
      */
     public function getPaperBySecret(string $secret): ?Paper
@@ -103,7 +105,8 @@ class PaperHandler
     /**
      * Save/update a paper in the database.
      *
-     * @param Paper The paper to save/update.
+     * @param Paper $paper The paper to save/update.
+     * @return void
      */
     public function savePaper(Paper $paper)
     {
@@ -117,27 +120,16 @@ class PaperHandler
     }
 
     /**
-     * Refresh a paper.
-     *
-     * @var Paper The paper to refresh.
-     * @return void
-     */
-    public function refreshPaper(Paper $paper)
-    {
-        $this->manager->refresh($paper);
-    }
-
-    /**
      * Delete a paper.
      *
-     * @param Paper The paper to delete.
+     * @param Paper $paper The paper to delete.
      */
     public function deletePaper(Paper $paper)
     {
-        $fullpath = $this->uploadsDirectory.$paper->getPath().$paper->getFilename();
-        if (file_exists($fullpath)) {
+        $fullPath = $this->uploadsDirectory.$paper->getPath().$paper->getFilename();
+        if (file_exists($fullPath)) {
             $fs = new FileSystem();
-            $fs->remove($fullpath);
+            $fs->remove($fullPath);
         }
         $this->manager->remove($paper);
         $this->manager->flush();

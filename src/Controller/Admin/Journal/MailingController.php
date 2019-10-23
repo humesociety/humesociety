@@ -17,14 +17,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class MailingController extends AbstractController
 {
     /**
+     * Route for showing mailing addresses.
+     *
+     * @param UserHandler $users The user handler.
+     * @return Response
      * @Route("/", name="index")
      */
-    public function index(UserHandler $userHandler): Response
+    public function index(UserHandler $users): Response
     {
-        return $this->render('admin/journal/mailing/mailing.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'journal',
             'subarea' => 'mailing',
-            'users' => $userHandler->getMembersReceivingHumeStudies()
-        ]);
+            'users' => $users->getMembersReceivingHumeStudies()
+        ];
+
+        // render and return the page
+        return $this->render('admin/journal/mailing/mailing.twig', $twigs);
     }
 }

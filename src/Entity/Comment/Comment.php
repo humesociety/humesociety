@@ -8,7 +8,6 @@ use App\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -94,18 +93,21 @@ class Comment extends Invitation
     /**
      * Constructor function.
      *
-     * @param Submission The submission concerned.
+     * @param Submission $submission The submission concerned.
      * @return void
      */
     public function __construct(Submission $submission)
     {
+        // invitation properties
+        parent::__construct();
+        // persisted properties
         $this->id = null; // doctrine will take care of this
         $this->submission = $submission;
         $this->user = null;
-        parent::__construct();
         $this->title = null;
-        $this->file = null;
         $this->filename = null;
+        // temporary properties
+        $this->file = null;
     }
 
     /**
@@ -129,7 +131,7 @@ class Comment extends Invitation
     }
 
     /**
-     * Get the submission concerened.
+     * Get the submission concerned.
      *
      * @return Submission
      */
@@ -151,7 +153,7 @@ class Comment extends Invitation
     /**
      * Set the user invited to comment.
      *
-     * @param User The user invited to comment.
+     * @param User $user The user invited to comment.
      * @return self
      */
     public function setUser(User $user): self
@@ -173,13 +175,23 @@ class Comment extends Invitation
     /**
      * Set the title of the comment.
      *
-     * @param string|null The title of the comment.
+     * @param string|null $title The title of the comment.
      * @return self
      */
     public function setTitle(?string $title): self
     {
         $this->title = $title;
         return $this;
+    }
+
+    /**
+     * Get the name of the uploaded file (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFilename(): ?string
+    {
+        return $this->filename;
     }
 
     /**
@@ -195,7 +207,7 @@ class Comment extends Invitation
     /**
      * Set the uploaded file (and the filename at the same time).
      *
-     * @param UploadedFile|null The submission file.
+     * @param UploadedFile|null $file The submission file.
      * @return self
      */
     public function setFile(?UploadedFile $file): self
@@ -208,22 +220,12 @@ class Comment extends Invitation
     }
 
     /**
-     * Get the name of the uploaded file (null when the object is first created).
+     * Get path to this file in the uploads subdirectory.
      *
      * @return string|null
      */
-    public function getFilename(): ?string
+    public function getPath(): ?string
     {
-        return $this->filename;
-    }
-
-    /**
-     * Get path to this file in the uploads subdirectory.
-     *
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return "comments/user{$this->getUser()->getId()}/{$this->getSubmission()->getId()}/";
+        return $this->user ? "comments/user{$this->getUser()->getId()}/{$this->getSubmission()->getId()}/" : null;
     }
 }

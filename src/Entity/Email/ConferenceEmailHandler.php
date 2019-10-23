@@ -71,9 +71,13 @@ class ConferenceEmailHandler
     /**
      * Constructor function.
      *
-     * @param EmailHandler The (main) email handler.
-     * @param SubmissionHandler The submission handler.
-     * @param ParameterBagInterface Symfony's parameter bag interface.
+     * @param EmailHandler $emails The (main) email handler.
+     * @param ChairHandler $chairs The chair handler.
+     * @param CommentHandler $comments The comment handler.
+     * @param PaperHandler $papers The paper handler.
+     * @param ReviewHandler $reviews The review handler.
+     * @param SubmissionHandler $submissions The submission handler.
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
      * @return void
      */
     public function __construct(
@@ -97,8 +101,9 @@ class ConferenceEmailHandler
     /**
      * Send submission email from template.
      *
-     * @param Submission The submission concerned.
-     * @param string The label of the template to use.
+     * @param Submission $submission The submission concerned.
+     * @param string $label The label of the template to use.
+     * @throws \Error
      * @return void
      */
     public function sendSubmissionEmail(Submission $submission, string $label)
@@ -114,6 +119,7 @@ class ConferenceEmailHandler
                     $submission->setDateDecisionEmailed();
                     $this->submissions->saveSubmission($submission);
                     break;
+
                 case 'submission-reminder':
                     $submission->incrementSubmissionReminderEmails();
                     $this->submissions->saveSubmission($submission);
@@ -127,8 +133,9 @@ class ConferenceEmailHandler
     /**
      * Send review email from template.
      *
-     * @param Review The review concerned.
-     * @param string The label of the template to use.
+     * @param Review $review The review concerned.
+     * @param string $label The label of the template to use.
+     * @throws \Error
      * @return void
      */
     public function sendReviewEmail(Review $review, string $label)
@@ -157,8 +164,9 @@ class ConferenceEmailHandler
     /**
      * Send comment email from template.
      *
-     * @param Comment The comment concerned.
-     * @param string The label of the template to use.
+     * @param Comment $comment The comment concerned.
+     * @param string $label The label of the template to use.
+     * @throws \Error
      * @return void
      */
     public function sendCommentEmail(Comment $comment, string $label)
@@ -187,8 +195,9 @@ class ConferenceEmailHandler
     /**
      * Send chair email from template.
      *
-     * @param Chair The chair concerned.
-     * @param string The label of the template to use.
+     * @param Chair $chair The chair concerned.
+     * @param string $label The label of the template to use.
+     * @throws \Error
      * @return void
      */
     public function sendChairEmail(Chair $chair, string $label)
@@ -212,8 +221,8 @@ class ConferenceEmailHandler
     /**
      * Send paper email from template.
      *
-     * @param Paper The paper concerned.
-     * @param string The label of the template to use.
+     * @param Paper $paper The paper concerned.
+     * @param string $label The label of the template to use.
      * @return void
      */
     public function sendPaperEmail(Paper $paper, string $label)

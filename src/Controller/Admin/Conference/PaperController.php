@@ -27,14 +27,18 @@ class PaperController extends AbstractController
     /**
      * Route for viewing all invited papers and inviting new speakers.
      *
-     * @param ConferenceHandler The conference handler.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param PaperHandler $papers The paper handler.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/", name="index")
      */
     public function index(
         Request $request,
-        ConferenceEmailHandler $conferenceEmails,
         ConferenceHandler $conferences,
+        ConferenceEmailHandler $conferenceEmails,
         PaperHandler $papers,
         UserHandler $users
     ): Response {
@@ -94,9 +98,9 @@ class PaperController extends AbstractController
     /**
      * Route for sending a reminder email to an invited speaker.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Paper The paper.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param Paper $paper The paper.
      * @return Response
      * @Route("/remind/{paper}", name="reminder")
      */

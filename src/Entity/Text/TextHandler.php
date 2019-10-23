@@ -3,6 +3,7 @@
 namespace App\Entity\Text;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
@@ -20,7 +21,7 @@ class TextHandler
     /**
      * The text repository (dependency injection).
      *
-     * @var TextRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -41,8 +42,8 @@ class TextHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param ParameterBagInterface Symfony's parameter bag interface.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
@@ -71,7 +72,7 @@ class TextHandler
     /**
      * Get a text variable from its label. Create it if it doesn't already exist.
      *
-     * @param string The label.
+     * @param string $label The text variable's label.
      * @return Text
      */
     public function getTextByLabel(string $label): Text
@@ -86,7 +87,7 @@ class TextHandler
     /**
      * Get the content of a text variable from its label.
      *
-     * @param string The label.
+     * @param string $label The text variable's label.
      * @return string|null
      */
     public function getTextContentByLabel(string $label): ?string
@@ -125,7 +126,8 @@ class TextHandler
     /**
      * Save/update some text in the database.
      *
-     * @param Text The text to save/update.
+     * @param Text $text The text to save/update.
+     * @return void
      */
     public function saveText(Text $text)
     {

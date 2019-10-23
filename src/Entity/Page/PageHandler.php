@@ -3,6 +3,7 @@
 namespace App\Entity\Page;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The page handler contains the main business logic for reading and writing page data.
@@ -19,14 +20,14 @@ class PageHandler
     /**
      * The page repository.
      *
-     * @var PageRepository
+     * @var EntityRepository
      */
     private $repository;
 
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager)
@@ -51,6 +52,7 @@ class PageHandler
     /**
      * Get all pages in a section.
      *
+     * @param string $section The section to get pages from.
      * @return Page[]
      */
     public function getSectionPages(string $section): array
@@ -65,6 +67,9 @@ class PageHandler
     /**
      * Get a page by its section and slug.
      *
+     * @param string $section The page's section.
+     * @param string $slug The page's slug.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Page|null
      */
     public function getPage(string $section, string $slug): ?Page
@@ -81,19 +86,20 @@ class PageHandler
     /**
      * Create the next page in a section.
      *
-     * @var string The section to create the page in.
+     * @var string $section The section to create the page in.
      * @return Page
      */
-    public function createNextPage(string $section)
+    public function createNextPage(string $section): Page
     {
         $page = new Page($section);
         $page->setPosition(sizeof($this->getSectionPages($section)) + 1);
+        return $page;
     }
 
     /**
      * Save/update a page.
      *
-     * @var Page The page to save/update.
+     * @var Page $page The page to save/update.
      * @return void
      */
     public function savePage(Page $page)
@@ -105,7 +111,7 @@ class PageHandler
     /**
      * Delete a page.
      *
-     * @var Page The page to delete.
+     * @var Page $page The page to delete.
      * @return void
      */
     public function deletePage(Page $page)
@@ -128,8 +134,8 @@ class PageHandler
     /**
      * Swap the position of two pages.
      *
-     * @var Page The first page.
-     * @var Page The second page.
+     * @var Page $page1 The first page.
+     * @var Page $page2 The second page.
      * @return void
      */
     private function swapPages(Page $page1, Page $page2)
@@ -144,7 +150,8 @@ class PageHandler
     /**
      * Move a page up in its section.
      *
-     * @var Page The page to move.
+     * @var Page $page The page to move.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return void
      */
     public function movePageUp(Page $page)
@@ -166,7 +173,8 @@ class PageHandler
     /**
      * Move a page down in its section.
      *
-     * @var Page The page to move.
+     * @var Page $page The page to move.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return void
      */
     public function movePageDown(Page $page)

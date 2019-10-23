@@ -3,6 +3,7 @@
 namespace App\Entity\Candidate;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The candidate handler contains the main business logic for reading and writing candidate data.
@@ -19,14 +20,14 @@ class CandidateHandler
     /**
      * The candidate repository.
      *
-     * @var CandidateRepository
+     * @var EntityRepository
      */
     private $repository;
 
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager)
@@ -38,6 +39,7 @@ class CandidateHandler
     /**
      * Find how many candidates there are in the database.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int
      */
     private function countCandidates(): int
@@ -83,6 +85,7 @@ class CandidateHandler
     /**
      * Get an array of start years.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int[]
      */
     public function getYears(): array
@@ -101,7 +104,7 @@ class CandidateHandler
     /**
      * Get an array of candidates for a given start year.
      *
-     * @param int The start year.
+     * @param int $year The start year.
      * @return Candidate[]
      */
     public function getCandidatesByYear(int $year): array
@@ -117,7 +120,7 @@ class CandidateHandler
     /**
      * Save/update a candidate in the database.
      *
-     * @param Candidate The candidate to save/update.
+     * @param Candidate $candidate The candidate to save/update.
      */
     public function saveCandidate(Candidate $candidate)
     {
@@ -128,7 +131,7 @@ class CandidateHandler
     /**
      * Delete a candidate from the database.
      *
-     * @param Candidate The candidate to delete.
+     * @param Candidate $candidate The candidate to delete.
      */
     public function deleteCandidate(Candidate $candidate)
     {

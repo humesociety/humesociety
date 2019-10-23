@@ -5,9 +5,10 @@ namespace App\Entity\Conference;
 use App\Entity\Upload\Upload;
 use App\Entity\Upload\UploadHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * The conference hander contains the main business logic for reading and writing conference data.
+ * The conference handler contains the main business logic for reading and writing conference data.
  */
 class ConferenceHandler
 {
@@ -21,7 +22,7 @@ class ConferenceHandler
     /**
      * The conference repository.
      *
-     * @var ConferenceRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -35,8 +36,8 @@ class ConferenceHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param UploadHandler The upload handler.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param UploadHandler $uploads The upload handler.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, UploadHandler $uploads)
@@ -49,7 +50,7 @@ class ConferenceHandler
     /**
      * Enrich a conference (i.e. link associated uploads).
      *
-     * @param Conference|null
+     * @param Conference|null $conference The conference to enrich.
      * @return Conference|null
      */
     public function enrichConference(?Conference $conference): ?Conference
@@ -63,7 +64,7 @@ class ConferenceHandler
     /**
      * Refresh a conference.
      *
-     * @param Conference The conference to refresh.
+     * @param Conference $conference The conference to refresh.
      * @return Conference
      */
     public function refreshConference(Conference $conference)
@@ -89,6 +90,7 @@ class ConferenceHandler
     /**
      * Get an array of all forthcoming conferences (enriched with associated uploads).
      *
+     * @throws \Exception
      * @return Conference[]
      */
     public function getForthcomingConferences(): array
@@ -113,6 +115,7 @@ class ConferenceHandler
     /**
      * Get the current conference (i.e. the earliest forthcoming conference).
      *
+     * @throws \Exception
      * @return Conference|null
      */
     public function getCurrentConference(): ?Conference
@@ -124,6 +127,7 @@ class ConferenceHandler
     /**
      * Find how many conferences there are in the database.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int
      */
     private function countConferences(): int
@@ -137,6 +141,7 @@ class ConferenceHandler
     /**
      * Get an array of decades for which there are conferences in the database.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int[]
      */
     public function getDecades(): array
@@ -155,7 +160,7 @@ class ConferenceHandler
     /**
      * Get the keywords of all submissions to the given conference.
      *
-     * @param Conference The conference to check.
+     * @param Conference $conference The conference to check.
      * @return string[]
      */
     public function getSubmissionKeywords(Conference $conference): array
@@ -175,6 +180,7 @@ class ConferenceHandler
     /**
      * Create the next conference.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Conference
      */
     public function createNextConference(): Conference
@@ -200,7 +206,8 @@ class ConferenceHandler
     /**
      * Create a conference file.
      *
-     * @param Conference The conference to link to the file.
+     * @param Conference $conference The conference to link to the file.
+     * @return Upload
      */
     public function createConferenceFile(Conference $conference)
     {
@@ -212,8 +219,9 @@ class ConferenceHandler
     /**
      * Save/update a conference.
      *
-     * @param Conference The conference to save/update.
-     * @param string|null The conference's old path (in case it might have changed).
+     * @param Conference $conference The conference to save/update.
+     * @param string|null $oldPath The conference's old path (in case it might have changed).
+     * @return void
      */
     public function saveConference(Conference $conference, ?string $oldPath = null)
     {
@@ -228,8 +236,9 @@ class ConferenceHandler
     /**
      * Save/upload a conference file.
      *
-     * @param Upload The upload to save.
-     * @param Conference The conference.
+     * @param Upload $upload The upload to save.
+     * @param Conference $conference The conference.
+     * @return void
      */
     public function saveConferenceFile(Upload $upload, Conference $conference)
     {
@@ -240,7 +249,8 @@ class ConferenceHandler
     /**
      * Delete a conference.
      *
-     * @param Conference The conference to delete.
+     * @param Conference $conference The conference to delete.
+     * @return void
      */
     public function deleteConference(Conference $conference)
     {
@@ -255,8 +265,9 @@ class ConferenceHandler
     /**
      * Delete a conference file.
      *
-     * @param string The name of the conference file to delete.
-     * @param Conference The conference.
+     * @param string $filename The name of the conference file to delete.
+     * @param Conference $conference The conference.
+     * @return void
      */
     public function deleteConferenceFile(string $filename, Conference $conference)
     {

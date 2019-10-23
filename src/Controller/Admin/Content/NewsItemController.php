@@ -20,82 +20,126 @@ use Symfony\Component\Routing\Annotation\Route;
 class NewsItemController extends AbstractController
 {
     /**
+     * Route for viewing news items.
+     *
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param string $category The initially visible category.
+     * @return Response
      * @Route("/{category}", name="index", requirements={"category": "%news_category_ids%"})
      */
-    public function index(NewsItemHandler $newsItemHandler, $category = 'society'): Response
+    public function index(NewsItemHandler $newsItems, $category = 'society'): Response
     {
-        return $this->render('admin/content/news-item/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'content',
             'subarea' => 'news-item',
             'category' => $category,
-            'newsItems' => $newsItemHandler->getNewsItems()
-        ]);
+            'newsItems' => $newsItems->getNewsItems()
+        ];
+
+        // render and return the page
+        return $this->render('admin/content/news-item/view.twig', $twigs);
     }
 
     /**
-     * @Route("/edit/{id}", name="edit")
-     */
-    public function edit(NewsItem $newsItem, NewsItemHandler $newsItemHandler, Request $request) : Response
-    {
-        $newsItemForm = $this->createForm(NewsItemType::class, $newsItem);
-        $newsItemForm->handleRequest($request);
-
-        if ($newsItemForm->isSubmitted() && $newsItemForm->isValid()) {
-            $newsItemHandler->saveNewsItem($newsItem);
-            $this->addFlash('notice', 'News item "'.$newsItem.'" has been updated.');
-            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
-        }
-
-        return $this->render('admin/content/news-item/edit.twig', [
-            'area' => 'content',
-            'subarea' => 'news-item',
-            'newsItem' => $newsItem,
-            'newsItemForm' => $newsItemForm->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/delete/{id}", name="delete")
-     */
-    public function delete(NewsItem $newsItem, NewsItemHandler $newsItemHandler, Request $request) : Response
-    {
-        $form = $this->createFormBuilder()->getForm();
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-            $newsItemHandler->deleteNewsItem($newsItem);
-            $this->addFlash('notice', 'News item "'.$newsItem.' has been deleted.');
-            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
-        }
-
-        return $this->render('admin/content/news-item/delete.twig', [
-            'area' => 'content',
-            'subarea' => 'news-item',
-            'newsItem' => $newsItem,
-            'newsItemForm' => $form->createView()
-        ]);
-    }
-
-    /**
+     * Route for creating a news item.
+     *
+     * @param Request $request Symfony's request object.
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param string $category The initial category to set.
+     * @return Response
      * @Route("/create/{category}", name="create", requirements={"category": "%news_category_ids%"})
      */
-    public function create(NewsItemHandler $newsItemHandler, Request $request, $category = 'society') : Response
+    public function create(Request $request, NewsItemHandler $newsItems, $category = 'society'): Response
     {
-        $newsItem = new NewsItem($category);
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'content',
+            'subarea' => 'news-item'
+        ];
 
+        // create and handle the news item form
+        $newsItem = new NewsItem($category);
         $newsItemForm = $this->createForm(NewsItemType::class, $newsItem);
         $newsItemForm->handleRequest($request);
-
         if ($newsItemForm->isSubmitted() && $newsItemForm->isValid()) {
-            $newsItemHandler->saveNewsItem($newsItem);
+            $newsItems->saveNewsItem($newsItem);
             $this->addFlash('notice', 'News item "'.$newsItem.'" has been created.');
             return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
         }
 
-        return $this->render('admin/content/news-item/create.twig', [
+        // add additional twig variables
+        $twigs['newsItemForm'] = $newsItemForm->createView();
+
+        // render and return the page
+        return $this->render('admin/content/news-item/create.twig', $twigs);
+    }
+
+    /**
+     * Route for editing a news item.
+     *
+     * @param Request $request Symfony's request object.
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param NewsItem $newsItem The news item to edit.
+     * @return Response
+     * @Route("/edit/{id}", name="edit")
+     */
+    public function edit(Request $request, NewsItemHandler $newsItems, NewsItem $newsItem) : Response
+    {
+        // initialise the twig variables
+        $twigs = [
             'area' => 'content',
             'subarea' => 'news-item',
-            'newsItemForm' => $newsItemForm->createView()
-        ]);
+            'newsItem' => $newsItem
+        ];
+
+        // create and handle the news item form
+        $newsItemForm = $this->createForm(NewsItemType::class, $newsItem);
+        $newsItemForm->handleRequest($request);
+        if ($newsItemForm->isSubmitted() && $newsItemForm->isValid()) {
+            $newsItems->saveNewsItem($newsItem);
+            $this->addFlash('notice', 'News item "'.$newsItem.'" has been updated.');
+            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
+        }
+
+        // add additional twig variables
+        $twigs['newsItemForm'] = $newsItemForm->createView();
+
+        // render and return the page
+        return $this->render('admin/content/news-item/edit.twig', $twigs);
+    }
+
+    /**
+     * Route for deleting a news item.
+     *
+     * @param Request $request Symfony's request object.
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param NewsItem $newsItem The news item to delete.
+     * @return Response
+     * @Route("/delete/{id}", name="delete")
+     */
+    public function delete(Request $request, NewsItemHandler $newsItems, NewsItem $newsItem): Response
+    {
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'content',
+            'subarea' => 'news-item',
+            'newsItem' => $newsItem
+        ];
+
+        // create and handle the delete news item form
+        $newsItemForm = $this->createFormBuilder()->getForm();
+        $newsItemForm->handleRequest($request);
+        if ($newsItemForm->isSubmitted() && $newsItemForm->isValid()) {
+            $newsItems->deleteNewsItem($newsItem);
+            $this->addFlash('notice', 'News item "'.$newsItem.' has been deleted.');
+            return $this->redirectToRoute('admin_content_news-item_index', ['category' => $newsItem->getCategory()]);
+        }
+
+        // add additional twig variables
+        $twigs['newsItemForm'] = $newsItemForm->createView();
+
+        // render and return the page
+        return $this->render('admin/content/news-item/delete.twig', $twigs);
     }
 }

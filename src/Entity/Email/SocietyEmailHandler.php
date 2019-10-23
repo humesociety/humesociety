@@ -35,9 +35,9 @@ class SocietyEmailHandler
     /**
      * Constructor function.
      *
-     * @param EmailHandler The (main) email handler.
-     * @param UserHandler The user handler.
-     * @param ParameterBagInterface Symfony's parameter bag interface.
+     * @param EmailHandler $emails The (main) email handler.
+     * @param UserHandler $users The user handler.
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
      * @return void
      */
     public function __construct(EmailHandler $emails, UserHandler $users, ParameterBagInterface $params)
@@ -50,11 +50,14 @@ class SocietyEmailHandler
     /**
      * Send an email to all members.
      *
-     * @param bool Whether to include current members.
-     * @param bool Whether to include lapsed members.
-     * @param bool Whether to include members who have declined to recieve general emails.
+     * @param bool $current Whether to send to current members.
+     * @param bool $lapsed Whether to send to lapsed members.
+     * @param bool $declining Whether to include members declining to receive emails.
      * @param Email The email to send.
-     * @return Object
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     * @return array
      */
     public function sendMembershipEmail(bool $current, bool $lapsed, bool $declining, Email $email): array
     {
@@ -111,8 +114,11 @@ class SocietyEmailHandler
     /**
      * Send society email from template.
      *
-     * @param User The recipient of the email.
-     * @param string The label of the template to use.
+     * @param User $user The user to send the email to.
+     * @param string $label The label of the template to use.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @return void
      */
     public function sendSocietyEmail(User $user, string $label)

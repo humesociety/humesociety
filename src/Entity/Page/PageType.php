@@ -8,11 +8,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * The page form type.
+ */
 class PageType extends AbstractType
 {
+    /**
+     * An associative array of section IDs and labels.
+     *
+     * @var array
+     */
     private $sections;
+
+    /**
+     * An associative array of page template IDs and labels.
+     *
+     * @var array
+     */
     private $pageTemplates;
 
+    /**
+     * Constructor function.
+     *
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
+     * @return void
+     */
     public function __construct(ParameterBagInterface $params)
     {
         $this->sections = [];
@@ -25,6 +45,13 @@ class PageType extends AbstractType
         }
     }
 
+    /**
+     * Build the form.
+     *
+     * @param FormBuilderInterface $builder Symfony's form builder interface.
+     * @param array An array of options.
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -35,6 +62,12 @@ class PageType extends AbstractType
             ->add('content');
     }
 
+    /**
+     * Configure the form's options.
+     *
+     * @param OptionsResolver $resolver Symfony's options resolver.
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['data_class' => Page::class]);

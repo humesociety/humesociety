@@ -28,8 +28,8 @@ class SecurityController extends AbstractController
     /**
      * Route for logging in to the site.
      *
-     * @param Request Symfony's request object.
-     * @param AuthenticationUtils Symfony's authentication utilities.
+     * @param Request $request Symfony's request object.
+     * @param AuthenticationUtils $authenticationUtils Symfony's authentication utilities.
      * @return Response
      * @Route("/login", name="login")
      */
@@ -60,11 +60,11 @@ class SecurityController extends AbstractController
     /**
      * Route for creating an account on the site.
      *
-     * @param Request Symfony's request object.
-     * @param UserPasswordEncoderInterface Symfony's password encoder.
-     * @param GuardAuthenticationHandler Symfony's authentication handler.
-     * @param LoginFormAuthenticator The login form authenticator.
-     * @param UserHandler The user handler.
+     * @param Request $request Symfony's request object.
+     * @param UserPasswordEncoderInterface $passwordEncoder Symfony's password encoder.
+     * @param GuardAuthenticatorHandler $guardHandler Symfony's authentication handler.
+     * @param LoginFormAuthenticator $authenticator The login form authenticator.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/register", name="register")
      */
@@ -100,9 +100,9 @@ class SecurityController extends AbstractController
     /**
      * Route for requesting a forgotten username and password reset link.
      *
-     * @param Request Symfony's request object.
-     * @param SystemEmailHandler The system email handler.
-     * @param UserHandler The user handler.
+     * @param Request $request Symfony's request object.
+     * @param SystemEmailHandler $systemEmails The system email handler.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/forgot", name="forgot")
      */
@@ -137,11 +137,12 @@ class SecurityController extends AbstractController
     /**
      * Route for resetting a forgotten password.
      *
-     * @param Request Symfony's request object.
-     * @param UserPasswordEncoderInterface Symfony's password encoder.
-     * @param UserHandler The user handler.
-     * @param string The user's username.
-     * @param string The user's reset password secret.
+     * @param Request $request Symfony's request object.
+     * @param UserPasswordEncoderInterface $passwordEncoder Symfony's password encoder.
+     * @param UserHandler $users The user handler.
+     * @param string $username The user's username.
+     * @param string $secret The user's reset password secret.
+     * @throws \Exception
      * @return Response
      * @Route("/reset/{username}/{secret}", name="reset")
      */

@@ -23,7 +23,7 @@ class DuesPayment
     private $id;
 
     /**
-     * The PayPal order identifier.
+     * The PayPal order ID.
      *
      * @var string
      * @ORM\Column(type="string", length=255)
@@ -66,6 +66,9 @@ class DuesPayment
     /**
      * Constructor function
      *
+     * @param User $user The user who made the payment.
+     * @param string $paypalOrderId The PayPal order ID.
+     * @throws \Exception
      * @return void
      */
     public function __construct(User $user, string $paypalOrderId)
@@ -99,7 +102,7 @@ class DuesPayment
     }
 
     /**
-     * Get the PayPal order identifier.
+     * Get the PayPal order ID.
      *
      * @return string
      */
@@ -121,7 +124,7 @@ class DuesPayment
     /**
      * Get the date of the payment.
      *
-     * @return \DateTimeInterface The date of the payment.
+     * @return \DateTimeInterface
      */
     public function getDate(): \DateTimeInterface
     {
@@ -141,7 +144,7 @@ class DuesPayment
     /**
      * Set the amount paid.
      *
-     * @param string The amount paid.
+     * @param string $amount The amount paid.
      * @return self
      */
     public function setAmount(string $amount): self
@@ -163,7 +166,7 @@ class DuesPayment
     /**
      * Set the description of the payment.
      *
-     * @param string The description of the payment.
+     * @param string $description The description of the payment.
      * @return self
      */
     public function setDescription(string $description): self

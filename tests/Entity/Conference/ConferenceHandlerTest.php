@@ -2,13 +2,6 @@
 
 namespace App\Tests\Entity\Conference;
 
-use App\Entity\Chair\Chair;
-use App\Entity\Comment\Comment;
-use App\Entity\Conference\Conference;
-use App\Entity\Paper\Paper;
-use App\Entity\Review\Review;
-use App\Entity\Submission\Submission;
-use App\Entity\User\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**

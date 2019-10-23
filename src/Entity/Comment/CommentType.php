@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Entity\Invitation;
+namespace App\Entity\Comment;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * The form type for an invitation to a new user.
+ * The form type for a comment on a submission for the Hume Conference.
  */
-class InvitationTypeNew extends AbstractType
+class CommentType extends AbstractType
 {
    /**
     * Build the form.
@@ -23,9 +21,8 @@ class InvitationTypeNew extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstname', TextType::class, ['attr' => ['placeholder' => 'firstname']])
-            ->add('lastname', TextType::class, ['attr' => ['placeholder' => 'lastname']])
-            ->add('email', EmailType::class, ['attr' => ['placeholder' => 'email address']]);
+            ->add('title')
+            ->add('file');
     }
 
     /**
@@ -37,8 +34,8 @@ class InvitationTypeNew extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Invitation::class,
-            'validation_groups' => ['Default', 'new']
+            'data_class' => Comment::class,
+            'validation_groups' => ['Default', 'create']
         ]);
     }
 }

@@ -3,8 +3,6 @@
 namespace App\Entity\Article;
 
 use App\Entity\Issue\Issue;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -148,9 +146,10 @@ class Article
     /**
      * Constructor function.
      *
+     * @param Issue $issue The issue the article is in.
      * @return void
      */
-    public function __construct($issue)
+    public function __construct(Issue $issue)
     {
         // persisted properties
         $this->id= null;
@@ -212,7 +211,7 @@ class Article
     /**
      * Set the position of the article in the issue.
      *
-     * @param int The position of the article in the issue.
+     * @param int $position The position of the article in the issue.
      * @return self
      */
     public function setPosition(int $position): self
@@ -234,7 +233,7 @@ class Article
     /**
      * Set the title of the article.
      *
-     * @param string The title of the article.
+     * @param string $title The title of the article.
      * @return self
      */
     public function setTitle(string $title): self
@@ -256,7 +255,7 @@ class Article
     /**
      * Set the authors of the article.
      *
-     * @param string|null The authors of the article.
+     * @param string|null $authors The authors of the article.
      * @return self
      */
     public function setAuthors(?string $authors): self
@@ -278,7 +277,7 @@ class Article
     /**
      * Set the start page of the article.
      *
-     * @param int|null The start page of the article.
+     * @param int|null $startPage The start page of the article.
      * @return self
      */
     public function setStartPage(?int $startPage): self
@@ -300,7 +299,7 @@ class Article
     /**
      * Set the end page of the article.
      *
-     * @param int|null The end page of the article.
+     * @param int|null $endPage The end page of the article.
      * @return self
      */
     public function setEndPage(?int $endPage): self
@@ -322,7 +321,7 @@ class Article
     /**
      * Set the article's ID on Project MUSE.
      *
-     * @param int|null The article's ID on Project MUSE.
+     * @param int|null $museId The article's ID on Project MUSE.
      * @return self
      */
     public function setMuseId(?int $museId): self
@@ -344,7 +343,7 @@ class Article
     /**
      * Set the article's DOI.
      *
-     * @param string|null The article's DOI.
+     * @param string|null $doi The article's DOI.
      * @return self
      */
     public function setDoi(?string $doi): self
@@ -366,7 +365,7 @@ class Article
     /**
      * Set the uploaded file.
      *
-     * @param UploadedFile The file.
+     * @param UploadedFile $file The file.
      * @return self
      */
     public function setFile(UploadedFile $file): self

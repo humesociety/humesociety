@@ -4,6 +4,7 @@ namespace App\Entity\Issue;
 
 use App\Entity\Article\ArticleHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The issue handler contains the main business logic for reading and writing journal issue data.
@@ -20,7 +21,7 @@ class IssueHandler
     /**
      * The issue repository.
      *
-     * @var IssueRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -34,15 +35,15 @@ class IssueHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param ArticleHandler The article handler.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param ArticleHandler $articles The article handler.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ArticleHandler $articles)
     {
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Issue::class);
-        $this->articleHandler = $articles;
+        $this->articles = $articles;
     }
 
     /**
@@ -66,26 +67,9 @@ class IssueHandler
     }
 
     /**
-     * Get an issue from its volume and number.
-     *
-     * @param int The volume of the issue.
-     * @param int The number of the issue.
-     * @return Issue|null
-     */
-    public function getIssue(int $volume, int $number): ?Issue
-    {
-        return $this->repository->createQueryBuilder('i')
-            ->andWhere('i.volume = :volume')
-            ->andWhere('i.number = :number')
-            ->setParameter('volume', $volume)
-            ->setParameter('number', $number)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-    /**
      * Get the latest (i.e. most recent) issue.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Issue|null
      */
     public function getLatestIssue(): ?Issue
@@ -101,6 +85,7 @@ class IssueHandler
     /**
      * Get the volume of the latest (i.e. most recent) issue.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int|null
      */
     public function getLatestVolume(): ?int
@@ -127,6 +112,7 @@ class IssueHandler
     /**
      * Create the next issue.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Issue
      */
     public function createNextIssue(): Issue
@@ -151,7 +137,7 @@ class IssueHandler
     /**
      * Save/update an issue.
      *
-     * @param Issue The issue to save/update.
+     * @param Issue $issue The issue to save/update.
      * @return void
      */
     public function saveIssue(Issue $issue)
@@ -163,7 +149,7 @@ class IssueHandler
     /**
      * Delete an issue.
      *
-     * @param Issue The issue to delete.
+     * @param Issue $issue The issue to delete.
      * @return void
      */
     public function deleteIssue(Issue $issue)

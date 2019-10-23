@@ -21,8 +21,8 @@ class EmailController extends AbstractController
     /**
      * Route for viewing conference text variables and email templates.
      *
-     * @param EmailTemplateHandler The email template handler.
-     * @param string The initially visible tab.
+     * @param EmailTemplateHandler $emailTemplates The email template handler.
+     * @param string $tab The initially visible tab.
      * @return Response
      * @Route("/{tab}", name="index", requirements={"tab": "%conference_email_template_group_ids%"})
      */
@@ -43,9 +43,9 @@ class EmailController extends AbstractController
     /**
      * Route for editing a conference email template.
      *
-     * @param Request Symfony's request object.
-     * @param EmailTemplateHandler The email template handler.
-     * @param string The email template label.
+     * @param Request $request Symfony's request object.
+     * @param EmailTemplateHandler $emailTemplates The email template handler.
+     * @param string $label The email template label.
      * @return Response
      * @Route("/edit/{label}", name="edit", requirements={"label": "%conference_email_template_ids%"})
      */

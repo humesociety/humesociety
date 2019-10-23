@@ -47,7 +47,7 @@ class SecurityControllerTest extends WebTestCase
     public function testRegister()
     {
         // check the register page exists
-        $crawler = $this->client->request('GET', '/register');
+        $this->client->request('GET', '/register');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Sign Up');
     }

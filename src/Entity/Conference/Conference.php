@@ -2,15 +2,14 @@
 
 namespace App\Entity\Conference;
 
+use App\Entity\Paper\Paper;
 use App\Entity\Submission\Submission;
 use App\Entity\Upload\Upload;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Conference objects represent Hume Society conferences.
@@ -50,14 +49,6 @@ class Conference
      * @ORM\Column(type="integer", unique=true)
      */
     private $number;
-
-    /**
-     * The conference's ordinal (derived from its number).
-     *
-     * @var string
-     * @Groups("json")
-     */
-    private $ordinal;
 
     /**
      * The year of the conference.
@@ -158,6 +149,14 @@ class Conference
     private $papers;
 
     /**
+     * The conference's ordinal (derived from its number).
+     *
+     * @var string
+     * @Groups("json")
+     */
+    private $ordinal;
+
+    /**
      * The uploads associated with this conference.
      *
      * Note that uploads are not persisted to the database, but simply saved to disk. The
@@ -175,9 +174,9 @@ class Conference
      */
     public function __construct()
     {
+        // persisted properties
         $this->id = null;
         $this->number = null;
-        $this->ordinal = null;
         $this->year = null;
         $this->startDate = null;
         $this->endDate = null;
@@ -188,6 +187,8 @@ class Conference
         $this->deadline = null;
         $this->submissions = new ArrayCollection();
         $this->papers = new ArrayCollection();
+        // derivative properties
+        $this->ordinal = null;
         $this->uploads = [];
     }
 
@@ -224,30 +225,13 @@ class Conference
     /**
      * Set the conference's (unique) number.
      *
-     * @param int The conference's (unique) number.
+     * @param int $number The conference's (unique) number.
      * @return self
      */
     public function setNumber(int $number): self
     {
         $this->number = $number;
         return $this;
-    }
-
-    /**
-     * Get the ordinal of this conference (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getOrdinal(): ?string
-    {
-        if ($this->number) {
-            if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
-                return $this->number.'th';
-            }
-            $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
-            return $this->number.$ends[$this->number % 10];
-        }
-        return null;
     }
 
     /**
@@ -263,7 +247,7 @@ class Conference
     /**
      * Set the year of the conference.
      *
-     * @param int The year of the conference.
+     * @param int $year The year of the conference.
      * @return self
      */
     public function setYear(int $year): self
@@ -295,7 +279,7 @@ class Conference
     /**
      * Set the start date of the conference.
      *
-     * @param \DateTimeInterface|null The start date of the conference.
+     * @param \DateTimeInterface|null $startDate The start date of the conference.
      * @return self
      */
     public function setStartDate(?\DateTimeInterface $startDate): self
@@ -317,7 +301,7 @@ class Conference
     /**
      * Set the end date of the conference.
      *
-     * @param \DateTimeInterface|null The end date of the conference.
+     * @param $endDate \DateTimeInterface|null The end date of the conference.
      * @return self
      */
     public function setEndDate(?\DateTimeInterface $endDate): self
@@ -352,7 +336,7 @@ class Conference
     /**
      * Set the host institution for the conference.
      *
-     * @param string The host institution for the conference.
+     * @param string $institution The host institution for the conference.
      * @return self
      */
     public function setInstitution(string $institution): self
@@ -374,7 +358,7 @@ class Conference
     /**
      * Set the town where the conference is held.
      *
-     * @param string The town where the conference is held.
+     * @param string $town The town where the conference is held.
      * @return self
      */
     public function setTown(string $town): self
@@ -396,7 +380,7 @@ class Conference
     /**
      * Set the three-letter country code of the country where the conference is held.
      *
-     * @param string The three-letter country code of the country where the conference is held.
+     * @param string $country The three-letter country code of the country where the conference is held.
      * @return self
      */
     public function setCountry(string $country): self
@@ -418,7 +402,7 @@ class Conference
     /**
      * Set the URL of the conference's web site.
      *
-     * @param string|null
+     * @param string|null $website The URL of the conference's web site.
      * @return self
      */
     public function setWebsite(?string $website): self
@@ -440,7 +424,7 @@ class Conference
     /**
      * Set the date at which submissions to this conference close.
      *
-     * @param \DateTimeInterface|null
+     * @param \DateTimeInterface|null $deadline The date at which submissions to this conference close.
      * @return self
      */
     public function setDeadline(?\DateTimeInterface $deadline): self
@@ -452,6 +436,7 @@ class Conference
     /**
      * Get whether submissions are open.
      *
+     * @throws \Exception
      * @return bool
      */
     public function isOpen(): bool
@@ -462,6 +447,7 @@ class Conference
     /**
      * Get whether submissions are closed.
      *
+     * @throws \Exception
      * @return bool
      */
     public function isClosed(): bool
@@ -490,6 +476,33 @@ class Conference
     }
 
     /**
+     * Get the ordinal of this conference (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getOrdinal(): ?string
+    {
+        if ($this->number) {
+            if (($this->number % 100) >= 11 && ($this->number % 100) <= 13) {
+                return $this->number.'th';
+            }
+            $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+            return $this->number.$ends[$this->number % 10];
+        }
+        return null;
+    }
+
+    /**
+     * Get the path to the conference's uploaded files.
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return "conferences/{$this->number}/";
+    }
+
+    /**
      * Get the uploads associated with this conference.
      *
      * @return Upload[]
@@ -502,23 +515,13 @@ class Conference
     /**
      * Set the uploads associated with this conference.
      *
-     * @param Upload[] The array of uploads.
+     * @param Upload[] $uploads The array of uploads.
      * @return self
      */
     public function setUploads(array $uploads): self
     {
         $this->uploads = $uploads;
         return $this;
-    }
-
-    /**
-     * Get the path to the conference's uploaded files.
-     *
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return "conferences/{$this->number}/";
     }
 
     /**

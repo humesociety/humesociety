@@ -9,8 +9,6 @@ use App\Entity\Paper\PaperHandler;
 use App\Entity\Review\ReviewHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -25,11 +23,11 @@ class InvitationController extends AbstractController
     /**
      * Route for viewing all invitations.
      *
-     * @param ChairHandler The chair handler.
-     * @param CommentHandler The comment handler.
-     * @param ConferenceHandler The conference handler.
-     * @param PaperHandler The paper handler.
-     * @param ReviewHandler The review handler.
+     * @param ChairHandler $chairs The chair handler.
+     * @param CommentHandler $comments The comment handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param PaperHandler $papers The paper handler.
+     * @param ReviewHandler $reviews The review handler.
      * @return Response
      * @Route("/", name="index")
      */

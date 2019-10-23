@@ -97,6 +97,7 @@ class Page
      */
     public function __construct()
     {
+        // persisted properties
         $this->id = null; // Doctrine takes care of this
         $this->section = null;
         $this->position = null;
@@ -139,7 +140,7 @@ class Page
     /**
      * Set the page's section.
      *
-     * @var string The page's section.
+     * @var string $section The page's section.
      * @return self
      */
     public function setSection(string $section): self
@@ -161,7 +162,7 @@ class Page
     /**
      * Set the page's position.
      *
-     * @var int The page's position.
+     * @var int $position The page's position.
      * @return self
      */
     public function setPosition(int $position): self
@@ -183,7 +184,7 @@ class Page
     /**
      * Set the page's slug.
      *
-     * @var string The page's slug.
+     * @var string $slug The page's slug.
      * @return self
      */
     public function setSlug(string $slug): self
@@ -205,7 +206,7 @@ class Page
     /**
      * Set the page's title.
      *
-     * @var string The page's title.
+     * @var string $title The page's title.
      * @return self
      */
     public function setTitle(string $title): self
@@ -227,7 +228,7 @@ class Page
     /**
      * Set the page's template.
      *
-     * @var string The page's template.
+     * @var string $template The page's template.
      * @return self
      */
     public function setTemplate(string $template): self
@@ -249,7 +250,7 @@ class Page
     /**
      * Set the page's content.
      *
-     * @var string The page's content.
+     * @var string $content The page's content.
      * @return self
      */
     public function setContent(string $content): self

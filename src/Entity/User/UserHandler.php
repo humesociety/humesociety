@@ -7,6 +7,7 @@ use App\Entity\DuesPayment\DuesPayment;
 use App\Entity\Invitation\Invitation;
 use App\Entity\Submission\SubmissionHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The user handler contains the main business logic for reading and writing user data.
@@ -23,7 +24,7 @@ class UserHandler
     /**
      * The user repository.
      *
-     * @var UserRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -37,7 +38,8 @@ class UserHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param SubmissionHandler $submissions The submission handler.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, SubmissionHandler $submissions)
@@ -50,7 +52,8 @@ class UserHandler
     /**
      * Create an invited user from an invitation.
      *
-     * @param Invitation The invitation.
+     * @param Invitation $invitation The invitation.
+     * @throws \Exception
      * @return User
      */
     public function createInvitedUser(Invitation $invitation): User
@@ -62,7 +65,7 @@ class UserHandler
         $user->setLastname($invitation->getLastname());
         $user->setEmail($invitation->getEmail());
         // username and password cannot be blank, so set some values; these won't do anything, however -
-        // the user will have to choose their own username and password if they accept the invitation
+        // invited users cannot log in
         $user->setUsername($invitation->getEmail());
         $user->setPassword('password');
         return $user;
@@ -95,6 +98,7 @@ class UserHandler
     /**
      * Get an array of all members in good standing.
      *
+     * @throws \Exception
      * @return User[]
      */
     public function getMembersInGoodStanding(): array
@@ -111,6 +115,7 @@ class UserHandler
     /**
      * Get an array of all members in arrears.
      *
+     * @throws \Exception
      * @return User[]
      */
     public function getMembersInArrears(): array
@@ -127,6 +132,7 @@ class UserHandler
     /**
      * Get an array of all members whose membership expires (at the end of) this month.
      *
+     * @throws \Exception
      * @return User[]
      */
     public function getMembersExpiringThisMonth(): array
@@ -144,6 +150,7 @@ class UserHandler
     /**
      * Get an array of all members who have elected to receive a copy of Hume Studies in the post.
      *
+     * @throws \Exception
      * @return User[]
      */
     public function getMembersReceivingHumeStudies(): array
@@ -161,6 +168,7 @@ class UserHandler
     /**
      * Get current EVPT.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return User|null
      */
     public function getVicePresident(): ?User
@@ -174,6 +182,7 @@ class UserHandler
     /**
      * Get current technical director.
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return User|null
      */
     public function getTechnicalDirector(): ?User
@@ -213,41 +222,9 @@ class UserHandler
     }
 
     /**
-     * Get an official society email address (address => name).
-     *
-     * @param string The type of email to get.
-     * @return object
-     */
-    public function getOfficialEmail(string $sender): array
-    {
-        switch ($sender) {
-            case 'vicepresident':
-                $evpt = $this->getVicePresident();
-                $name = $evpt ? $evpt->getFullname() : 'Executive Vice-President Treasurer';
-                return ['vicepresident@humesociety.org' => $name];
-
-            case 'conference':
-                $organisers = $this->getConferenceOrganisers();
-                $name = 'Conference Organisers';
-                if (sizeof($organisers) > 0) {
-                    $name = implode(', ', array_map(function ($organiser) {
-                        return $organiser->getFullname();
-                    }, $organisers));
-                }
-                return ['conference@humesociety.org' => $name];
-
-            case 'web': // fallthrough
-            default: // also make this the default, to ensure this function always returns something
-                $tech = $this->getTechnicalDirector();
-                $name = $tech ? $tech->getFullname() : 'Technical Director';
-                return ['web@humesociety.org' => $name];
-        }
-    }
-
-    /**
      * Get official society email addresses.
      *
-     * @param string The type of email to get.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return object[]
      */
     public function getOfficialEmails(): array
@@ -276,9 +253,10 @@ class UserHandler
     /**
      * Get one user by their username.
      *
+     * @param string $username The username of the user to look for.
      * @return User|null
      */
-    public function getUserByUsername($username): ?User
+    public function getUserByUsername(string $username): ?User
     {
         return $this->repository->findOneByUsername($username);
     }
@@ -286,9 +264,10 @@ class UserHandler
     /**
      * Get one user by their email.
      *
+     * @param string $email The email of the user to look for.
      * @return User|null
      */
-    public function getUserByEmail($email): ?User
+    public function getUserByEmail(string $email): ?User
     {
         return $this->repository->findOneByEmail($email);
     }
@@ -296,7 +275,7 @@ class UserHandler
     /**
      * Get all reviewers for a given conference.
      *
-     * @param Conference The conference.
+     * @param Conference $conference The conference.
      * @return User[]
      */
     public function getReviewers(Conference $conference): array
@@ -309,7 +288,7 @@ class UserHandler
     /**
      * Get all commentators for a given conference.
      *
-     * @param Conference The conference.
+     * @param Conference $conference The conference.
      * @return User[]
      */
     public function getCommentators(Conference $conference): array
@@ -322,7 +301,7 @@ class UserHandler
     /**
      * Get all chairs for a given conference.
      *
-     * @param Conference The conference.
+     * @param Conference $conference The conference.
      * @return User[]
      */
     public function getChairs(Conference $conference): array
@@ -335,7 +314,7 @@ class UserHandler
     /**
      * Get all invited speakers for a given conference.
      *
-     * @param Conference The conference.
+     * @param Conference $conference The conference.
      * @return User[]
      */
     public function getSpeakers(Conference $conference): array
@@ -348,7 +327,7 @@ class UserHandler
     /**
      * Save/update a user in the database.
      *
-     * @param User The user to save/update.
+     * @param User $user The user to save/update.
      * @return void
      */
     public function saveUser(User $user)
@@ -360,7 +339,7 @@ class UserHandler
     /**
      * Refresh user.
      *
-     * @param User The user to refresh.
+     * @param User $user The user to refresh.
      * @return void
      */
     public function refreshUser(User $user)
@@ -371,7 +350,7 @@ class UserHandler
     /**
      * Delete a user from the database.
      *
-     * @param User The user to delete.
+     * @param User $user The user to delete.
      * @return void
      */
     public function deleteUser(User $user)
@@ -398,7 +377,8 @@ class UserHandler
     /**
      * Update a user's last login to today's date.
      *
-     * @param User The user to be updated.
+     * @param User $user The user to be updated.
+     * @throws \Exception
      * @return void
      */
     public function updateLastLogin(User $user)
@@ -411,8 +391,10 @@ class UserHandler
     /**
      * Update a user's dues payment date.
      *
-     * @param User The user to be updated.
-     * @param DuesPayment The payment record.
+     * @param User $user The user to be updated.
+     * @param DuesPayment $duesPayment The payment record.
+     * @throws \Exception
+     * @return void
      */
     public function updateDues(User $user, DuesPayment $duesPayment)
     {
@@ -421,10 +403,12 @@ class UserHandler
             case 'Student Membership (1 year)':
                 $user->setDues(1);
                 break;
+
             case 'Regular Membership (2 years)': // fallthrough
             case 'Student Membership (2 years)':
                 $user->setDues(2);
                 break;
+
             case 'Regular Membership (5 years)':
                 $user->setDues(5);
                 break;

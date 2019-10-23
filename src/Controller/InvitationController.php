@@ -2,20 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Chair\Chair;
 use App\Entity\Chair\ChairHandler;
-use App\Entity\Comment\Comment;
+use App\Entity\Comment\CommentType;
 use App\Entity\Comment\CommentHandler;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Email\SystemEmailHandler;
-use App\Entity\Paper\Paper;
 use App\Entity\Paper\PaperHandler;
 use App\Entity\Paper\PaperType;
-use App\Entity\Review\Review;
 use App\Entity\Review\ReviewHandler;
 use App\Entity\Review\ReviewType;
 use App\Entity\Text\TextHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,13 +27,15 @@ class InvitationController extends AbstractController
     /**
      * Route for handling a review invitation.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param ReviewHandler The review handler.
-     * @param TextHandler The text handler.
-     * @param string The review's secret.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param SystemEmailHandler $systemEmails The conference email handler.
+     * @param ReviewHandler $reviews The review handler.
+     * @param TextHandler $texts The text handler.
+     * @param string $secret The review's secret.
+     * @param string|null $reply The reply to the invitation.
      * @return Response
+     * @throws \Exception
      * @Route("/review/{secret}/{reply}", name="review", requirements={"reply": "accept|decline"})
      */
     public function review(
@@ -125,12 +123,13 @@ class InvitationController extends AbstractController
     /**
      * Route for handling a comment invitation.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param CommentHandler The comment handler.
-     * @param TextHandler The text handler.
-     * @param string The comment's secret.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param SystemEmailHandler $systemEmails The conference email handler.
+     * @param CommentHandler $comments The comment handler.
+     * @param TextHandler $texts The text handler.
+     * @param string $secret The comment's secret.
+     * @param string $reply The reply to the invitation.
      * @return Response
      * @Route("/comment/{secret}/{reply}", name="comment", requirements={"reply": "accept|decline"})
      */
@@ -219,26 +218,25 @@ class InvitationController extends AbstractController
     /**
      * Route for handling a chair invitation.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param CommentHandler The comment handler.
-     * @param TextHandler The text handler.
-     * @param string The comment's secret.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param SystemEmailHandler $systemEmails The conference email handler.
+     * @param ChairHandler $chairs The comment handler.
+     * @param TextHandler $texts The text handler.
+     * @param string $secret The comment's secret.
+     * @param string $reply The reply to the invitation.
      * @return Response
      * @Route("/chair/{secret}/{reply}", name="chair", requirements={"reply": "accept|decline"})
      */
     public function chair(
-        Request $request,
         ConferenceHandler $conferences,
         SystemEmailHandler $systemEmails,
-        ChairHandler $comments,
+        ChairHandler $chairs,
         TextHandler $texts,
         string $secret,
         ?string $reply = null
     ): Response {
         // look for the chair invitation
-        $chair = $chair->getChairBySecret($secret);
+        $chair = $chairs->getChairBySecret($secret);
 
         // throw 404 error if not found
         if (!$chair) {
@@ -268,7 +266,7 @@ class InvitationController extends AbstractController
         ];
 
         // return a different response depending on the comment's status
-        switch ($comment->getStatus()) {
+        switch ($chair->getStatus()) {
             case 'pending':
                 // add the chair guidance text to the twig variables
                 $twigs['chairGuidance'] = $texts->getTextContentByLabel('chair-guidance');
@@ -292,11 +290,11 @@ class InvitationController extends AbstractController
     /**
      * Route for handling a paper invitation.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param PaperHandler The paper handler.
-     * @param TextHandler The text handler.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param SystemEmailHandler $systemEmails The system email handler.
+     * @param PaperHandler $papers The paper handler.
+     * @param TextHandler $texts The text handler.
      * @param string The paper's secret.
      * @return Response
      * @Route("/paper/{secret}", name="paper")
@@ -307,8 +305,7 @@ class InvitationController extends AbstractController
         SystemEmailHandler $systemEmails,
         PaperHandler $papers,
         TextHandler $texts,
-        string $secret,
-        ?string $reply = null
+        string $secret
     ): Response {
         // look for the paper
         $paper = $papers->getPaperBySecret($secret);

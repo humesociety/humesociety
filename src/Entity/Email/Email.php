@@ -100,7 +100,7 @@ class Email
     /**
      * Set the sender of the email.
      *
-     * @param string The sender of the email.
+     * @param string $sender The sender of the email.
      * @return self
      */
     public function setSender(string $sender): self
@@ -122,7 +122,7 @@ class Email
     /**
      * Set the recipient.
      *
-     * @param User The recipient.
+     * @param User $recipient The recipient.
      * @return self
      */
     public function setRecipient(User $recipient): self
@@ -144,7 +144,7 @@ class Email
     /**
      * Set the subject of the email.
      *
-     * @param string The subject of the email.
+     * @param string $subject The subject of the email.
      * @return self
      */
     public function setSubject(string $subject): self
@@ -166,7 +166,7 @@ class Email
     /**
      * Set the attached file.
      *
-     * @param UploadedFile|null The attached file.
+     * @param UploadedFile|null $attachment The attached file.
      * @return self
      */
     public function setAttachment(?UploadedFile $attachment): self
@@ -178,7 +178,7 @@ class Email
     /**
      * Get the twig variables.
      *
-     * @return Object
+     * @return array
      */
     public function getTwigs(): array
     {
@@ -190,7 +190,7 @@ class Email
      *
      * @param string The name of the variable.
      * @param mixed The value of the variable.
-     * @return void
+     * @return self
      */
     public function addTwig(string $name, $value): self
     {
@@ -211,7 +211,7 @@ class Email
     /**
      * Set the content of the email.
      *
-     * @param string The content of the email.
+     * @param string $content The content of the email.
      * @return self
      */
     public function setContent(string $content): self
@@ -233,7 +233,7 @@ class Email
     /**
      * Set the twig template to use when rendering the email.
      *
-     * @param string The twig template to use when rendering the email.
+     * @param string $template The twig template to use when rendering the email.
      * @return self
      */
     public function setTemplate(string $template): self
@@ -267,8 +267,8 @@ class Email
     /**
      * Replace conference-related variables with their values in the email's subject and content.
      *
-     * @param Conference The conference.
-     * @param object Associative array of country codes and names.
+     * @param Conference $conference The conference.
+     * @param array $countries Associative array of country codes and names.
      * @return self
      */
     public function prepareConferenceContent(Conference $conference, array $countries): self
@@ -289,9 +289,9 @@ class Email
     /**
      * Replace submission-related variables with their values in the email's subject and content.
      *
-     * @param Submission The submission.
-     * @param object Associative array of country codes and names.
-     * @return string
+     * @param Submission $submission The submission.
+     * @param array $countries Associative array of country codes and names.
+     * @return self
      */
     public function prepareSubmissionContent(Submission $submission, array $countries): self
     {
@@ -311,9 +311,9 @@ class Email
     /**
      * Replace review-related variables with their values in the email's subject and content.
      *
-     * @param Review The review.
-     * @param object Associative array of country codes and names.
-     * @return string
+     * @param Review $review The review.
+     * @param array $countries Associative array of country codes and names.
+     * @return self
      */
     public function prepareReviewContent(Review $review, array $countries): self
     {
@@ -328,9 +328,9 @@ class Email
     /**
      * Replace comment-related variables with their values in the email's subject and content.
      *
-     * @param Comment The comment.
-     * @param object Associative array of country codes and names.
-     * @return string
+     * @param Comment $comment The comment.
+     * @param array $countries Associative array of country codes and names.
+     * @return self
      */
     public function prepareCommentContent(Comment $comment, array $countries): self
     {
@@ -345,9 +345,9 @@ class Email
     /**
      * Replace chair-related variables with their values in the email's subject and content.
      *
-     * @param Chair The chair.
-     * @param object Associative array of country codes and names.
-     * @return string
+     * @param Chair $chair The chair.
+     * @param array $countries Associative array of country codes and names.
+     * @return self
      */
     public function prepareChairContent(Chair $chair, array $countries): self
     {
@@ -362,9 +362,9 @@ class Email
     /**
      * Replace paper-related variables with their values in the email's subject and content.
      *
-     * @param Paper The paper.
-     * @param object Associative array of country codes and names.
-     * @return string
+     * @param Paper $paper The paper.
+     * @param array $countries Associative array of country codes and names.
+     * @return self
      */
     public function preparePaperContent(Paper $paper, array $countries): self
     {

@@ -24,11 +24,12 @@ class DataController extends AbstractController
     /**
      * Details of a user (the current user by default).
      *
-     * @param SerializerInterface Symfony's serializer.
+     * @param SerializerInterface $serializer Symfony's serializer.
+     * @param User|null $user The user to show
      * @return Response
      * @Route("/user/{user}", name="user")
      */
-    public function currentUser(?User $user = null, SerializerInterface $serializer): Response
+    public function user(SerializerInterface $serializer, ?User $user = null): Response
     {
         if ($user) {
             return new Response($serializer->serialize($user, 'json', ['groups' => 'json']));
@@ -39,8 +40,8 @@ class DataController extends AbstractController
     /**
      * An array of users and their details.
      *
-     * @param SerializerInterface Symfony's serializer.
-     * @param UserHandler The user handler.
+     * @param SerializerInterface $serializer Symfony's serializer.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/users", name="users")
      * @IsGranted("ROLE_ADMIN")
@@ -53,8 +54,8 @@ class DataController extends AbstractController
     /**
      * An array of members and their details.
      *
-     * @param SerializerInterface Symfony's serializer.
-     * @param UserHandler The user handler.
+     * @param SerializerInterface $serializer Symfony's serializer.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/members", name="members")
      * @IsGranted("ROLE_MEMBER")
@@ -71,8 +72,8 @@ class DataController extends AbstractController
     /**
      * An array of Hume Studies issues.
      *
-     * @param SerializerInterface Symfony's serializer.
-     * @param IssueHandler The issue handler.
+     * @param SerializerInterface $serializer Symfony's serializer.
+     * @param IssueHandler $issues The issue handler.
      * @return Response
      * @Route("/issues", name="issues")
      */
@@ -84,8 +85,8 @@ class DataController extends AbstractController
     /**
      * Details of the current Hume Conference.
      *
-     * @param SerializerInterface Symfony's serializer.
-     * @param ConferenceHandler The conference handler.
+     * @param SerializerInterface $serializer Symfony's serializer.
+     * @param ConferenceHandler $conferences The conference handler.
      * @return Response
      * @Route("/conference", name="conference")
      */
@@ -101,8 +102,8 @@ class DataController extends AbstractController
     /**
      * The current Hume Conference keywords.
      *
-     * @param SerializerInterface Symfony's serializer.
-     * @param ConferenceHandler The conference handler.
+     * @param SerializerInterface $serializer Symfony's serializer.
+     * @param ConferenceHandler $conferences The conference handler.
      * @return Response
      * @Route("/conference/keywords", name="conference_keywords")
      */

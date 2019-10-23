@@ -22,7 +22,7 @@ class AccountController extends AbstractController
     /**
      * Route for viewing all users.
      *
-     * @param UserHandler The user handler.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/", name="index")
      */
@@ -42,8 +42,8 @@ class AccountController extends AbstractController
     /**
      * Route for adding a role to a user.
      *
-     * @param UserHandler The user handler.
-     * @param User The user.
+     * @param UserHandler $users The user handler.
+     * @param User $user The user.
      * @param string The role to add.
      * @return JsonResponse
      * @Route("/role/{id}/add/{role}", name="add_role")
@@ -58,8 +58,8 @@ class AccountController extends AbstractController
     /**
      * Route for removing a role from a user.
      *
-     * @param UserHandler The user handler.
-     * @param User The user.
+     * @param UserHandler $users The user handler.
+     * @param User $user The user.
      * @param string The role to remove.
      * @return JsonResponse
      * @Route("/role/{id}/remove/{role}", name="remove_role")
@@ -74,9 +74,9 @@ class AccountController extends AbstractController
     /**
      * Route for viewing/editing user details.
      *
-     * @param Request Symfony's request object.
-     * @param UserHandler The user handler.
-     * @param User The user.
+     * @param Request $request Symfony's request object.
+     * @param UserHandler $users The user handler.
+     * @param User $user The user.
      * @return Response
      * @Route("/edit/{id}", name="edit")
      */

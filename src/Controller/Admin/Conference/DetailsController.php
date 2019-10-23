@@ -23,9 +23,9 @@ class DetailsController extends AbstractController
     /**
      * Route for viewing and editing details of the current conference.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param string The initially visible tab.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param string $tab The initially visible tab.
      * @return Response
      * @Route("/{tab}", name="index", requirements={"tab": "details|files|deadline"})
      */
@@ -92,9 +92,9 @@ class DetailsController extends AbstractController
     /**
      * Route for deleting a conference file.
      *
-     * @param Request Symfony's request object.
-     * @param ConferenceHandler The conference handler.
-     * @param string The file's name.
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param string $filename The file's name.
      * @return Response
      * @Route("/delete/{filename}", name="delete_upload")
      */

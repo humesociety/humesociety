@@ -21,116 +21,161 @@ use Symfony\Component\Routing\Annotation\Route;
 class CandidateController extends AbstractController
 {
     /**
+     * Route for viewing candidates.
+     *
+     * @param CandidateHandler $candidates The candidate handler.
+     * @return Response
      * @Route("/", name="index")
      */
-    public function index(CandidateHandler $candidateHandler): Response
+    public function index(CandidateHandler $candidates): Response
     {
-        return $this->render('admin/society/candidate/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'candidate',
-            'years' => $candidateHandler->getYears(),
-            'evpts' => $candidateHandler->getEVPTs(),
-            'execs' => $candidateHandler->getExecs()
-        ]);
+            'years' => $candidates->getYears(),
+            'evpts' => $candidates->getEvpts(),
+            'execs' => $candidates->getExecs()
+        ];
+
+        // render and return the page
+        return $this->render('admin/society/candidate/view.twig', $twigs);
     }
 
     /**
-     * @Route("/edit/{id}", name="edit")
-     */
-    public function edit(Candidate $candidate, CandidateHandler $candidateHandler, Request $request): Response
-    {
-        $candidateForm = $this->createForm(CandidateType::class, $candidate);
-        $candidateForm->handleRequest($request);
-
-        if ($candidateForm->isSubmitted() && $candidateForm->isValid()) {
-            $candidateHandler->saveCandidate($candidate);
-            $this->addFlash('notice', 'Record for '.$candidate.' has been updated.');
-            return $this->redirectToRoute('admin_society_candidate_index');
-        }
-
-        return $this->render('admin/society/candidate/edit.twig', [
-            'area' => 'society',
-            'subarea' => 'candidate',
-            'candidate' => $candidate,
-            'candidateForm' => $candidateForm->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/elect/{id}", name="elect")
-     */
-    public function elect(
-        Candidate $candidate,
-        CandidateHandler $candidateHandler,
-        ElectionHandler $electionHandler
-    ): Response {
-        $candidate->setElected(true);
-        $candidateHandler->saveCandidate($candidate);
-        $this->addFlash('notice', $candidate.' has been elected to the executive committee.');
-        $election = $electionHandler->getElectionByYear($candidate->getStart());
-        return $this->redirectToRoute('admin_society_election_candidates', ['id' => $election->getId()]);
-    }
-
-    /**
-     * @Route("/unelect/{id}", name="unelect")
-     */
-    public function unelect(
-        Candidate $candidate,
-        CandidateHandler $candidateHandler,
-        ElectionHandler $electionHandler
-    ): Response {
-        $candidate->setElected(false);
-        $candidateHandler->saveCandidate($candidate);
-        $this->addFlash('notice', $candidate.' has been unelected from the executive committee.');
-        $election = $electionHandler->getElectionByYear($candidate->getStart());
-        return $this->redirectToRoute('admin_society_election_candidates', ['id' => $election->getId()]);
-    }
-
-    /**
-     * @Route("/delete/{id}", name="delete")
-     */
-    public function delete(
-        Candidate $candidate,
-        CandidateHandler $candidateHandler,
-        Request $request
-    ): Response {
-        $candidateForm = $this->createFormBuilder()->getForm();
-        $candidateForm->handleRequest($request);
-
-        if ($candidateForm->isSubmitted() && $form->isValid()) {
-            $candidateHandler->deleteCandidate($candidate);
-            $this->addFlash('notice', 'Record for '.$candidate.' has been deleted.');
-            return $this->redirectToRoute('admin_society_candidate_index');
-        }
-
-        return $this->render('admin/society/candidate/delete.twig', [
-            'area' => 'society',
-            'subarea' => 'candidate',
-            'candidate' => $candidate,
-            'candidateForm' => $candidateForm->createView()
-        ]);
-    }
-
-    /**
+     * Route for creating a candidate.
+     *
+     * @param Request $request Symfony's request object.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @return Response
      * @Route("/create", name="create")
      */
-    public function create(CandidateHandler $candidateHandler, Request $request): Response
+    public function create(Request $request, CandidateHandler $candidates): Response
     {
-        $candidate = new Candidate();
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'society',
+            'subarea' => 'candidate'
+        ];
 
+        // create and handle the candidate form
+        $candidate = new Candidate();
         $candidateForm = $this->createForm(CandidateType::class, $candidate);
         $candidateForm->handleRequest($request);
-
         if ($candidateForm->isSubmitted() && $candidateForm->isValid()) {
-            $candidateHandler->saveCandidate($candidate);
+            $candidates->saveCandidate($candidate);
             $this->addFlash('notice', 'Record for '.$candidate.' has been created.');
             return $this->redirectToRoute('admin_society_candidate_index');
         }
 
-        return $this->render('admin/society/candidate/create.twig', [
+        // add additional twig variables
+        $twigs['candidateForm'] = $candidateForm->createView();
+
+        // render and return the page
+        return $this->render('admin/society/candidate/create.twig', $twigs);
+    }
+
+    /**
+     * Route for editing a candidate.
+     *
+     * @param Request $request Symfony's request object.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param Candidate $candidate The candidate to edit.
+     * @return Response
+     * @Route("/edit/{id}", name="edit")
+     */
+    public function edit(Request $request, CandidateHandler $candidates, Candidate $candidate): Response
+    {
+        // initialise the twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'candidate',
-            'candidateForm' => $candidateForm->createView()
-        ]);
+            'candidate' => $candidate
+        ];
+
+        // create and handle the candidate form
+        $candidateForm = $this->createForm(CandidateType::class, $candidate);
+        $candidateForm->handleRequest($request);
+        if ($candidateForm->isSubmitted() && $candidateForm->isValid()) {
+            $candidates->saveCandidate($candidate);
+            $this->addFlash('notice', 'Record for '.$candidate.' has been updated.');
+            return $this->redirectToRoute('admin_society_candidate_index');
+        }
+
+        // add additional twig variables
+        $twigs['candidateForm'] = $candidateForm->createView();
+
+        // render and return the page
+        return $this->render('admin/society/candidate/edit.twig', $twigs);
+    }
+
+    /**
+     * Route for electing a candidate.
+     *
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param ElectionHandler $elections The election handler.
+     * @param Candidate $candidate The candidate to elect.
+     * @return Response
+     * @Route("/elect/{id}", name="elect")
+     */
+    public function elect(CandidateHandler $candidates, ElectionHandler $elections, Candidate $candidate): Response
+    {
+        $candidate->setElected(true);
+        $candidates->saveCandidate($candidate);
+        $this->addFlash('notice', $candidate.' has been elected to the executive committee.');
+        $election = $elections->getElectionByYear($candidate->getStart());
+        return $this->redirectToRoute('admin_society_election_candidates', ['id' => $election->getId()]);
+    }
+
+    /**
+     * Route for unelecting a candidate.
+     *
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param ElectionHandler $elections The election handler.
+     * @param Candidate $candidate The candidate to elect.
+     * @return Response
+     * @Route("/unelect/{id}", name="unelect")
+     */
+    public function unelect(CandidateHandler $candidates, ElectionHandler $elections, Candidate $candidate): Response
+    {
+        $candidate->setElected(false);
+        $candidates->saveCandidate($candidate);
+        $this->addFlash('notice', $candidate.' has been unelected from the executive committee.');
+        $election = $elections->getElectionByYear($candidate->getStart());
+        return $this->redirectToRoute('admin_society_election_candidates', ['id' => $election->getId()]);
+    }
+
+    /**
+     * Route for deleting a candidate.
+     *
+     * @param Request $request Symfony's request object.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param Candidate $candidate The candidate to delete.
+     * @return Response
+     * @Route("/delete/{id}", name="delete")
+     */
+    public function delete(Request $request, CandidateHandler $candidates, Candidate $candidate): Response
+    {
+        // initialise the twig variables
+        $twigs = [
+            'area' => 'society',
+            'subarea' => 'candidate',
+            'candidate' => $candidate
+        ];
+
+        // create and handle the delete candidate form
+        $candidateForm = $this->createFormBuilder()->getForm();
+        $candidateForm->handleRequest($request);
+        if ($candidateForm->isSubmitted() && $candidateForm->isValid()) {
+            $candidates->deleteCandidate($candidate);
+            $this->addFlash('notice', 'Record for '.$candidate.' has been deleted.');
+            return $this->redirectToRoute('admin_society_candidate_index');
+        }
+
+        // add additional twig variables
+        $twigs['candidateForm'] = $candidateForm->createView();
+
+        // render and return the page
+        return $this->render('admin/society/candidate/delete.twig', $twigs);
     }
 }

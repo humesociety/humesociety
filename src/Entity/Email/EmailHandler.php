@@ -2,13 +2,7 @@
 
 namespace App\Entity\Email;
 
-use App\Entity\EmailTemplate\EmailTemplate;
 use App\Entity\EmailTemplate\EmailTemplateHandler;
-use App\Entity\Conference\Conference;
-use App\Entity\Conference\ConferenceHandler;
-use App\Entity\Review\Review;
-use App\Entity\Submission\Submission;
-use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -56,11 +50,11 @@ class EmailHandler
     /**
      * Constructor function.
      *
-     * @param \Swift_Mailer Swift Mailer.
-     * @param \Twig_Environment. Twig.
-     * @param ParameterBagInterface Symfony's parameter bag interface.
-     * @param EmailTemplateHandler The email template handler.
-     * @param UserHandler The user handler.
+     * @param \Swift_Mailer $mailer Swift Mailer.
+     * @param \Twig_Environment $templating Twig.
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
+     * @param EmailTemplateHandler $emailTemplates The email template handler.
+     * @param UserHandler $users The user handler.
      * @return void
      */
     public function __construct(
@@ -80,8 +74,8 @@ class EmailHandler
     /**
      * Get an official society email address (address => name).
      *
-     * @param string The type of email to get.
-     * @return object
+     * @param string $sender The type of email to get.
+     * @return array
      */
     public function getOfficialEmail(string $sender): array
     {
@@ -112,9 +106,12 @@ class EmailHandler
     /**
      * Send an email.
      *
-     * @param Email The email to send.
-     * @param string|null The path to an attachment.
-     * @return void
+     * @param Email $email The email to send.
+     * @param string|null $pathToAttachment The path to an attachment.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     * @return int
      */
     public function sendEmail(Email $email, ?string $pathToAttachment = null)
     {
@@ -140,7 +137,7 @@ class EmailHandler
     /**
      * Create an email from a template saved in the database.
      *
-     * @param string The label of the template.
+     * @param string $label The label of the template.
      * @return Email|null
      */
     public function emailFromTemplate(string $label): ?Email

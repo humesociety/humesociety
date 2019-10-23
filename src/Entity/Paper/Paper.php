@@ -8,7 +8,6 @@ use App\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -100,23 +99,33 @@ class Paper extends Invitation
     private $filename;
 
     /**
+     * The path to this paper's file in the uploads directory.
+     * @var string|null
+     */
+    private $path;
+
+    /**
      * Constructor function.
      *
-     * @param User The user who sent the paper.
-     * @param Conference The conference the paper for.
-     * @param string The type of the paper.
+     * @param Conference $conference The conference the paper for.
+     * @throws \Exception
      * @return void
      */
     public function __construct(Conference $conference)
     {
+        // invitation properties
+        parent::__construct();
+        // persisted properties
         $this->id = null; // doctrine will take care of this
         $this->conference = $conference;
         $this->user = null;
-        parent::__construct();
         $this->title = null;
         $this->abstract = null;
-        $this->file = null;
         $this->filename = null;
+        // temporary properties
+        $this->file = null;
+        // derivative properties
+        $this->path = null;
     }
 
     /**
@@ -168,7 +177,7 @@ class Paper extends Invitation
     /**
      * Set the user invited to speak.
      *
-     * @param User
+     * @param User $user The user invited to speak.
      * @return self
      */
     public function setUser(User $user): self
@@ -190,7 +199,7 @@ class Paper extends Invitation
     /**
      * Set the title of the paper.
      *
-     * @param string The title of the paper.
+     * @param string $title The title of the paper.
      * @return self
      */
     public function setTitle(string $title): self
@@ -212,13 +221,23 @@ class Paper extends Invitation
     /**
      * Set the abstract of the paper.
      *
-     * @param string The abstract of the paper.
+     * @param string $abstract The abstract of the paper.
      * @return self
      */
     public function setAbstract(string $abstract): self
     {
         $this->abstract = $abstract;
         return $this;
+    }
+
+    /**
+     * Get the name of the uploaded file (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getFilename(): ?string
+    {
+        return $this->filename;
     }
 
     /**
@@ -234,7 +253,7 @@ class Paper extends Invitation
     /**
      * Set the uploaded file (and the filename at the same time).
      *
-     * @param UploadedFile|null The uploaded file.
+     * @param UploadedFile|null $file The uploaded file.
      * @return self
      */
     public function setFile(?UploadedFile $file): self
@@ -247,22 +266,12 @@ class Paper extends Invitation
     }
 
     /**
-     * Get the name of the uploaded file (null when the object is first created).
+     * Get path to the file in the uploads subdirectory.
      *
      * @return string|null
      */
-    public function getFilename(): ?string
+    public function getPath(): ?string
     {
-        return $this->filename;
-    }
-
-    /**
-     * Get path to the file in the uploads subdirectory.
-     *
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return "papers/user{$this->getUser()->getId()}/{$this->getConference()->getNumber()}/";
+        return $this->user ? "papers/user{$this->user->getId()}/{$this->getConference()->getNumber()}/" : null;
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Entity\Upload;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -47,8 +46,8 @@ class Upload
     /**
      * Constructor function.
      *
-     * @param string|null The subdirectory of the uploads folder where the file is stored.
-     * @param string|null The full filename (including the extension).
+     * @param string|null $path The subdirectory of the uploads folder where the file is stored.
+     * @param string|null $filename The full filename (including the extension).
      * @return void
      */
     public function __construct(?string $path = null, ?string $filename = null)
@@ -64,7 +63,7 @@ class Upload
      */
     public function __toString(): string
     {
-        return $this->filename;
+        return $this->filename ? $this->filename : 'uninitialised upload';
     }
 
     /**
@@ -80,7 +79,7 @@ class Upload
     /**
      * Set the path to the file.
      *
-     * @param string The path to the file.
+     * @param string $path The path to the file.
      * @return self
      */
     public function setPath(string $path): self
@@ -102,7 +101,7 @@ class Upload
     /**
      * Set the filename.
      *
-     * @param string The filename.
+     * @param string $filename The filename.
      * @return self
      */
     public function setFilename(string $filename): self
@@ -136,7 +135,7 @@ class Upload
     /**
      * Set the uploaded file.
      *
-     * @param UploadedFile The uploaded file.
+     * @param UploadedFile $file The uploaded file.
      * @return self
      */
     public function setFile(UploadedFile $file): self
@@ -154,19 +153,5 @@ class Upload
     public function getUrl(): string
     {
         return "/uploads/{$this->getPath()}{$this->getFilename()}";
-    }
-
-    /**
-     * Get the subpath of the file (= the year for reports, the conference number for conference files).
-     *
-     * @return int|null
-     */
-    public function getSubPath(): ?int
-    {
-        $bits = explode('/', $this->path);
-        if (array_key_exists(1, $bits) && intval($bits[1])) {
-            return intval($bits[1]);
-        }
-        return null;
     }
 }

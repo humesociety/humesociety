@@ -28,8 +28,8 @@ class DefaultController extends AbstractController
     /**
      * The web site home page.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param NewsItemHandler The news item handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param NewsItemHandler $newsItems The news item handler.
      * @return Response
      * @Route("/", name="society_index")
      */
@@ -49,14 +49,14 @@ class DefaultController extends AbstractController
     /**
      * Any other page from the database.
      *
-     * @param Request Symfony's request object.
-     * @param CandidateHandler The candidate handler.
-     * @param ConferenceHandler The conference handler.
-     * @param NewsItemHandler The news item handler.
-     * @param PageHandler The page handler.
-     * @param UploadHandler The upload handler.
-     * @param string The section of the site.
-     * @param string The page within the section.
+     * @param Request $request Symfony's request object.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param PageHandler $pages The page handler.
+     * @param UploadHandler $uploads The upload handler.
+     * @param string $section The section of the site.
+     * @param string $slug The page within the section.
      * @return Response
      * @Route("/{section}/{slug}", name="society_page", requirements={"section": "%section_ids%"})
      */
@@ -105,11 +105,11 @@ class DefaultController extends AbstractController
     /**
      * Dummy template pages (used for testing the templates). Not to be made available in production.
      *
-     * @param CandidateHandler The candidate handler.
-     * @param ConferenceHandler The conference handler.
-     * @param NewsItemHandler The news item handler.
-     * @param UploadHandler The upload handler.
-     * @param string The template to render.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param UploadHandler $uploads The upload handler.
+     * @param string $template The template to render.
      * @return Response
      * @Route(
      *     "/template/{template}",
@@ -141,12 +141,12 @@ class DefaultController extends AbstractController
     /**
      * Function for rendering a given page.
      *
-     * @param Page The page to render.
-     * @param Page[] The page's siblings.
-     * @param CandidateHandler The candidate handler.
-     * @param ConferenceHandler The conference handler.
-     * @param NewsItemHandler The news item handler.
-     * @param UploadHandler The upload handler.
+     * @param Page $page The page to render.
+     * @param Page[] $siblings The page's siblings.
+     * @param CandidateHandler $candidates The candidate handler.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param NewsItemHandler $newsItems The news item handler.
+     * @param UploadHandler $uploads The upload handler.
      * @return Response
      */
     private function renderPage(
@@ -162,7 +162,7 @@ class DefaultController extends AbstractController
         switch ($page->getTemplate()) {
             case 'society-governance':
                 $twigs['years'] = $candidates->getYears();
-                $twigs['evpts'] = $candidates->getEVPTs();
+                $twigs['evpts'] = $candidates->getEvpts();
                 $twigs['execs'] = $candidates->getExecs();
                 return $this->render('site/templates/society-governance.twig', $twigs);
 

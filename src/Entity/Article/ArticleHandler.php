@@ -4,6 +4,7 @@ namespace App\Entity\Article;
 
 use App\Entity\Issue\Issue;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
@@ -23,7 +24,7 @@ class ArticleHandler
     /**
      * The article repository.
      *
-     * @var ArticleRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -37,8 +38,8 @@ class ArticleHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface Doctrine's entity manager.
-     * @param ParameterBagInterface Symfony's paramater bag interface.
+     * @param EntityManagerInterface $manager Doctrine's entity manager.
+     * @param ParameterBagInterface $params Symfony's paramater bag interface.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
@@ -51,7 +52,8 @@ class ArticleHandler
     /**
      * Find how many articles there are in an issue.
      *
-     * @param Issue The issue.
+     * @param Issue $issue The issue.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int
      */
     private function countArticles(Issue $issue): int
@@ -67,7 +69,8 @@ class ArticleHandler
     /**
      * Create the next article in an issue.
      *
-     * @param Issue The issue to create the article in.
+     * @param Issue $issue The issue to create the article in.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Article
      */
     public function createNextArticle(Issue $issue): Article
@@ -80,17 +83,20 @@ class ArticleHandler
     /**
      * Set an article's metadata from its DOI.
      *
-     * @param Article The article to modify.
+     * @param Article $article The article to modify.
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      * @return void
      */
     public function setDataFromDoi(Article $article)
     {
         $httpClient = HttpClient::create();
-        $response = $httpClient->request('GET', 'https://api.crossref.org/v1/works/' . $article->doi);
+        $response = $httpClient->request('GET', 'https://api.crossref.org/v1/works/' . $article->getDoi());
         if ($response->getStatusCode() === 200) {
             $content = json_decode($response->getContent());
             if ($content->status === 'ok') {
-                $article->setMetaData($content->message);
                 $article->setTitle($content->message->title[0]);
                 $authors = array_map(function ($author) {
                     return ($author->given) ? $author->given.' '.$author->family : $author->family;
@@ -106,7 +112,7 @@ class ArticleHandler
     /**
      * Save an article to the database.
      *
-     * @param Article The article to save.
+     * @param Article $article The article to save.
      * @return void
      */
     public function saveArticle(Article $article)
@@ -122,28 +128,28 @@ class ArticleHandler
     /**
      * Rename the file associated with an article
      *
-     * @param Article The article to modify (with the new filename).
-     * @param string The article's previous filename.
+     * @param Article $article The article to modify (with the new filename).
+     * @param string $oldFilename The article's previous filename.
      * @return void
      */
     public function renameArticleFile(Article $article, string $oldFilename)
     {
-        $fullpath = $this->uploadsDirectory.$article->getPath();
-        rename($fullpath.$oldFilename, $fullpath.$article->getFilename());
+        $fullPath = $this->uploadsDirectory.$article->getPath();
+        rename($fullPath.$oldFilename, $fullPath.$article->getFilename());
     }
 
     /**
      * Delete an article.
      *
-     * @param Article The article to delete.
+     * @param Article $article The article to delete.
      * @return void
      */
     public function deleteArticle(Article $article)
     {
-        $fullpath = $this->uploadsDirectory.$article->getPath().$article->getFilename();
-        if (file_exists($fullpath)) {
+        $fullPath = $this->uploadsDirectory.$article->getPath().$article->getFilename();
+        if (file_exists($fullPath)) {
             $fs = new FileSystem();
-            $fs->remove($fullpath);
+            $fs->remove($fullPath);
         }
         $this->manager->remove($article);
         $this->manager->flush();
@@ -152,8 +158,9 @@ class ArticleHandler
     /**
      * Swap the position of two articles.
      *
-     * @param Article The first article.
-     * @param Article The second article.
+     * @param Article $article1 The first article.
+     * @param Article $article2 The second article.
+     * @return void
      */
     private function swapArticles(Article $article1, Article $article2)
     {
@@ -167,7 +174,8 @@ class ArticleHandler
     /**
      * Get the article preceeding the given article in an issue.
      *
-     * @param Article The article.
+     * @param Article $article The article.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Article|null
      */
     private function getPreviousArticle(Article $article): ?Article
@@ -184,7 +192,8 @@ class ArticleHandler
     /**
      * Get the article following the given article in an issue.
      *
-     * @param Article The article.
+     * @param Article $article The article.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return Article|null
      */
     private function getNextArticle(Article $article): ?Article
@@ -201,7 +210,8 @@ class ArticleHandler
     /**
      * Move an article up in an issue.
      *
-     * @param Article The article to move.
+     * @param Article $article The article to move.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return void
      */
     public function moveArticleUp(Article $article)
@@ -217,7 +227,8 @@ class ArticleHandler
     /**
      * Move an article down in an issue.
      *
-     * @param Article The article to move.
+     * @param Article $article The article to move.
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return void
      */
     public function moveArticleDown(Article $article)

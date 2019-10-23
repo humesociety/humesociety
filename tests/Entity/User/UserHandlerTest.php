@@ -2,7 +2,6 @@
 
 namespace App\Tests\Entity\User;
 
-use App\Entity\User\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**

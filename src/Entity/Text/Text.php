@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Text objects are small bits of variable text used in the web site, whose content is stored in the database.
+ * Text variables are small bits of variable text used in the web site, whose content is stored in the database.
  *
- * Text variables need to be "declared" in the `services.yml` file, which defines a human-readable title
- * and description alongside the label.
+ * Text variables need to be "declared" in the services.yml file, which defines a human-readable title and
+ * description alongside the label.
  *
  * @ORM\Entity()
  * @UniqueEntity(
@@ -20,7 +20,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Text
 {
     /**
-     * The text's unique identifier in the database.
+     * The text variable's unique identifier in the database.
      *
      * @var int
      * @ORM\Id()
@@ -30,7 +30,7 @@ class Text
     private $id;
 
     /**
-     * The text's (unique) label.
+     * The text variable's (unique) label.
      *
      * @var string
      * @ORM\Column(type="string", length=255, unique=true)
@@ -38,14 +38,7 @@ class Text
     private $label;
 
     /**
-     * The text's group (from `services.yml`).
-     *
-     * @var string
-     */
-    private $group;
-
-    /**
-     * The text itself.
+     * The text variable's content.
      *
      * @var string
      * @ORM\Column(type="text")
@@ -53,14 +46,21 @@ class Text
     private $content;
 
     /**
-     * The text's title. This is not stored in the database, but in the `services.yml` file.
+     * The text variable's group. This is not stored in the database, but in the services.yml file.
+     *
+     * @var string
+     */
+    private $group;
+
+    /**
+     * The text variable's title. This is not stored in the database, but in the services.yml file.
      *
      * @var string
      */
     private $title;
 
     /**
-     * The text's description. This is not stored in the database, but in the `services.yml` file.
+     * The text variable's description. This is not stored in the database, but in the services.yml file.
      *
      * @var string
      */
@@ -69,20 +69,25 @@ class Text
     /**
      * Constructor function.
      *
-     * @var string The text's label.
+     * @var string The text variable's label.
      * @return void
      */
     public function __construct(string $label)
     {
+        // persisted properties
         $this->id = null; // Doctrine takes care of this
         $this->label = $label;
         $this->content = null;
+        // fixed properties (defined in services.yml)
+        $this->group = null;
         $this->title = null;
         $this->description = null;
     }
 
     /**
      * ToString function.
+     *
+     * @return string
      */
     public function __toString(): string
     {
@@ -90,7 +95,7 @@ class Text
     }
 
     /**
-     * Get the text's unique identifier (null when the object is first created).
+     * Get the text variable's unique identifier (null when the object is first created).
      *
      * @return int|null
      */
@@ -100,7 +105,7 @@ class Text
     }
 
     /**
-     * Get the text's label (null when the object is first created).
+     * Get the text variable's label (null when the object is first created).
      *
      * @return string|null
      */
@@ -110,9 +115,9 @@ class Text
     }
 
     /**
-     * Set the text's label.
+     * Set the text variable's label.
      *
-     * @param string The text's label.
+     * @param string $label The text variable's label.
      * @return self
      */
     public function setLabel(string $label): self
@@ -122,29 +127,7 @@ class Text
     }
 
     /**
-     * Get the text's group (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getGroup(): ?string
-    {
-        return $this->group;
-    }
-
-    /**
-     * Set the text's group.
-     *
-     * @param string The text's group.
-     * @return self
-     */
-    public function setGroup(string $group): self
-    {
-        $this->group = $group;
-        return $this;
-    }
-
-    /**
-     * Get the text's content (null when the object is first created).
+     * Get the text variable's content (null when the object is first created).
      *
      * @return string|null
      */
@@ -154,9 +137,9 @@ class Text
     }
 
     /**
-     * Set the text's content.
+     * Set the text variable's content.
      *
-     * @param string The text's content.
+     * @param string $content The text variable's content.
      * @return self
      */
     public function setContent(string $content): self
@@ -166,7 +149,29 @@ class Text
     }
 
     /**
-     * Get the text's title (null when the object is first created).
+     * Get the text variable's group (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getGroup(): ?string
+    {
+        return $this->group;
+    }
+
+    /**
+     * Set the text variable's group.
+     *
+     * @param string $group The text variable's group.
+     * @return self
+     */
+    public function setGroup(string $group): self
+    {
+        $this->group = $group;
+        return $this;
+    }
+
+    /**
+     * Get the text variable's title (null when the object is first created).
      *
      * @return string|null
      */
@@ -176,9 +181,9 @@ class Text
     }
 
     /**
-     * Set the text's title.
+     * Set the text variable's title.
      *
-     * @param string The text's title.
+     * @param string $title The text variable's title.
      * @return self
      */
     public function setTitle(string $title): self
@@ -188,7 +193,7 @@ class Text
     }
 
     /**
-     * Get the text's description (null when the object is first created).
+     * Get the text variable's description (null when the object is first created).
      *
      * @return string|null
      */
@@ -198,9 +203,9 @@ class Text
     }
 
     /**
-     * Set the text's description.
+     * Set the text variable's description.
      *
-     * @param string The text's description.
+     * @param string $description The text variable's description.
      * @return self
      */
     public function setDescription(string $description): self

@@ -7,7 +7,6 @@ use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,7 +21,7 @@ class UserController extends AbstractController
     /**
      * Route for viewing all users.
      *
-     * @param UserHandler The user handler.
+     * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/", name="index")
      */
@@ -43,9 +42,9 @@ class UserController extends AbstractController
     /**
      * Route for toggling whether a user is active.
      *
-     * @param UserHandler The user handler.
-     * @param User The user to toggle.
-     * @return Response
+     * @param UserHandler $users The user handler.
+     * @param User $user The user to toggle.
+     * @return JsonResponse
      * @Route("/toggle/{user}", name="toggle")
      */
     public function toggle(UserHandler $users, User $user): JsonResponse

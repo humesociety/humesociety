@@ -2,8 +2,6 @@
 
 namespace App\Entity\Election;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -71,6 +69,7 @@ class Election
      */
     public function __construct()
     {
+        // persisted properties
         $this->id = null; // Doctrine takes care of this
         $this->year = idate('Y') + 1;
         $this->open = false;
@@ -111,7 +110,7 @@ class Election
     /**
      * Set whether the election is open.
      *
-     * @param bool Whether the election is open.
+     * @param bool $open Whether the election is open.
      * @return self
      */
     public function setOpen(bool $open): self
@@ -133,7 +132,7 @@ class Election
     /**
      * Set the year for which the election is held.
      *
-     * @param int The year for which the election is held.
+     * @param int $year The year for which the election is held.
      * @return self
      */
     public function setYear(int $year): self
@@ -165,7 +164,7 @@ class Election
     /**
      * Set the number of votes cast.
      *
-     * @param int The number of votes cast.
+     * @param int $votes The number of votes cast.
      * @return self
      */
     public function setVotes(int $votes): self
@@ -187,7 +186,7 @@ class Election
     /**
      * Set the population.
      *
-     * @param int The population.
+     * @param int $population The population.
      * @return self
      */
     public function setPopulation(int $population): self

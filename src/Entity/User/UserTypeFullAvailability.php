@@ -27,12 +27,17 @@ class UserTypeFullAvailability extends AbstractType
     /**
      * Constructor function.
      *
-     * @param ConfereneHandler The conference handler (dependency injection).
+     * @throws \Exception
+     * @throw \Error
+     * @param ConferenceHandler $conferences The conference handler (dependency injection).
      */
-    public function __construct(ConferenceHandler $conferenceHandler)
+    public function __construct(ConferenceHandler $conferences)
     {
-        $currentConference = $conferenceHandler->getCurrentConference();
-        // getCurrentConference may return null; in which case we shouldn't be here at all
+        $currentConference = $conferences->getCurrentConference();
+        // getCurrentConference may return null, in which case we shouldn't be here at all
+        if ($currentConference === null) {
+            throw new \Error('Full availability cannot be set when there is no current conference.');
+        }
         $this->conferenceInfo = $currentConference->getOrdinal();
         $this->conferenceInfo .= ' Hume Conference in ';
         $this->conferenceInfo .= $currentConference->getTown();
@@ -41,8 +46,8 @@ class UserTypeFullAvailability extends AbstractType
     /**
      * Build the form.
      *
-     * @param FormBuilderInterface Symfony's form builder interface.
-     * @param array An array of options.
+     * @param FormBuilderInterface $builder Symfony's form builder interface.
+     * @param array $options An array of options.
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -68,7 +73,7 @@ class UserTypeFullAvailability extends AbstractType
     /**
      * Configure the form options.
      *
-     * @param OptionsResolver Symfony's options resolver.
+     * @param OptionsResolver $resolver Symfony's options resolver.
      * @return void
      */
     public function configureOptions(OptionsResolver $resolver)

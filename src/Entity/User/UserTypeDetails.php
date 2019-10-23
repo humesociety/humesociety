@@ -7,8 +7,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * The form type for editing a user's details.
@@ -16,7 +14,7 @@ use Symfony\Component\Validator\Constraints\Length;
 class UserTypeDetails extends AbstractType
 {
     /**
-     * An associative array of countries and their country codes (from the app's parameters).
+     * An associative array of countries and their country codes.
      *
      * @var array
      */
@@ -25,7 +23,7 @@ class UserTypeDetails extends AbstractType
     /**
      * Constructor function.
      *
-     * @param ParameterBagInterface
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
      * @return void
      */
     public function __construct(ParameterBagInterface $params)
@@ -39,8 +37,8 @@ class UserTypeDetails extends AbstractType
     /**
      * Build the form.
      *
-     * @param FormBuilderInterface Symfony's form builder interface.
-     * @param array An array of options.
+     * @param FormBuilderInterface $builder Symfony's form builder interface.
+     * @param array $options An array of options.
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -63,7 +61,7 @@ class UserTypeDetails extends AbstractType
     /**
      * Configure the form options.
      *
-     * @param OptionsResolver Symfony's options resolver.
+     * @param OptionsResolver $resolver Symfony's options resolver.
      * @return void
      */
     public function configureOptions(OptionsResolver $resolver)

@@ -15,8 +15,8 @@ class UploadType extends AbstractType
     /**
      * Build the form.
      *
-     * @param FormBuilderInterface Symfony's form builder interface.
-     * @param array An array of options.
+     * @param FormBuilderInterface $builder Symfony's form builder interface.
+     * @param array $options An array of options.
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -30,7 +30,7 @@ class UploadType extends AbstractType
     /**
      * Configure the form options.
      *
-     * @param OptionsResolver Symfony's options resolver.
+     * @param OptionsResolver $resolver Symfony's options resolver.
      * @return void
      */
     public function configureOptions(OptionsResolver $resolver)

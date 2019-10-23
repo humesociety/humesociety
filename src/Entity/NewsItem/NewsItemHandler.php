@@ -3,6 +3,7 @@
 namespace App\Entity\NewsItem;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The issue handler contains the main business logic for reading and writing journal issue data.
@@ -19,14 +20,14 @@ class NewsItemHandler
     /**
      * The news item repository.
      *
-     * @var NewsItemRepository
+     * @var EntityRepository
      */
     private $repository;
 
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager)
@@ -52,7 +53,8 @@ class NewsItemHandler
     /**
      * Get all current news items.
      *
-     * @param string|null Optional category to restrict to.
+     * @param string|null $category Optional category to restrict to.
+     * @throws \Exception
      * @return NewsItem[]
      */
     public function getCurrentNewsItems(?string $category = null): array
@@ -69,7 +71,8 @@ class NewsItemHandler
     /**
      * Get archived news items.
      *
-     * @param string|null Optional category to restrict to.
+     * @param string|null $category Optional category to restrict to.
+     * @throws \Exception
      * @return NewsItem[]
      */
     public function getArchivedNewsItems(?string $category = null): array
@@ -106,7 +109,7 @@ class NewsItemHandler
     /**
      * Save/update a news item.
      *
-     * @param NewsItem The news item to save/update.
+     * @param NewsItem $newsItem The news item to save/update.
      * @return void
      */
     public function saveNewsItem(NewsItem $newsItem)
@@ -118,7 +121,7 @@ class NewsItemHandler
     /**
      * Delete a news item.
      *
-     * @param NewsItem The news item to delete.
+     * @param NewsItem $newsItem The news item to delete.
      * @return void
      */
     public function deleteNewsItem(NewsItem $newsItem)

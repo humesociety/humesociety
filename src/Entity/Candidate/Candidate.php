@@ -29,7 +29,7 @@ class Candidate
     private $id;
 
     /**
-     * The candidate's firstname.
+     * The candidate's first name.
      *
      * @var string
      * @ORM\Column(type="string", length=255)
@@ -37,7 +37,7 @@ class Candidate
     private $firstname;
 
     /**
-     * The candidate's lastname.
+     * The candidate's last name.
      *
      * @var string
      * @ORM\Column(type="string", length=255)
@@ -134,6 +134,7 @@ class Candidate
      */
     public function __construct()
     {
+        // persisted properties
         $this->id = null; // doctrine takes care of this
         $this->firstname = null;
         $this->lastname = null;
@@ -172,7 +173,7 @@ class Candidate
     }
 
     /**
-     * Get the candidate's firstname (null when the object is first created).
+     * Get the candidate's first name (null when the object is first created).
      *
      * @return string|null
      */
@@ -182,9 +183,9 @@ class Candidate
     }
 
     /**
-     * Set the candidate's firstname.
+     * Set the candidate's first name.
      *
-     * @param string The candidate's firstname.
+     * @param string $firstname The candidate's first name.
      * @return self
      */
     public function setFirstname(string $firstname): self
@@ -194,9 +195,9 @@ class Candidate
     }
 
     /**
-     * Get the candidate's lastname (null when the object is first created).
+     * Get the candidate's last name (null when the object is first created).
      *
-     * @return int|null
+     * @return string|null
      */
     public function getLastname(): ?string
     {
@@ -204,9 +205,9 @@ class Candidate
     }
 
     /**
-     * Set the candidate's lastname.
+     * Set the candidate's last name.
      *
-     * @param string The candidate's lastname.
+     * @param string $lastname The candidate's last name.
      * @return self
      */
     public function setLastname(string $lastname): self
@@ -228,7 +229,7 @@ class Candidate
     /**
      * Set the candidate's institution.
      *
-     * @param string|null The candidate's institution.
+     * @param string|null $institution The candidate's institution.
      * @return self
      */
     public function setInstitution(string $institution): self
@@ -250,7 +251,7 @@ class Candidate
     /**
      * Set the associated user.
      *
-     * @param User|null The associated user.
+     * @param User|null $user he associated user.
      * @return self
      */
     public function setUser(?User $user): self
@@ -272,7 +273,8 @@ class Candidate
     /**
      * Set the start year of this term of office.
      *
-     * @param int The start year of this term of office.
+     * @param int $start The start year of this term of office.
+     * @return self
      */
     public function setStart(int $start): self
     {
@@ -293,7 +295,8 @@ class Candidate
     /**
      * Set the end year of this term of office.
      *
-     * @param int The end year of this term of office.
+     * @param int $end The end year of this term of office.
+     * @return self
      */
     public function setEnd(int $end): self
     {
@@ -314,7 +317,7 @@ class Candidate
     /**
      * Set the description of this candidate.
      *
-     * @param string|null The description of this candidate.
+     * @param string|null $description The description of this candidate.
      * @return self
      */
     public function setDescription(string $description): self
@@ -328,7 +331,7 @@ class Candidate
      *
      * @return int
      */
-    public function getVotes(): ?int
+    public function getVotes(): int
     {
         return $this->votes;
     }
@@ -336,7 +339,7 @@ class Candidate
     /**
      * Set how many votes the candidate has received.
      *
-     * @param int How many votes the candidate has received.
+     * @param int $votes How many votes the candidate has received.
      * @return self
      */
     public function setVotes(int $votes): self
@@ -358,7 +361,7 @@ class Candidate
     /**
      * Set whether the candidate is elected.
      *
-     * @param bool Whether the candidate is elected.
+     * @param bool $elected Whether the candidate is elected.
      * @return self
      */
     public function setElected(bool $elected): self
@@ -380,7 +383,7 @@ class Candidate
     /**
      * Set whether the candidate is reelectable after this term of office.
      *
-     * @param bool Whether the candidate is reelectable after this term of office.
+     * @param bool $reelectable Whether the candidate is reelectable after this term of office.
      * @return self
      */
     public function setReelectable(bool $reelectable): self
@@ -402,7 +405,7 @@ class Candidate
     /**
      * Set whether the candidate is standing for president.
      *
-     * @param bool Whether the candidate is standing for president.
+     * @param bool $president Whether the candidate is standing for president.
      * @return self
      */
     public function setPresident(bool $president): self
@@ -424,7 +427,7 @@ class Candidate
     /**
      * Set whether the candidate is standing for EVPT.
      *
-     * @param bool Whether the candidate is standing for EVPT.
+     * @param bool $evpt Whether the candidate is standing for EVPT.
      * @return self
      */
     public function setEvpt(bool $evpt): self

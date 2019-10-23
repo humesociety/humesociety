@@ -4,8 +4,7 @@ namespace App\Entity\Chair;
 
 use App\Entity\Conference\Conference;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Filesystem\Filesystem;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * The chair handler contains the main business logic for reading and writing chair data.
@@ -22,14 +21,14 @@ class ChairHandler
     /**
      * The chair repository.
      *
-     * @var ChairRepository
+     * @var EntityRepository
      */
     private $repository;
 
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager)
@@ -41,7 +40,7 @@ class ChairHandler
     /**
      * Get all chair invitations.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Chair[]
      */
     public function getChairs(?Conference $conference = null): array
@@ -58,7 +57,7 @@ class ChairHandler
     /**
      * Save/update a chair.
      *
-     * @param Chair The chair to save/update.
+     * @param Chair $chair The chair to save/update.
      */
     public function saveChair(Chair $chair)
     {
@@ -69,7 +68,7 @@ class ChairHandler
     /**
      * Delete a chair.
      *
-     * @param Chair The chair to delete.
+     * @param Chair $chair The chair to delete.
      */
     public function deleteChair(Chair $chair)
     {

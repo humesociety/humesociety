@@ -4,6 +4,7 @@ namespace App\Entity\DuesPayment;
 
 use App\Entity\User\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
@@ -24,14 +25,14 @@ class DuesPaymentHandler
     /**
      * The dues payment repository.
      *
-     * @var DuesPaymentRepository
+     * @var EntityRepository
      */
     private $repository;
 
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager)
@@ -43,10 +44,10 @@ class DuesPaymentHandler
     /**
      * Fetch order details from PayPal.
      *
-     * @param string The PayPal order ID.
-     * @return Object The PayPal response.
+     * @param string $orderId The PayPal order ID.
+     * @return array
      */
-    public function fetchOrderFromPayPal(string $orderId)
+    public function fetchOrderFromPayPal(string $orderId): array
     {
         // create the PayPal environment
         if ($_ENV['APP_ENV'] === 'prod') {
@@ -57,16 +58,17 @@ class DuesPaymentHandler
         // create the PayPal client and check the order status
         $client = new PayPalHttpClient($environment);
         $response = $client->execute(new OrdersGetRequest($orderId));
-        // return the respose result
+        // return the response result
         return $response->result;
     }
 
     /**
      * Create a dues payment based on a PayPal order response.
      *
-     * @param User The user who made the payment.
-     * @param string The PayPal order ID.
-     * @param Object The PayPal order response.
+     * @param User $user The user who made the payment.
+     * @param string $orderId The PayPal order ID.
+     * @param Object $order The PayPal order response.
+     * @throws \Exception
      * @return DuesPayment
      */
     public function createDuesPaymentFromOrder(User $user, string $orderId, $order): DuesPayment
@@ -78,18 +80,9 @@ class DuesPaymentHandler
     }
 
     /**
-     * Get all dues payments.
-     *
-     * @return DuesPayment[]
-     */
-    public function getDuesPayments() : Array
-    {
-        return $this->repository->findBy([], ['date' => 'asc']);
-    }
-
-    /**
      * Get a dues payment by its PayPal order ID.
      *
+     * @param string $orderId The PayPal order ID.
      * @return DuesPayment|null
      */
     public function getDuesPaymentByPaypalOrderId(string $orderId) : ?DuesPayment
@@ -100,7 +93,7 @@ class DuesPaymentHandler
     /**
      * Save a dues payment to the database.
      *
-     * @param DuesPayment The dues payment to save.
+     * @param DuesPayment $duesPayment The dues payment to save.
      * @return void
      */
     public function saveDuesPayment(DuesPayment $duesPayment)

@@ -3,6 +3,7 @@
 namespace App\Entity\EmailTemplate;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
@@ -20,7 +21,7 @@ class EmailTemplateHandler
     /**
      * The email template repository.
      *
-     * @var EmailTemplateRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -41,8 +42,8 @@ class EmailTemplateHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param ParameterBagInterface Symfony's parameter bag interface.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
@@ -54,9 +55,9 @@ class EmailTemplateHandler
     }
 
     /**
-     * Enrich an email template with its title and description (from `services.yml`).
+     * Enrich an email template with its title and description (from services.yml).
      *
-     * @param EmailTemplate The email template to enrich.
+     * @param EmailTemplate $emailTemplate The email template to enrich.
      * @return EmailTemplate
      */
     private function enrichEmailTemplate(EmailTemplate $emailTemplate): EmailTemplate
@@ -75,7 +76,7 @@ class EmailTemplateHandler
     /**
      * Get an (enriched) email template from its label. Create it if it doesn't exist.
      *
-     * @param string The label of the template to get.
+     * @param string $label The label of the template to get.
      * @return EmailTemplate
      */
     public function getEmailTemplateByLabel(string $label): EmailTemplate
@@ -91,7 +92,7 @@ class EmailTemplateHandler
     /**
      * Get email templates.
      *
-     * @param string|null Optional group to restrict to.
+     * @param string|null $group Optional group to restrict to.
      * @return EmailTemplate[]
      */
     public function getEmailTemplates(?string $group = null): array
@@ -107,7 +108,7 @@ class EmailTemplateHandler
     /**
      * Get all groups of conference email templates
      *
-     * @return Object
+     * @return array
      */
     public function getConferenceEmailTemplateGroups(): array
     {
@@ -121,7 +122,7 @@ class EmailTemplateHandler
     /**
      * Save/update an email template.
      *
-     * @param EmailTemplate The email template to save/update.
+     * @param EmailTemplate $emailTemplate The email template to save/update.
      * @return void
      */
     public function saveEmailTemplate(EmailTemplate $emailTemplate)

@@ -4,6 +4,7 @@ namespace App\Entity\Comment;
 
 use App\Entity\Conference\Conference;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -22,7 +23,7 @@ class CommentHandler
     /**
      * The comment repository.
      *
-     * @var CommentRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -36,8 +37,8 @@ class CommentHandler
     /**
      * Constructor function.
      *
-     * @param EntityManagerInterface The Doctrine entity manager.
-     * @param ParameterBagInterface Symfony's paramater bag interface.
+     * @param EntityManagerInterface $manager The Doctrine entity manager.
+     * @param ParameterBagInterface $params Symfony's paramater bag interface.
      * @return void
      */
     public function __construct(EntityManagerInterface $manager, ParameterBagInterface $params)
@@ -50,7 +51,7 @@ class CommentHandler
     /**
      * Get all comment invitations.
      *
-     * @param Conference|null Optional conference to restrict to.
+     * @param Conference|null $conference Optional conference to restrict to.
      * @return Comment[]
      */
     public function getComments(?Conference $conference = null): array
@@ -67,7 +68,8 @@ class CommentHandler
     /**
      * Save/update a comment.
      *
-     * @param Comment The comment to save/update.
+     * @param Comment $comment The comment to save/update.
+     * @return void
      */
     public function saveComment(Comment $comment)
     {
@@ -83,14 +85,15 @@ class CommentHandler
     /**
      * Delete a comment.
      *
-     * @param Comment The comment to delete.
+     * @param Comment $comment The comment to delete.
+     * @return void
      */
     public function deleteComment(Comment $comment)
     {
-        $fullpath = $this->uploadsDirectory.$comment->getPath().$comment->getFilename();
-        if (file_exists($fullpath)) {
+        $fullPath = $this->uploadsDirectory.$comment->getPath().$comment->getFilename();
+        if (file_exists($fullPath)) {
             $fs = new FileSystem();
-            $fs->remove($fullpath);
+            $fs->remove($fullPath);
         }
         $this->manager->remove($comment);
         $this->manager->flush();

@@ -60,15 +60,17 @@ class Chair extends Invitation
     /**
      * Constructor function.
      *
-     * @param Submission The submission concerned.
+     * @param Submission $submission The submission concerned.
      * @return void
      */
     public function __construct(Submission $submission)
     {
+        // invitation properties
+        parent::__construct();
+        // persisted properties
         $this->id = null; // doctrine will take care of this
         $this->submission = $submission;
         $this->user = null;
-        parent::__construct();
     }
 
     /**
@@ -114,7 +116,7 @@ class Chair extends Invitation
     /**
      * Set the user invited to chair.
      *
-     * @param User The user invited to chair.
+     * @param User $user The user invited to chair.
      * @return self
      */
     public function setUser(User $user): self

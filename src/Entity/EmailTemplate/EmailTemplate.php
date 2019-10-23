@@ -35,27 +35,6 @@ class EmailTemplate
     private $label;
 
     /**
-     * The template's group (from `services.yml`).
-     *
-     * @var string
-     */
-    private $group;
-
-    /**
-     * The title of the email template (from `services.yml`).
-     *
-     * @var string
-     */
-    private $title;
-
-    /**
-     * The description of the email template (from `services.yml`).
-     *
-     * @var string
-     */
-    private $description;
-
-    /**
      * The sender of the email (vicepresident|web|conference).
      *
      * @var string
@@ -80,20 +59,53 @@ class EmailTemplate
     private $content;
 
     /**
+     * The template's group (from `services.yml`).
+     *
+     * @var string
+     */
+    private $group;
+
+    /**
+     * The title of the email template (from `services.yml`).
+     *
+     * @var string
+     */
+    private $title;
+
+    /**
+     * The description of the email template (from `services.yml`).
+     *
+     * @var string
+     */
+    private $description;
+
+    /**
      * Constructor function.
      *
      * @return void
      */
     public function __construct()
     {
+        // persisted properties
         $this->id = null; // Doctrine takes care of this
         $this->label = null;
-        $this->group = null;
-        $this->title = null;
-        $this->description = null;
         $this->sender = null;
         $this->subject = null;
         $this->content = null;
+        // fixed properties (defined in services.yml)
+        $this->group = null;
+        $this->title = null;
+        $this->description = null;
+    }
+
+    /**
+     * ToString function.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->title ? $this->title : 'uninitialised email template';
     }
 
     /**
@@ -119,78 +131,12 @@ class EmailTemplate
     /**
      * Set the template's (unique) label.
      *
-     * @param string The template's (unique) label.
+     * @param string $label The template's (unique) label.
      * @return self
      */
     public function setLabel(string $label): self
     {
         $this->label = $label;
-        return $this;
-    }
-
-    /**
-     * Get the template's group (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getGroup(): ?string
-    {
-        return $this->group;
-    }
-
-    /**
-     * Set the template's group.
-     *
-     * @param string The template's group.
-     * @return self
-     */
-    public function setGroup(string $group): self
-    {
-        $this->group = $group;
-        return $this;
-    }
-
-    /**
-     * Get the template's title (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    /**
-     * Set the template's title.
-     *
-     * @param string The template's title.
-     * @return self
-     */
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-        return $this;
-    }
-
-    /**
-     * Get the template's description (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set the template's description.
-     *
-     * @param string The template's description.
-     * @return self
-     */
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
         return $this;
     }
 
@@ -207,7 +153,7 @@ class EmailTemplate
     /**
      * Set the sender of the email.
      *
-     * @param string The sender of the email.
+     * @param string $sender The sender of the email.
      * @return self
      */
     public function setSender(string $sender): self
@@ -231,7 +177,7 @@ class EmailTemplate
     /**
      * Set the subject of the email.
      *
-     * @param string The subject of the email.
+     * @param string $subject The subject of the email.
      * @return self
      */
     public function setSubject(string $subject): self
@@ -253,7 +199,7 @@ class EmailTemplate
     /**
      * Set the content of the email.
      *
-     * @param string The content of the email.
+     * @param string $content The content of the email.
      * @return self
      */
     public function setContent(string $content): self
@@ -263,12 +209,68 @@ class EmailTemplate
     }
 
     /**
-     * ToString function.
+     * Get the template's group (null when the object is first created).
      *
-     * @return string
+     * @return string|null
      */
-    public function __toString(): string
+    public function getGroup(): ?string
     {
-        return $this->title ? $this->title : 'uninitialised email template';
+        return $this->group;
+    }
+
+    /**
+     * Set the template's group.
+     *
+     * @param string $group The template's group.
+     * @return self
+     */
+    public function setGroup(string $group): self
+    {
+        $this->group = $group;
+        return $this;
+    }
+
+    /**
+     * Get the template's title (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set the template's title.
+     *
+     * @param string $title The template's title.
+     * @return self
+     */
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Get the template's description (null when the object is first created).
+     *
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set the template's description.
+     *
+     * @param string $description The template's description.
+     * @return self
+     */
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+        return $this;
     }
 }

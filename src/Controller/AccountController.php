@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\DuesPayment\DuesPayment;
 use App\Entity\DuesPayment\DuesPaymentHandler;
 use App\Entity\Email\SocietyEmailHandler;
-use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use App\Entity\User\UserTypeDetails;
 use App\Entity\User\UserTypeChangePassword;
@@ -21,18 +19,18 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  * Controller for the user account area of the site.
  *
  * @Route("/account", name="account_")
+ * @IsGranted("ROLE_USER")
  */
 class AccountController extends AbstractController
 {
     /**
      * Route for editing basic account details.
      *
-     * @param Request Symfony's request object.
-     * @param UserHandler The user handler.
-     * @param string The initially visible tab.
+     * @param Request $request Symfony's request object.
+     * @param UserHandler $users The user handler.
+     * @param string $tab The initially visible tab.
      * @return Response
      * @Route("/{tab}", name="index", requirements={"tab": "details|settings"})
-     * @IsGranted("ROLE_USER")
      */
     public function index(Request $request, UserHandler $users, string $tab = 'details'): Response
     {
@@ -74,21 +72,20 @@ class AccountController extends AbstractController
      *
      * @return Response
      * @Route("/research", name="research")
-     * @IsGranted("ROLE_USER")
      */
     public function research(): Response
     {
-        // redirect to the research avaiability page
+        // redirect to the research availability page
         return $this->redirectToRoute('account_research_availability');
     }
 
     /**
      * Route for paying dues.
      *
-     * @param Request Symfony's request object.
+     * @param $request Request Symfony's request object.
+     * @throws \Exception
      * @return Response
      * @Route("/pay", name="pay")
-     * @IsGranted("ROLE_USER")
      */
     public function pay(Request $request): Response
     {
@@ -115,13 +112,13 @@ class AccountController extends AbstractController
     /**
      * Route PayPal sends the user to after payment is completed.
      *
-     * @param Request Symfony's request object.
-     * @param DuesPaymentHandler The dues payment handler.
-     * @param SocietyEmailHandler The society email handler.
-     * @param UserHandler The user handler.
+     * @param Request $request Symfony's request object.
+     * @param DuesPaymentHandler $duesPayments The dues payment handler.
+     * @param SocietyEmailHandler $societyEmails The society email handler.
+     * @param UserHandler $users The user handler.
      * @param string The PayPal order id.
+     * @return Response
      * @Route("/paid/{orderId}", name="paid")
-     * @IsGranted("ROLE_USER")
      */
     public function paid(
         Request $request,
@@ -137,7 +134,7 @@ class AccountController extends AbstractController
         ];
 
         // fetch the details of the order from PayPal
-        $order = $duesPayments->fetchOrderFromPaypal($orderId);
+        $order = $duesPayments->fetchOrderFromPayPal($orderId);
 
         // if the payment is complete, update the database
         if ($order->status === 'COMPLETED') {
@@ -163,12 +160,11 @@ class AccountController extends AbstractController
     /**
      * Route for changing the account password.
      *
-     * @param Request Symfony's request object.
-     * @param UserHandler The user handler.
-     * @param UserPasswordEncoderInterface Symfony's password encoder.
+     * @param Request $request Symfony's request object.
+     * @param UserHandler $users The user handler.
+     * @param UserPasswordEncoderInterface $passwordEncoder Symfony's password encoder.
      * @return Response
      * @Route("/password", name="password")
-     * @IsGranted("ROLE_USER")
      */
     public function password(
         Request $request,

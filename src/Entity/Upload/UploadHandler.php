@@ -2,11 +2,7 @@
 
 namespace App\Entity\Upload;
 
-use App\Entity\Article\Article;
-use App\Entity\Note\Note;
 use App\Entity\Conference\Conference;
-use App\Entity\Review\Review;
-use App\Entity\Submission\Submission;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -27,7 +23,7 @@ class UploadHandler
     /**
      * Constructor function.
      *
-     * @param ParamaterBagInterface Symfony's paramater bag interface.
+     * @param ParameterBagInterface $params Symfony's paramater bag interface.
      * @return void
      */
     public function __construct(ParameterBagInterface $params)
@@ -77,7 +73,7 @@ class UploadHandler
     /**
      * Get all reports for a given year.
      *
-     * @param int The year of the reports.
+     * @param int $year The year of the reports.
      * @return Upload[]
      */
     public function getReportsByYear(int $year): array
@@ -102,7 +98,7 @@ class UploadHandler
     /**
      * Get all uploads for a given conference.
      *
-     * @param Conference The conference whose files to get.
+     * @param Conference $conference The conference whose files to get.
      * @return Upload[]
      */
     public function getConferenceUploads(Conference $conference): array
@@ -113,9 +109,10 @@ class UploadHandler
     /**
      * Save an upload to disk.
      *
-     * @param Article|Submission|Upload The upload to save.
+     * @param Upload The upload to save.
+     * @return void
      */
-    public function saveUpload($upload)
+    public function saveUpload(Upload $upload)
     {
         $upload->getFile()->move($this->uploadsDirectory.$upload->getPath(), $upload->getFilename());
     }
@@ -124,6 +121,7 @@ class UploadHandler
      * Save an image.
      *
      * @param Upload The image to save.
+     * @return void
      */
     public function saveImage(Upload $upload)
     {
@@ -135,6 +133,8 @@ class UploadHandler
      * Save a report.
      *
      * @param Upload The report to save.
+     * @param int $year The year of the report.
+     * @return void
      */
     public function saveReport(Upload $upload, int $year)
     {
@@ -145,21 +145,23 @@ class UploadHandler
     /**
      * Delete an uploaded file from the disk.
      *
-     * @param Article|Submission|Upload The entity with a file to delete.
+     * @param Upload The upload to delete.
+     * @return void
      */
     public function deleteUpload(Upload $upload)
     {
-        $fullpath = $this->uploadsDirectory.$upload->getPath().$upload->getFilename();
-        if (file_exists($fullpath)) {
+        $fullPath = $this->uploadsDirectory.$upload->getPath().$upload->getFilename();
+        if (file_exists($fullPath)) {
             $fs = new FileSystem();
-            $fs->remove($fullpath);
+            $fs->remove($fullPath);
         }
     }
 
     /**
      * Delete an image.
      *
-     * @param string The name of the image file.
+     * @param string $filename The name of the image file.
+     * @return void
      */
     public function deleteImage(string $filename)
     {
@@ -170,8 +172,9 @@ class UploadHandler
     /**
      * Delete a report.
      *
-     * @param string The name of the report.
-     * @param int The year of the report.
+     * @param string $filename The name of the report.
+     * @param string $year The year of the report.
+     * @return void
      */
     public function deleteReport(string $filename, string $year)
     {
@@ -182,15 +185,15 @@ class UploadHandler
     /**
      * Recursively delete a directory and its contents.
      *
-     * @param string The path to the directory/file.
+     * @param string $path The path to the directory/file.
      * @return void
      */
     private function deletePath(string $path)
     {
         if (is_dir($path)) {
-            $subpaths = glob($path.'*', GLOB_MARK);
-            foreach ($subpaths as $subpath) {
-                $this->deletePath($subpath);
+            $subPaths = glob($path.'*', GLOB_MARK);
+            foreach ($subPaths as $subPath) {
+                $this->deletePath($subPath);
             }
             rmdir($path);
         } elseif (is_file($path)) {
@@ -201,13 +204,15 @@ class UploadHandler
     /**
      * Move all uploads from one directory to another.
      *
-     * @param string The old directory.
-     * @param string The new directory.
+     * @param string $oldPath The path to the old directory.
+     * @param string $newPath The path to the new directory.
      * @return void
      */
     public function moveFiles($oldPath, $newPath)
     {
+        // delete everything in the new path recursively, to make sure it's clear
         $this->deletePath($this->uploadsDirectory.$newPath);
+        // then move everything from the old path to the new one
         rename($this->uploadsDirectory.$oldPath, $this->uploadsDirectory.$newPath);
     }
 }

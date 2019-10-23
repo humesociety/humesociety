@@ -3,19 +3,30 @@
 namespace App\Entity\NewsItem;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * The news item form type.
+ */
 class NewsItemType extends AbstractType
 {
+    /**
+     * An associative array of news item IDs and labels.
+     *
+     * @var array
+     */
     private $categories;
 
+    /**
+     * Constructor function.
+     *
+     * @param ParameterBagInterface $params Symfony's parameter bag interface.
+     * @return void
+     */
     public function __construct(ParameterBagInterface $params)
     {
         $this->categories = [];
@@ -24,6 +35,13 @@ class NewsItemType extends AbstractType
         }
     }
 
+    /**
+     * Build the form.
+     *
+     * @param FormBuilderInterface $builder Symfony's form builder interface.
+     * @param array An array of options.
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -34,6 +52,12 @@ class NewsItemType extends AbstractType
             ->add('content');
     }
 
+    /**
+     * Configure the form's options.
+     *
+     * @param OptionsResolver $resolver Symfony's options resolver.
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['data_class' => NewsItem::class]);

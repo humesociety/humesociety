@@ -55,12 +55,11 @@ class DefaultController extends AbstractController
     /**
      * The conference area index page.
      *
-     * @param ConferenceHandler The conference handler.
      * @return Response
      * @Route("/conference", name="conference")
      * @IsGranted("ROLE_ORGANISER")
      */
-    public function conference(ConferenceHandler $conferenceHandler): Response
+    public function conference(): Response
     {
         return $this->redirectToRoute('admin_conference_details_index');
     }

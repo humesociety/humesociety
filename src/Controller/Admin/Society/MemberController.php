@@ -2,11 +2,9 @@
 
 namespace App\Controller\Admin\Society;
 
-use App\Entity\User\User;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -19,42 +17,71 @@ use Symfony\Component\Routing\Annotation\Route;
 class MemberController extends AbstractController
 {
     /**
+     * Route for viewing members.
+     *
+     * @param UserHandler $users The user handler.
+     * @return Response
      * @Route("/", name="index")
      */
-    public function index(UserHandler $userHandler): Response
+    public function index(UserHandler $users): Response
     {
-        return $this->render('admin/society/member/view.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'member',
-            'users' => $userHandler->getMembers()
-        ]);
+            'users' => $users->getMembers()
+        ];
+
+        // render and return the page
+        return $this->render('admin/society/member/view.twig', $twigs);
     }
 
     /**
+     * Route for viewing a member.
+     *
+     * @param UserHandler $users The user handler.
+     * @param string $username The username of the user to view.
+     * @return Response
      * @Route("/view/{username}", name="member")
      */
-    public function member(string $username, UserHandler $userHandler): Response
+    public function member(UserHandler $users, string $username): Response
     {
-        $user = $userHandler->getUserByUsername($username);
+        // look for the user
+        $user = $users->getUserByUsername($username);
+
+        // throw 404 error if the user isn't found
         if (!$user) {
             throw $this->createNotFoundException('User not found.');
         }
-        return $this->render('admin/society/member/member.twig', [
+
+        // add additional twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'member',
             'user' => $user
-        ]);
+        ];
+
+        // render and return the page
+        return $this->render('admin/society/member/member.twig', $twigs);
     }
 
     /**
+     * Route for viewing membership statistics.
+     *
+     * @param UserHandler $users The user handler.
+     * @return Response
      * @Route("/statistics", name="statistics")
      */
-    public function statistics(UserHandler $userHandler): Response
+    public function statistics(UserHandler $users): Response
     {
-        return $this->render('admin/society/member/statistics.twig', [
+        // initialise the twig variables
+        $twigs = [
             'area' => 'society',
             'subarea' => 'member',
-            'users' => $userHandler->getUsers()
-        ]);
+            'users' => $users->getUsers()
+        ];
+
+        // render and return the page
+        return $this->render('admin/society/member/statistics.twig', $twigs);
     }
 }

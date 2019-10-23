@@ -10,10 +10,7 @@ use App\Entity\Review\Review;
 use App\Entity\Submission\Submission;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -27,9 +24,9 @@ class SubmissionEmailController extends AbstractController
     /**
      * Route for sending a decision email to a user who submitted a paper.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Submission The submission.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/submission-decision/{submission}", name="submission_decision")
      */
@@ -71,9 +68,9 @@ class SubmissionEmailController extends AbstractController
     /**
      * Route for sending a submission remdinder email to a user who's paper has been accepted'.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Submission The submission.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param Submission $submission The submission.
      * @return Response
      * @Route("/submission-reminder/{submission}", name="submission_reminder")
      */
@@ -106,9 +103,9 @@ class SubmissionEmailController extends AbstractController
     /**
      * Route for sending a reminder email for a review.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Review The review.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param Review $review The review.
      * @return Response
      * @Route("/review-reminder/{review}", name="review_reminder")
      */
@@ -146,9 +143,9 @@ class SubmissionEmailController extends AbstractController
     /**
      * Route for sending a reminder email for a comment.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Comment The comment.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param Comment $comment The comment.
      * @return Response
      * @Route("/comment-reminder/{comment}", name="comment_reminder")
      */
@@ -186,9 +183,9 @@ class SubmissionEmailController extends AbstractController
     /**
      * Route for sending a reminder email for a chair invitation.
      *
-     * @param ConferenceHandler The conference handler.
-     * @param ConferenceEmailHandler The conference email handler.
-     * @param Chair The chair invitation.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param Chair $chair The chair invitation.
      * @return Response
      * @Route("/chair-reminder/{chair}", name="chair_reminder")
      */

@@ -25,7 +25,7 @@ class EmailController extends AbstractController
     /**
      * Route for viewing all society email options.
      *
-     * @param EmailTemplateHandler The email template handler.
+     * @param EmailTemplateHandler $emailTemplates The email template handler.
      * @return Response
      * @Route("/", name="index")
      */
@@ -45,8 +45,8 @@ class EmailController extends AbstractController
     /**
      * Route for sending a membership email.
      *
-     * @param Request Symfony's request object.
-     * @param SocietyEmailHandler The society email handler.
+     * @param Request $request Symfony's request object.
+     * @param SocietyEmailHandler $societyEmails The society email handler.
      * @return Response
      * @Route("/send", name="send")
      */
@@ -75,7 +75,7 @@ class EmailController extends AbstractController
                     $this->addFlash('error', $error);
                 }
             } else {
-                $form->get('current')->addError(new FormError('You must select some recipients.'));
+                $emailForm->get('current')->addError(new FormError('You must select some recipients.'));
             }
         }
 
@@ -90,9 +90,9 @@ class EmailController extends AbstractController
     /**
      * Route for editing a society email template.
      *
-     * @param Request Symfony's request object.
-     * @param EmailTemplateHandler The email template handler.
-     * @param string The email template's label.
+     * @param Request $request Symfony's request object.
+     * @param EmailTemplateHandler $emailTemplates The email template handler.
+     * @param string $label The email template's label.
      * @return Response
      * @Route("/edit/{label}", name="edit", requirements={"label": "%society_email_template_ids%"})
      */

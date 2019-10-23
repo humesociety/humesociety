@@ -21,7 +21,8 @@ class TextController extends AbstractController
     /**
      * Route for viewing conference text variables and email templates.
      *
-     * @param TextHandler The text handler.
+     * @param TextHandler $texts The text handler.
+     * @param string $tab The initially visible tab.
      * @return Response
      * @Route("/{tab}", name="index", requirements={"tab": "%conference_text_group_ids%"})
      */
@@ -42,9 +43,9 @@ class TextController extends AbstractController
     /**
      * Route for editing a conference text variable.
      *
-     * @param Request Symfony's request object.
-     * @param TextHandler The text handler.
-     * @param string The text's label.
+     * @param Request $request Symfony's request object.
+     * @param TextHandler $texts The text handler.
+     * @param string $label The text's label.
      * @return Response
      * @Route("/edit/{label}", name="edit", requirements={"label": "%conference_text_ids%"})
      */

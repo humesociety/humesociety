@@ -21,10 +21,24 @@ class SendEmailsCommand extends Command
     protected static $defaultName = 'app:reminder:send';
 
     /**
+     * The society email handler.
+     *
+     * @var SocietyEmailHandler
+     */
+    private $societyEmails;
+
+    /**
+     * The user handler.
+     *
+     * @var UserHandler
+     */
+    private $users;
+
+    /**
      * Constructor function.
      *
-     * @param SocietyEmailHandler The society email handler.
-     * @param UserHandler The user handler.
+     * @param SocietyEmailHandler $societyEmails The society email handler.
+     * @param UserHandler $users The user handler.
      * @return void
      */
     public function __construct(SocietyEmailHandler $societyEmails, UserHandler $users)
@@ -51,8 +65,8 @@ class SendEmailsCommand extends Command
     /**
      * The code to run when the command is called.
      *
-     * @param InputInterface Symfony's input interface.
-     * @param OutputInterface Symfony's output interface.
+     * @param InputInterface $input Symfony's input interface.
+     * @param OutputInterface $output Symfony's output interface.
      * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)

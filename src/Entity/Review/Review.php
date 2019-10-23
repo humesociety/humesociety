@@ -5,7 +5,6 @@ namespace App\Entity\Review;
 use App\Entity\Invitation\Invitation;
 use App\Entity\Submission\Submission;
 use App\Entity\User\User;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -76,15 +75,18 @@ class Review extends Invitation
     /**
      * Constructor function.
      *
-     * @var Submission The submission being reviewed.
+     * @var Submission $submission The submission being reviewed.
+     * @throws \Exception
      * @return void
      */
     public function __construct(Submission $submission)
     {
+        // invitation properties
+        parent::__construct();
+        // persisted properties
         $this->id = null; // Doctrine takes care of this
         $this->submission = $submission;
         $this->user = null;
-        parent::__construct();
         $this->grade = null;
         $this->comments = null;
     }
@@ -96,7 +98,7 @@ class Review extends Invitation
      */
     public function __toString(): string
     {
-        return "Review for “{$this->submission->getTitle()}”";
+        return "Review for {$this->submission}";
     }
 
     /**
@@ -132,7 +134,7 @@ class Review extends Invitation
     /**
      * Set the user invited to review.
      *
-     * @var User The user invited to review.
+     * @var User $user The user invited to review.
      * @return self
      */
     public function setUser(User $user): self
@@ -154,7 +156,7 @@ class Review extends Invitation
     /**
      * Set the reviewer's grade.
      *
-     * @var string The reviewer's grade.
+     * @var string $grade The reviewer's grade.
      * @return self
      */
     public function setGrade(string $grade)
@@ -176,7 +178,7 @@ class Review extends Invitation
     /**
      * Set the reviewer's comments.
      *
-     * @var string The reviewer's comments.
+     * @var string $comments The reviewer's comments.
      * @return self
      */
     public function setComments(string $comments)
