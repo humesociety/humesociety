@@ -45,9 +45,9 @@ class DuesPaymentHandler
      * Fetch order details from PayPal.
      *
      * @param string $orderId The PayPal order ID.
-     * @return array
+     * @return object
      */
-    public function fetchOrderFromPayPal(string $orderId): array
+    public function fetchOrderFromPayPal(string $orderId): object
     {
         // create the PayPal environment
         if ($_ENV['APP_ENV'] === 'prod') {

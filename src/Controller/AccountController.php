@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 /**
  * Controller for the user account area of the site.
  *
- * @Route("/account", name="account_")
+ * @Route("/account",      name="account_")
  * @IsGranted("ROLE_USER")
  */
 class AccountController extends AbstractController
@@ -26,10 +26,12 @@ class AccountController extends AbstractController
     /**
      * Route for editing basic account details.
      *
-     * @param Request $request Symfony's request object.
-     * @param UserHandler $users The user handler.
-     * @param string $tab The initially visible tab.
+     * @param Request     $request Symfony's request object.
+     * @param UserHandler $users   The user handler.
+     * @param string      $tab     The initially visible tab.
+     * 
      * @return Response
+     * 
      * @Route("/{tab}", name="index", requirements={"tab": "details|settings"})
      */
     public function index(Request $request, UserHandler $users, string $tab = 'details'): Response
@@ -71,6 +73,7 @@ class AccountController extends AbstractController
      * Route for managing conference submissions, reviews, etc.
      *
      * @return Response
+     * 
      * @Route("/research", name="research")
      */
     public function research(): Response
@@ -82,9 +85,11 @@ class AccountController extends AbstractController
     /**
      * Route for paying dues.
      *
-     * @param $request Request Symfony's request object.
+     * @param Request $request Symfony's request object.
+     * 
      * @throws \Exception
      * @return Response
+     * 
      * @Route("/pay", name="pay")
      */
     public function pay(Request $request): Response
@@ -112,12 +117,14 @@ class AccountController extends AbstractController
     /**
      * Route PayPal sends the user to after payment is completed.
      *
-     * @param Request $request Symfony's request object.
-     * @param DuesPaymentHandler $duesPayments The dues payment handler.
+     * @param Request             $request       Symfony's request object.
+     * @param DuesPaymentHandler  $duesPayments  The dues payment handler.
      * @param SocietyEmailHandler $societyEmails The society email handler.
-     * @param UserHandler $users The user handler.
-     * @param string The PayPal order id.
+     * @param UserHandler         $users         The user handler.
+     * @param string              $orderId       The PayPal order id.
+     * 
      * @return Response
+     * 
      * @Route("/paid/{orderId}", name="paid")
      */
     public function paid(
@@ -160,10 +167,12 @@ class AccountController extends AbstractController
     /**
      * Route for changing the account password.
      *
-     * @param Request $request Symfony's request object.
-     * @param UserHandler $users The user handler.
+     * @param Request                      $request         Symfony's request object.
+     * @param UserHandler                  $users           The user handler.
      * @param UserPasswordEncoderInterface $passwordEncoder Symfony's password encoder.
+     * 
      * @return Response
+     * 
      * @Route("/password", name="password")
      */
     public function password(
