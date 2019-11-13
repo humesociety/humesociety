@@ -837,7 +837,7 @@ class User implements UserInterface
         for ($i = 0; $i < 10; $i++) {
             $this->passwordResetSecret .= $characters[rand(0, strlen($characters) - 1)];
         }
-        $this->passwordResetSecretExpires = new \DateTime('+12 hours');
+        $this->passwordResetSecretExpires = new \DateTime('+24 hours');
         return $this;
     }
 
