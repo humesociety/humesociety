@@ -4,6 +4,7 @@ namespace App\Entity\Election;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 
 /**
  * The election handler contains the main business logic for reading and writing election data.
@@ -47,6 +48,20 @@ class ElectionHandler
             ->orderBy('e.year', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Get the currently open election (if any).
+     *
+     * @return Election|null
+     * @throws NonUniqueResultException
+     */
+    public function getOpenElection(): ?Election
+    {
+        return $this->repository->createQueryBuilder('e')
+            ->where('e.open = TRUE')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

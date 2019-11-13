@@ -417,4 +417,17 @@ class UserHandler
         $this->manager->persist($user);
         $this->manager->flush();
     }
+
+    /**
+     * Reset voting records for the next election.
+     */
+    public function resetVotingRecords()
+    {
+        foreach ($this->getUsers() as $user) {
+            if ($user->hasVoted()) {
+                $user->setVoted(false);
+                $this->saveUser($user);
+            }
+        }
+    }
 }

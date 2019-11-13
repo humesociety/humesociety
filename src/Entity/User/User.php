@@ -720,7 +720,7 @@ class User implements UserInterface
      *
      * @return bool
      */
-    public function getVoted(): bool
+    public function hasVoted(): bool
     {
         return $this->voted;
     }

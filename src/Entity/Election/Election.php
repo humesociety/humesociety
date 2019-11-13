@@ -174,6 +174,17 @@ class Election
     }
 
     /**
+     * Increment the number of votes cast by one.
+     *
+     * @return self
+     */
+    public function incrementVotes(): self
+    {
+        $this->votes += 1;
+        return $this;
+    }
+
+    /**
      * Get the population.
      *
      * @return int

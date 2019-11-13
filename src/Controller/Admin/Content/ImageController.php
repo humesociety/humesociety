@@ -83,6 +83,6 @@ class ImageController extends AbstractController
         $twigs['uploadForm'] = $uploadForm->createView();
 
         // render and return the page
-        return $this->render('admin/content/image/delete.twig', );
+        return $this->render('admin/content/image/delete.twig', $twigs);
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\Election\Election;
 use App\Entity\Election\ElectionHandler;
 use App\Entity\Election\ElectionType;
 use App\Entity\Candidate\CandidateHandler;
+use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,7 @@ class ElectionController extends AbstractController
      * @param ElectionHandler $elections The election handler.
      * @param string $decade The initial decade to show.
      * @return Response
-     * @Route("/{decade}", name="index", requirements={"deacde": "\d{4}"})
+     * @Route("/{decade}", name="index", requirements={"decade": "\d{4}"})
      */
     public function index(ElectionHandler $elections, string $decade = null): Response
     {
@@ -96,14 +97,18 @@ class ElectionController extends AbstractController
      * Route for closing an election.
      *
      * @param ElectionHandler $elections The election handler.
+     * @param UserHandler $users
      * @param Election $election The election to open.
      * @return Response
+     * @throws \Exception
      * @Route("/close/{id}", name="close")
      */
-    public function close(ElectionHandler $elections, Election $election): Response
+    public function close(ElectionHandler $elections, UserHandler $users, Election $election): Response
     {
         $election->setOpen(false);
+        $election->setPopulation(sizeof($users->getMembersInGoodStanding()));
         $elections->saveElection($election);
+        $users->resetVotingRecords();
         $this->addFlash('notice', 'Election for '.$election.' has been closed. Editing of this election is now possible.');
         return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
     }

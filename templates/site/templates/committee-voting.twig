@@ -2,5 +2,34 @@
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
-  <p>There are no elections at present.</p>
+  {% if election is not null %}
+    <h2>Election for Committee Membership {{ election.year }}</h2>
+    {% if app.user.hasVoted %}
+      <p>Your votes have been submitted.</p>
+    {% else %}
+      <p>The election is now open for committee membership beginning in {{ election.year }}. Details of each candidate are shown below. You may vote for at most one candidate for President, at most one candidate for Executive Vice-President Treasurer, and at most {{ ordinary }} ordinary committee members. Votes are completely anonymous; this site records who has voted and how many votes each candidate has received, but not who voted for whom.</p>
+      {{ form_start(votingForm) }}
+        {% for name, field in votingForm.children %}
+          {% if name != '_token' %}
+            <div class="columns has-checkboxes">
+              <div class="column has-checkbox">
+                {{ form_row(field) }}
+              </div>
+            </div>
+            {% for candidate in candidates %}
+              {% if candidate.id == name %}
+                {% if candidate.description %}<p>{{ candidate.description|raw }}</p>{% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        {{ form_row(votingForm._token) }}
+        <div class="buttons">
+          <button type="submit">Submit Votes</button>
+        </div>
+      {{ form_end(votingForm) }}
+    {% endif %}
+  {%  else %}
+    <p>There are no elections at present.</p>
+  {% endif %}
 {% endblock %}

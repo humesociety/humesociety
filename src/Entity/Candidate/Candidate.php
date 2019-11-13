@@ -349,6 +349,17 @@ class Candidate
     }
 
     /**
+     * Increment the number of votes the candidate has received.
+     *
+     * @return self
+     */
+    public function incrementVotes(): self
+    {
+        $this->votes += 1;
+        return $this;
+    }
+
+    /**
      * Get whether the candidate is elected.
      *
      * @return bool

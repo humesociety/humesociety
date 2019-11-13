@@ -4,10 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Candidate\CandidateHandler;
 use App\Entity\Conference\ConferenceHandler;
+use App\Entity\Election\ElectionHandler;
+use App\Entity\Election\VotingType;
 use App\Entity\NewsItem\NewsItemHandler;
 use App\Entity\Page\Page;
 use App\Entity\Page\PageHandler;
 use App\Entity\Upload\UploadHandler;
+use App\Entity\User\UserHandler;
+use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +37,7 @@ class DefaultController extends AbstractController
      * @param NewsItemHandler $newsItems The news item handler.
      * @return Response
      * @Route("/", name="society_index")
+     * @throws Exception
      */
     public function index(ConferenceHandler $conferences, NewsItemHandler $newsItems): Response
     {
@@ -52,21 +58,26 @@ class DefaultController extends AbstractController
      * @param Request $request Symfony's request object.
      * @param CandidateHandler $candidates The candidate handler.
      * @param ConferenceHandler $conferences The conference handler.
+     * @param ElectionHandler $elections
      * @param NewsItemHandler $newsItems The news item handler.
      * @param PageHandler $pages The page handler.
      * @param UploadHandler $uploads The upload handler.
+     * @param UserHandler $users
      * @param string $section The section of the site.
      * @param string $slug The page within the section.
      * @return Response
+     * @throws NonUniqueResultException
      * @Route("/{section}/{slug}", name="society_page", requirements={"section": "%section_ids%"})
      */
     public function page(
         Request $request,
         CandidateHandler $candidates,
         ConferenceHandler $conferences,
+        ElectionHandler $elections,
         NewsItemHandler $newsItems,
         PageHandler $pages,
         UploadHandler $uploads,
+        UserHandler $users,
         string $section,
         string $slug = 'index'
     ): Response {
@@ -99,18 +110,22 @@ class DefaultController extends AbstractController
         }
 
         // render and return the page
-        return $this->renderPage($page, $siblings, $candidates, $conferences, $newsItems, $uploads);
+        return $this->renderPage($request, $page, $siblings, $candidates, $conferences, $elections, $newsItems, $uploads, $users);
     }
 
     /**
      * Dummy template pages (used for testing the templates). Not to be made available in production.
      *
+     * @param Request $request
      * @param CandidateHandler $candidates The candidate handler.
      * @param ConferenceHandler $conferences The conference handler.
+     * @param ElectionHandler $elections
      * @param NewsItemHandler $newsItems The news item handler.
      * @param UploadHandler $uploads The upload handler.
+     * @param UserHandler $users
      * @param string $template The template to render.
      * @return Response
+     * @throws NonUniqueResultException
      * @Route(
      *     "/template/{template}",
      *     name="society_template",
@@ -119,10 +134,13 @@ class DefaultController extends AbstractController
      * )
      */
     public function template(
+        Request $request,
         CandidateHandler $candidates,
         ConferenceHandler $conferences,
+        ElectionHandler $elections,
         NewsItemHandler $newsItems,
         UploadHandler $uploads,
+        UserHandler $users,
         string $template
     ): Response {
           // create a dummy page with the given template
@@ -135,27 +153,35 @@ class DefaultController extends AbstractController
               ->setContent('<p>Example of this template.</p>');
 
           // render and return the response
-          return $this->renderPage($page, [$page], $candidates, $conferences, $newsItems, $uploads);
+          return $this->renderPage($request, $page, [$page], $candidates, $conferences, $elections, $newsItems, $uploads, $users);
     }
 
     /**
      * Function for rendering a given page.
      *
+     * @param Request $request
      * @param Page $page The page to render.
      * @param Page[] $siblings The page's siblings.
      * @param CandidateHandler $candidates The candidate handler.
      * @param ConferenceHandler $conferences The conference handler.
+     * @param ElectionHandler $elections
      * @param NewsItemHandler $newsItems The news item handler.
      * @param UploadHandler $uploads The upload handler.
+     * @param UserHandler $users
      * @return Response
+     * @throws NonUniqueResultException
+     * @throws Exception
      */
     private function renderPage(
+        Request $request,
         Page $page,
         array $siblings,
         CandidateHandler $candidates,
         ConferenceHandler $conferences,
+        ElectionHandler $elections,
         NewsItemHandler $newsItems,
-        UploadHandler $uploads
+        UploadHandler $uploads,
+        UserHandler $users
     ): Response {
         // initialise the twig variables
         $twigs = ['page' => $page, 'siblings' => $siblings];
@@ -197,7 +223,38 @@ class DefaultController extends AbstractController
                 return $this->render('site/templates/minutes-reports.twig', $twigs);
 
             case 'committee-voting':
-                // TODO: voting form
+                $election = $elections->getOpenElection();
+                if ($election && !$this->getUser()->hasVoted()) {
+                    $electionCandidates = $candidates->getCandidatesByYear($election->getYear());
+                    $ordinary = 3;
+                    $presidentStanding = false;
+                    foreach ($electionCandidates as $candidate) {
+                        if ($candidate->getPresident()) {
+                            $presidentStanding = true;
+                        }
+                    }
+                    if ($presidentStanding) {
+                        $ordinary -= 1;
+                    }
+                    $votingForm = $this->createForm(VotingType::class);
+                    $votingForm->handleRequest($request);
+                    if ($votingForm->isSubmitted() && $votingForm->isValid()) {
+                        foreach ($electionCandidates as $candidate) {
+                            if ($votingForm->getData()[$candidate->getId()] === true) {
+                                $candidate->incrementVotes();
+                                $candidates->saveCandidate($candidate);
+                            }
+                        }
+                        $this->getUser()->setVoted(true);
+                        $users->saveUser($this->getUser());
+                        $election->incrementVotes();
+                        $elections->saveElection($election);
+                    }
+                    $twigs['candidates'] = $electionCandidates;
+                    $twigs['ordinary'] = $ordinary;
+                    $twigs['votingForm'] = $votingForm->createView();
+                }
+                $twigs['election'] = $election;
                 return $this->render('site/templates/committee-voting.twig', $twigs);
 
             default:

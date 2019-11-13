@@ -16,7 +16,7 @@
         <td>{% if election.open %}Open{% else %}Closed{% endif %}</td>
         <td>{{ election.votes }}</td>
         <td>{{ election.population }}</td>
-        <td>{% if election.turnout %}{{ election.turnout }}%{% else %}-{% endif %}</td>
+        <td>{% if election.turnout is not null %}{{ election.turnout }}%{% else %}-{% endif %}</td>
         <td class="controls">
           {% if election.open %}
             <a href="{{ path('admin_society_election_close', { id: election.id }) }}">Close</a>
