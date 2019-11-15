@@ -1,0 +1,5 @@
+{% if conference %}
+  <p>Countdown: {{ countdown|date('%Y-%m-%d %H:%i:%s') }}</p>
+{% else %}
+  <p>No current conference.</p>
+{% endif %}

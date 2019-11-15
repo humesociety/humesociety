@@ -422,6 +422,20 @@ class Conference
     }
 
     /**
+     * Get the actual deadline for submissions to this conference close.
+     *
+     * The deadline is stored in the database as a date, which translates - on our server - to a datetime of midnight
+     * Eastern Time at the start of that day; what we actually want is midnight Pacific Time at the end of that day.
+     *
+     * @return \DateTimeInterface|null
+     * @throws \Exception
+     */
+    public function getActualDeadline(): ?\DateTimeInterface
+    {
+        return $this->deadline ? $this->deadline->add(new \DateInterval('PT27H')) : null;
+    }
+
+    /**
      * Set the date at which submissions to this conference close.
      *
      * @param \DateTimeInterface|null $deadline The date at which submissions to this conference close.
@@ -441,7 +455,7 @@ class Conference
      */
     public function isOpen(): bool
     {
-        return $this->deadline && $this->deadline >= new \DateTime('today');
+        return $this->getActualDeadline() && $this->getActualDeadline() >= new \DateTime('now');
     }
 
     /**
@@ -452,7 +466,7 @@ class Conference
      */
     public function isClosed(): bool
     {
-        return $this->deadline && $this->deadline < new \DateTime('today');
+        return $this->getActualDeadline() && $this->getActualDeadline() < new \DateTime('now');
     }
 
     /**

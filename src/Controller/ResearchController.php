@@ -33,8 +33,9 @@ class ResearchController extends AbstractController
      * @param ConferenceHandler $conferences The conference handler.
      * @param UserHandler $users The user handler.
      * @return Response
-     * @Route("/research/availability", name="availability")
+     * @Route("/availability", name="availability")
      * @IsGranted("ROLE_USER")
+     * @throws \Exception
      */
     public function availability(Request $request, ConferenceHandler $conferences, UserHandler $users): Response
     {
@@ -75,6 +76,10 @@ class ResearchController extends AbstractController
      * @param SubmissionHandler $submissions The submission handler.
      * @param TextHandler $texts The text handler.
      * @return Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @Route("/submissions", name="submissions")
      * @IsGranted("ROLE_USER")
      */
@@ -143,5 +148,31 @@ class ResearchController extends AbstractController
 
         // render and return the page
         return $this->render('site/account/research/submissions.twig', $twigs);
+    }
+
+    /**
+     * Route for checking how long till the current conference deadline.
+     * @param ConferenceHandler $conferences
+     * @return Response
+     * @throws \Exception
+     * @Route("/deadline", name="deadline")
+     * @IsGranted("ROLE_USER")
+     */
+    public function deadline(ConferenceHandler $conferences): Response
+    {
+        $conference = $conferences->getCurrentConference();
+
+        if ($conference && $conference->getActualDeadline()) {
+            $countdown = $conference->getActualDeadline()->diff(new \DateTime('now'));
+        } else {
+            $countdown = null;
+        }
+
+        $twigs = [
+            'conference' => $conference,
+            'countdown' => $countdown
+        ];
+
+        return $this->render('site/account/research/deadline.twig', $twigs);
     }
 }
