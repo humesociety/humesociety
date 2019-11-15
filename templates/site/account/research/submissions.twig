@@ -4,7 +4,7 @@
   <div class="section content">
     <h4>Submissions for the {{ conference }}</h4>
     {% if submission == null and conference.open %}
-      <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Pacific Time) on {{ conference.deadline|date('F jS') }}. Please submit your paper using the form below.</p>
+      <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Pacific Time) on {#{{ conference.deadline|date('F jS') }}#}November 15th. Please submit your paper using the form below.</p>
       {% if guidanceText is defined %}{{ guidanceText|raw }}{% endif %}
       {% include 'site/_form/conference-submission.twig' %}
     {% elseif submission %}
