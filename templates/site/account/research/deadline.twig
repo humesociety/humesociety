@@ -1,4 +1,6 @@
 {% if conference %}
+  <p>Deadline: {{ conference.deadline|date('Y-m-d H:i:s') }}</p>
+  <p>Actual deadline: {{ conference.actualDeadline|date('Y-m-d H:i:s') }}</p>
   <p>Countdown: {{ countdown|date('%Y-%m-%d %H:%i:%s') }}</p>
 {% else %}
   <p>No current conference.</p>
