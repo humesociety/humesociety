@@ -425,14 +425,14 @@ class Conference
      * Get the actual deadline for submissions to this conference close.
      *
      * The deadline is stored in the database as a date, which translates - on our server - to a datetime of midnight
-     * Eastern Time; what we actually want is midnight Pacific Time, hence we add three hours.
+     * Eastern Time at the start of that day; what we actually want is midnight Pacific Time at the end of that day.
      *
      * @return \DateTimeInterface|null
      * @throws \Exception
      */
     public function getActualDeadline(): ?\DateTimeInterface
     {
-        return $this->deadline ? $this->deadline->add(new \DateInterval('PT3H')) : null;
+        return $this->deadline ? $this->deadline->add(new \DateInterval('PT27H')) : null;
     }
 
     /**
