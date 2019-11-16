@@ -432,7 +432,13 @@ class Conference
      */
     public function getActualDeadline(): ?\DateTimeInterface
     {
-        return $this->deadline ? $this->deadline->add(new \DateInterval('PT27H')) : null;
+        if ($this->deadline) {
+            $actualDeadline = clone $this->deadline;
+
+            return $actualDeadline->add(new \DateInterval('PT27H'));
+        }
+
+        return null;
     }
 
     /**
