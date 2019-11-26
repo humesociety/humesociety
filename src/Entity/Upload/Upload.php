@@ -160,7 +160,7 @@ class Upload
      *
      * @return int|null
      */
-    public function getSubPath(): ?int
+    public function getSubpath(): ?int
     {
         $bits = explode('/', $this->path);
         if (array_key_exists(1, $bits) && intval($bits[1])) {
