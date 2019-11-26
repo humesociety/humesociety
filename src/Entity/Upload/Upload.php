@@ -154,4 +154,18 @@ class Upload
     {
         return "/uploads/{$this->getPath()}{$this->getFilename()}";
     }
+
+    /**
+     * Get the subpath of the file (= the year for reports, the conference number for conference files).
+     *
+     * @return int|null
+     */
+    public function getSubPath(): ?int
+    {
+        $bits = explode('/', $this->path);
+        if (array_key_exists(1, $bits) && intval($bits[1])) {
+            return intval($bits[1]);
+        }
+        return null;
+    }
 }
