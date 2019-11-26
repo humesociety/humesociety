@@ -1,7 +1,7 @@
 /*
 Voting form validation.
 */
-const votingForm = document.querySelector('[name="voting_type"]')
+const votingForm = document.querySelector('[name="voting"]')
 const ordinaryDiv = document.querySelector('[data-ordinary]')
 
 if (votingForm && ordinaryDiv) {
