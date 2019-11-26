@@ -8,6 +8,7 @@
       <p>Your votes have been submitted.</p>
     {% else %}
       <p>The election is now open for committee membership beginning in {{ election.year }}. Details of each candidate are shown below. You may vote for at most one candidate for President, at most one candidate for Executive Vice-President Treasurer, and at most {{ ordinary }} ordinary committee members. Votes are completely anonymous; this site records who has voted and how many votes each candidate has received, but not who voted for whom.</p>
+      <div style="display: none;" data-ordinary="{{ ordinary }}"></div>
       {{ form_start(votingForm) }}
         {% for name, field in votingForm.children %}
           {% if name != '_token' %}

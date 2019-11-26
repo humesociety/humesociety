@@ -50,15 +50,24 @@ class VotingType extends AbstractType
         foreach ($this->candidates as $candidate) {
             $label = "{$candidate->getFirstname()} {$candidate->getLastname()}, {$candidate->getInstitution()}";
             if ($candidate->getPresident()) {
-                $label .= ' (President)';
+                $builder->add($candidate->getId(), CheckboxType::class, [
+                    'label' => $label.' (President)',
+                    'required' => false,
+                    'attr' => ['data-president' => 'true']
+                ]);
             } elseif ($candidate->getEvpt()) {
-                $label .= ' (Executive Vice-President Treasurer)';
+              $builder->add($candidate->getId(), CheckboxType::class, [
+                  'label' => $label.' (Executive Vice-President Treasurer)',
+                  'required' => false,
+                  'attr' => ['data-evpt' => 'true']
+              ]);
+            } else {
+              $builder->add($candidate->getId(), CheckboxType::class, [
+                  'label' => $label,
+                  'required' => false,
+                  'attr' => ['data-ordinary' => 'true']
+              ]);
             }
-            $builder->add($candidate->getId(), CheckboxType::class, [
-                'label' => $label,
-                'required' => false,
-                'attr' => ['data-president' => $candidate->getPresident(), 'data-evpt' => $candidate->getEvpt()]
-            ]);
         }
     }
 
