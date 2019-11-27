@@ -13,9 +13,9 @@
         {% for name, field in votingForm.children %}
           {% if name != '_token' %}
             {% if loop.index == 1 %}
-              <h6>Nominees for Regular Members</h6>
+              <h5>Nominees for Regular Members</h5>
             {% elseif loop.index == 5 %}
-              <h6>Nominee for President</h6>
+              <h5>Nominee for President</h5>
             {% endif %}
             <div class="columns has-checkboxes">
               <div class="column has-checkbox">
