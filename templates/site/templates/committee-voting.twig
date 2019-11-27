@@ -3,11 +3,11 @@
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
   {% if election is not null %}
-    <h2>Election for Committee Membership {{ election.year }}</h2>
+    <h2>Election for the Executive Committee {{ election.year }}</h2>
     {% if app.user.hasVoted %}
       <p>Your votes have been submitted.</p>
     {% else %}
-      <p>The election is now open for committee membership beginning in {{ election.year }}. Details of each candidate are shown below. You may vote for at most one candidate for President, at most one candidate for Executive Vice-President Treasurer, and at most {{ ordinary }} ordinary committee members. Votes are completely anonymous; this site records who has voted and how many votes each candidate has received, but not who voted for whom.</p>
+      <p>The election is now open for the Executive Committee of the Hume Society with three year terms beginning in {{ election.year }}. Details of each candidate are shown below. You may vote for at most one candidate for President (if any), at most one candidate for Executive Vice-President Treasurer (if any), and at most {{ ordinary }} regular committee members. Votes are completely anonymous; this site records who has voted and how many votes each candidate has received, but not who voted for whom.</p>
       <div style="display: none;" data-ordinary="{{ ordinary }}"></div>
       {{ form_start(votingForm) }}
         {% for name, field in votingForm.children %}
