@@ -98,7 +98,7 @@ class ElectionController extends AbstractController
      *
      * @param ElectionHandler $elections The election handler.
      * @param UserHandler $users
-     * @param Election $election The election to open.
+     * @param Election $election The election to close.
      * @return Response
      * @throws \Exception
      * @Route("/close/{id}", name="close")
@@ -110,6 +110,41 @@ class ElectionController extends AbstractController
         $elections->saveElection($election);
         $users->resetVotingRecords();
         $this->addFlash('notice', 'Election for '.$election.' has been closed. Editing of this election is now possible.');
+        return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
+    }
+
+    /**
+     * Route for opening an election run-off.
+     *
+     * @param ElectionHandler $elections The election handler.
+     * @param Election $election The election to open.
+     * @return Response
+     * @Route("/open-runoff/{id}", name="open_runoff")
+     */
+    public function openRunOff(ElectionHandler $elections, Election $election): Response
+    {
+        $election->setRunOffOpen(true);
+        $elections->saveElection($election);
+        $this->addFlash('notice', 'Election run-off for '.$election.' has been opened. Editing of this election has been disabled.');
+        return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
+    }
+
+    /**
+     * Route for closing an election run-off.
+     *
+     * @param ElectionHandler $elections The election handler.
+     * @param UserHandler $users
+     * @param Election $election The election to close.
+     * @return Response
+     * @throws \Exception
+     * @Route("/close-runoff/{id}", name="close_runoff")
+     */
+    public function closeRunOff(ElectionHandler $elections, UserHandler $users, Election $election): Response
+    {
+        $election->setRunOffOpen(false);
+        $elections->saveElection($election);
+        $users->resetVotingRecords();
+        $this->addFlash('notice', 'Election run-off for '.$election.' has been closed. Editing of this election is now possible.');
         return $this->redirectToRoute('admin_society_election_index', ['decade' => $election->getDecade()]);
     }
 

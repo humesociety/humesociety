@@ -47,12 +47,28 @@ class Election
     private $open;
 
     /**
+     * Whether the election run-off (if required) is currently open.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $runOffOpen;
+
+    /**
      * How many members have voted.
      *
      * @var int
      * @ORM\Column(type="integer", options={"default": 0})
      */
     private $votes;
+
+    /**
+     * How many members have voted in the run-off (if any).
+     *
+     * @var int
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $runOffVotes;
 
     /**
      * The number of members when the election is held.
@@ -73,7 +89,9 @@ class Election
         $this->id = null; // Doctrine takes care of this
         $this->year = idate('Y') + 1;
         $this->open = false;
+        $this->runOffOpen = false;
         $this->votes = 0;
+        $this->runOffVotes = 0;
         $this->population = 0;
     }
 
@@ -116,6 +134,28 @@ class Election
     public function setOpen(bool $open): self
     {
         $this->open = $open;
+        return $this;
+    }
+
+    /**
+     * Get whether the election run-off (if any) is open.
+     *
+     * @return bool
+     */
+    public function getRunOffOpen(): bool
+    {
+        return $this->runOffOpen;
+    }
+
+    /**
+     * Set whether the election run-off (if any) is open.
+     *
+     * @param bool $open Whether the election run-off is open.
+     * @return self
+     */
+    public function setRunOffOpen(bool $runOffOpen): self
+    {
+        $this->runOffOpen = $runOffOpen;
         return $this;
     }
 
@@ -185,6 +225,39 @@ class Election
     }
 
     /**
+     * Get the number of votes cast in the run-off (if any).
+     *
+     * @return int
+     */
+    public function getRunOffVotes(): int
+    {
+        return $this->runOffVotes;
+    }
+
+    /**
+     * Set the number of votes cast in the run-off (if any).
+     *
+     * @param int $votes The number of votes cast in the run-off.
+     * @return self
+     */
+    public function setRunOffVotes(int $runOffVotes): self
+    {
+        $this->runOffVotes = $runOffVotes;
+        return $this;
+    }
+
+    /**
+     * Increment the number of votes cast by one.
+     *
+     * @return self
+     */
+    public function incrementRunOffVotes(): self
+    {
+        $this->runOffVotes += 1;
+        return $this;
+    }
+
+    /**
      * Get the population.
      *
      * @return int
@@ -217,5 +290,21 @@ class Election
             return round($this->votes / $this->population, 2) * 100;
         }
         return null;
+    }
+
+    /**
+     * Get the status of the election.
+     *
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        if ($this->open) {
+            return 'Open';
+        }
+        if ($this->runOffOpen) {
+            return 'Run-off Open';
+        }
+        return 'Closed';
     }
 }

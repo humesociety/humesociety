@@ -4,6 +4,7 @@
       <th>Name</th>
       <th>Status</th>
       <th>Votes</th>
+      <th>Run-off Votes</th>
       <th></th>
     </tr>
   </thead>
@@ -13,6 +14,7 @@
         <td>{{ candidate }}{% if candidate.evpt %} (EVPT){% endif %}{% if candidate.president %} (President){% endif %}</td>
         <td>{% if candidate.elected %}Elected{% else %}Not Elected{% endif %}</td>
         <td>{{ candidate.votes | number_format }}</td>
+        <td>{% if candidate.inRunOff %}{{ candidate.runOffVotes | number_format }}{% else %}-{% endif %}</td>
         <td class="controls">
           {% if candidate.elected %}
             <a href="{{ path('admin_society_candidate_unelect', { id: candidate.id }) }}">Unelect</a>

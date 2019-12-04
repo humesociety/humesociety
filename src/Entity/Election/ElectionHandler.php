@@ -65,6 +65,20 @@ class ElectionHandler
     }
 
     /**
+     * Get the currently open election run-off (if any).
+     *
+     * @return Election|null
+     * @throws NonUniqueResultException
+     */
+    public function getOpenElectionRunOff(): ?Election
+    {
+        return $this->repository->createQueryBuilder('e')
+            ->where('e.runOffOpen = TRUE')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Get the election for the given year.
      *
      * @param int $year The year of the election.

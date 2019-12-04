@@ -50,6 +50,8 @@ class CandidateType extends AbstractType
             ->add('president')
             ->add('evpt', null, ['label' => 'EVPT', 'required' => false])
             ->add('votes')
+            ->add('inRunOff')
+            ->add('runOffVotes')
             ->add('description');
     }
 

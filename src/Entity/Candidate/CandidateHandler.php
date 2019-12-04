@@ -118,6 +118,23 @@ class CandidateHandler
     }
 
     /**
+     * Get an array of run-off andidates for a given start year.
+     *
+     * @param int $year The start year.
+     * @return Candidate[]
+     */
+    public function getRunOffCandidatesByYear(int $year): array
+    {
+        return $this->repository->createQueryBuilder('c')
+            ->where('c.inRunOff = TRUE')
+            ->andWhere('c.start = :year')
+            ->setParameter('year', $year)
+            ->orderBy('c.lastname, c.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Save/update a candidate in the database.
      *
      * @param Candidate $candidate The candidate to save/update.

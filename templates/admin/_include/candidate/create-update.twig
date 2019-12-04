@@ -17,12 +17,13 @@
       {{ form_row(candidateForm.lastname) }}
     </div>
   </div>
-  <div class="columns">
-    <div class="column">
-      {{ form_row(candidateForm.institution) }}
+  {{ form_row(candidateForm.institution) }}
+  <div class="columns has-checkboxes">
+    <div class="column has-checkbox">
+      {{ form_row(candidateForm.president) }}
     </div>
-    <div class="column">
-      {{ form_row(candidateForm.votes) }}
+    <div class="column has-checkbox">
+      {{ form_row(candidateForm.evpt) }}
     </div>
   </div>
   <div class="columns has-checkboxes">
@@ -33,10 +34,15 @@
       {{ form_row(candidateForm.reelectable) }}
     </div>
     <div class="column has-checkbox">
-      {{ form_row(candidateForm.president) }}
+      {{ form_row(candidateForm.inRunOff) }}
     </div>
-    <div class="column has-checkbox">
-      {{ form_row(candidateForm.evpt) }}
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(candidateForm.votes) }}
+    </div>
+    <div class="column">
+      {{ form_row(candidateForm.runOffVotes) }}
     </div>
   </div>
   {{ form_row(candidateForm.description) }}

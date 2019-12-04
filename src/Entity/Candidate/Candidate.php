@@ -96,6 +96,22 @@ class Candidate
     private $votes;
 
     /**
+     * How many votes the candidate has received in a run-off (if any).
+     *
+     * @var int
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $runOffVotes;
+
+    /**
+     * Whether the candidate is in the run-off (if any).
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $inRunOff;
+
+    /**
      * Whether the candidate is elected.
      *
      * @var bool
@@ -144,6 +160,8 @@ class Candidate
         $this->end = $this->start + 2; // terms last three years by default
         $this->description = null;
         $this->votes = 0;
+        $this->runOffVotes = 0;
+        $this->inRunOff = false;
         $this->elected = false;
         $this->reelectable = true;
         $this->president = false;
@@ -356,6 +374,61 @@ class Candidate
     public function incrementVotes(): self
     {
         $this->votes += 1;
+        return $this;
+    }
+
+    /**
+     * Get how many votes the candidate has received in a run-off (if any).
+     *
+     * @return int
+     */
+    public function getRunOffVotes(): int
+    {
+        return $this->runOffVotes;
+    }
+
+    /**
+     * Set how many votes the candidate has received in a run-off (if any).
+     *
+     * @param int $votes How many votes the candidate has received.
+     * @return self
+     */
+    public function setRunOffVotes(int $runOffVotes): self
+    {
+        $this->runOffVotes = $runOffVotes;
+        return $this;
+    }
+
+    /**
+     * Increment the number of votes the candidate has received in the run-off (if any).
+     *
+     * @return self
+     */
+    public function incrementRunOffVotes(): self
+    {
+        $this->runOffVotes += 1;
+        return $this;
+    }
+
+    /**
+     * Get whether the candidate is in a run-off (if any).
+     *
+     * @return bool
+     */
+    public function getInRunOff(): bool
+    {
+        return $this->inRunOff;
+    }
+
+    /**
+     * Set whether the candidate is in a run-off (if any).
+     *
+     * @param bool $elected Whether the candidate is in a run-off.
+     * @return self
+     */
+    public function setInRunOff(bool $inRunOff): self
+    {
+        $this->inRunOff = $inRunOff;
         return $this;
     }
 

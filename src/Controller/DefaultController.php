@@ -6,6 +6,7 @@ use App\Entity\Candidate\CandidateHandler;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Election\ElectionHandler;
 use App\Entity\Election\VotingType;
+use App\Entity\Election\VotingRunOffType;
 use App\Entity\NewsItem\NewsItemHandler;
 use App\Entity\Page\Page;
 use App\Entity\Page\PageHandler;
@@ -254,7 +255,29 @@ class DefaultController extends AbstractController
                     $twigs['ordinary'] = $ordinary;
                     $twigs['votingForm'] = $votingForm->createView();
                 }
-                $twigs['election'] = $election;
+                $electionRunOff = $elections->getOpenElectionRunOff();
+                if ($electionRunOff && !$this->getUser()->hasVoted()) {
+                    $electionCandidates = $candidates->getRunOffCandidatesByYear($electionRunOff->getYear());
+                    $votingRunOffForm = $this->createForm(VotingRunOffType::class);
+                    $votingRunOffForm->handleRequest($request);
+                    if ($votingRunOffForm->isSubmitted() && $votingRunOffForm->isValid()) {
+                        foreach ($electionCandidates as $candidate) {
+                            if ($votingRunOffForm->getData()[$candidate->getId()] === true) {
+                                $candidate->incrementRunOffVotes();
+                                $candidates->saveCandidate($candidate);
+                            }
+                        }
+                        $this->getUser()->setVoted(true);
+                        $users->saveUser($this->getUser());
+                        $electionRunOff->incrementRunOffVotes();
+                        $elections->saveElection($electionRunOff);
+                    }
+                    $twigs['candidates'] = $electionCandidates;
+                    $twigs['ordinary'] = 1;
+                    $twigs['votingForm'] = $votingRunOffForm->createView();
+                }
+                $twigs['election'] = $election ? $election : null;
+                $twigs['election'] = $electionRunOff ? $electionRunOff : null;
                 return $this->render('site/templates/committee-voting.twig', $twigs);
 
             default:
