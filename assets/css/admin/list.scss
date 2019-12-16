@@ -44,6 +44,11 @@
         &.status {
           flex-basis: 6em;
         }
+        &.delete {
+          .button .fas {
+            padding-right: 0;
+          }
+        }
         .button {
           padding: .25em .75em;
         }
@@ -59,6 +64,12 @@
       padding: .5em;
       input {
         margin: 0;
+      }
+      .view-type {
+        display: none;
+        &.active {
+          display: block;
+        }
       }
     }
     .review-comments {

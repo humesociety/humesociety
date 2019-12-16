@@ -129,48 +129,6 @@ class SubmissionController extends AbstractController
     }
 
     /**
-     * Route for recording the decision for a submission.
-     *
-     * @param Request $request Symfony's request object.
-     * @param ConferenceHandler $conferences The conference handler.
-     * @param SubmissionHandler $submissions The submission handler.
-     * @param Submission $submission The submission.
-     * @return Response
-     * @Route("/details/{submission}/decision", name="decision")
-     */
-    public function decision(
-        Request $request,
-        ConferenceHandler $conferences,
-        SubmissionHandler $submissions,
-        Submission $submission
-    ): Response {
-        // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'decision');
-
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
-        if ($submission->getConference() !== $conference) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // create and handle the submission decision form
-        $submissionDecisionForm = $this->createForm(SubmissionTypeDecision::class, $submission);
-        $submissionDecisionForm->handleRequest($request);
-        if ($submissionDecisionForm->isSubmitted() && $submissionDecisionForm->isValid()) {
-            $submissions->saveSubmission($submission);
-            $this->addFlash('notice', 'The decision for this paper has been recorded.');
-        }
-
-        // add additional twig variables
-        $twigs['submissionDecisionForm'] = $submissionDecisionForm->createView();
-
-        // render and return the page
-        return $this->render('admin/conference/submission/decision.twig', $twigs);
-    }
-
-    /**
      * Route for handling reviews for a submission.
      *
      * @param Request $request Symfony's request object.
@@ -236,6 +194,71 @@ class SubmissionController extends AbstractController
 
         // render and return the page
         return $this->render('admin/conference/submission/reviews.twig', $twigs);
+    }
+
+    /**
+     * Route for deleting/revoking a review invitation.
+     *
+     * @param Request $request Symfony's request object.
+     * @param ReviewHandler $reviews The review handler.
+     * @param Submission $submission The submission.
+     * @param Review $review The review.
+     * @return Response
+     * @Route("/details/{submission}/delete-review/{review}", name="delete_review")
+     */
+    public function deleteReview(
+        Request $request,
+        ReviewHandler $reviews,
+        Submission $submission,
+        Review $review
+    ): Response {
+        $reviews->deleteReview($review);
+        $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked.");
+        return $this->redirectToRoute('admin_conference_submission_reviews', [
+            'submission' => $submission->getId()
+        ]);
+    }
+
+    /**
+     * Route for recording the decision for a submission.
+     *
+     * @param Request $request Symfony's request object.
+     * @param ConferenceHandler $conferences The conference handler.
+     * @param SubmissionHandler $submissions The submission handler.
+     * @param Submission $submission The submission.
+     * @return Response
+     * @Route("/details/{submission}/decision", name="decision")
+     */
+    public function decision(
+        Request $request,
+        ConferenceHandler $conferences,
+        SubmissionHandler $submissions,
+        Submission $submission
+    ): Response {
+        // initialise the twig variables
+        $twigs = $this->createSubmissionTwigs($submission, 'decision');
+
+        // look for the current conference
+        $conference = $conferences->getCurrentConference();
+
+        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
+        if ($submission->getConference() !== $conference) {
+            throw $this->createNotFoundException('Page not found.');
+        }
+
+        // create and handle the submission decision form
+        $submissionDecisionForm = $this->createForm(SubmissionTypeDecision::class, $submission);
+        $submissionDecisionForm->handleRequest($request);
+        if ($submissionDecisionForm->isSubmitted() && $submissionDecisionForm->isValid()) {
+            $submissions->saveSubmission($submission);
+            $this->addFlash('notice', 'The decision for this paper has been recorded.');
+        }
+
+        // add additional twig variables
+        $twigs['submissionDecisionForm'] = $submissionDecisionForm->createView();
+
+        // render and return the page
+        return $this->render('admin/conference/submission/decision.twig', $twigs);
     }
 
     /**

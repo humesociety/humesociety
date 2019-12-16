@@ -6,7 +6,7 @@
       <div class="list-item" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
         <div class="heading">
           <div class="left">
-            <h3><a href="{{ path('admin_conference_submission_view', { submission: submission.id }) }}">{{ submission.title }}</a></h3>
+            <h3><a href="{{ path('admin_conference_submission_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
             <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
           </div>
           {% if submission.status == 'accepted' and submission.decisionEmailed %}
@@ -18,7 +18,21 @@
           <div class="right status"><i class="{{ submission.statusIcon }}"></i> {{ submission.status }}</div>
         </div>
         <div class="body">
-          <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+          <div class="view-type active" data-type="keywords">
+            <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+          </div>
+          <div class="view-type" data-type="reviews">
+            {% if submission.reviews|length > 0 %}
+              {% for review in submission.reviews %}
+                <div class="review">
+                  <div class="user">{{ review.user }}</div>
+                  <div class="status {{ review.status }}">{{ review.status }}<i class="fas {{ review.statusIcon }}"></i></div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p>No one has been invited to review this submission.</p>
+            {% endif %}
+          </div>
         </div>
       </div>
     {% endfor %}

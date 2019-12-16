@@ -26,6 +26,9 @@
                   </div>
                 {% endif %}
                 <div class="right status"><i class="{{ review.statusIcon }}"></i> {{ review.status }}</div>
+                <div class="right delete">
+                  <a href="{{ path('admin_conference_submission_delete_review', { submission: submission.id, review: review.id }) }}" class="button delete"><i class="fas fa-times"></i><br>delete</a>
+                </div>
               </div>
               {% if review.submitted %}
                 <div class="review-comments">

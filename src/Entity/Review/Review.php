@@ -37,7 +37,7 @@ class Review extends Invitation
      * @ORM\ManyToOne(
      *     targetEntity="App\Entity\Submission\Submission",
      *     inversedBy="reviews",
-     *     cascade={"persist", "remove"}
+     *     cascade={"refresh"}
      * )
      * @ORM\JoinColumn(nullable=false)
      */
@@ -50,7 +50,7 @@ class Review extends Invitation
      * @ORM\ManyToOne(
      *     targetEntity="App\Entity\User\User",
      *     inversedBy="reviews",
-     *     cascade={"persist", "remove"}
+     *     cascade={"refresh"}
      * )
      * @ORM\JoinColumn(nullable=false)
      */

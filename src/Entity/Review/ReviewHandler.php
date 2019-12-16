@@ -75,4 +75,15 @@ class ReviewHandler
         $this->manager->persist($review);
         $this->manager->flush();
     }
+
+    /**
+     * Delete a review from the database.
+     *
+     * @param Review $review The review to delete.
+     */
+    public function deleteReview(Review $review)
+    {
+        $this->manager->remove($review);
+        $this->manager->flush();
+    }
 }

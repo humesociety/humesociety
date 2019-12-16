@@ -238,11 +238,17 @@ class UserHandler
             ? $tech->getFullname().' <web@humesociety.org>'
             : 'Technical Director <vicepresident@humesociety.org>';
         $organisers = $this->getConferenceOrganisers();
+        /*
+        N.B. will have to fix this properly next year; after we agreed to do it this way, Saul changed
+        his mind, so I'm just hard coding it for now so as not to complicate things while the review
+        process is underway
         $organisersDisplay = (sizeof($organisers) > 0)
             ? implode(', ', array_map(function ($organiser) {
                 return $organiser->getFullname();
             }, $organisers)).' <conference@humesociety.org>'
             : 'Conference Organisers <vicepresident@humesociety.org>';
+        */
+        $organisersDisplay = 'Ann Level, Saul Traiger <conference@humesociety.org>';
         return [
             $evptDisplay => 'vicepresident',
             $techDisplay => 'web',

@@ -1,0 +1,33 @@
+.review {
+  display: flex;
+  border-top: 1px solid $grey;
+  &:hover {
+    background: $grey;
+  }
+  .user, .status {
+    padding: .25em .5em;
+  }
+  .user {
+    flex: 1;
+  }
+  .status {
+    .fas {
+      display: inline-block;
+      width: 2em;
+      text-align: center;
+    }
+    &.pending {
+      color: orange;
+    }
+    &.declined {
+      color: maroon;
+    }
+    &.accepted {
+      color: $green;
+    }
+    &.submitted {
+      background: $green;
+      color: #fff;
+    }
+  }
+}

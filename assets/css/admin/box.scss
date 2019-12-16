@@ -19,6 +19,8 @@
 
 .box-header-right {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   .input {
     display: flex;
     align-items: baseline;
