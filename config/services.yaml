@@ -4,8 +4,6 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: 'en'
-
     uploads_directory: '%kernel.project_dir%/uploads/'
     subdirectories:
         attachments: attachments/
@@ -691,6 +689,7 @@ parameters:
         YEM: Asia
         ZMB: Africa
         ZWE: Africa
+
 
 services:
     # default configuration for services in *this* file
