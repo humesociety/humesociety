@@ -1,0 +1,18 @@
+{% extends 'site/invitation/_layout.twig' %}
+
+{% block main %}
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
+  <p><strong>Title:</strong> {{ comment.submission.title }}</p>
+  <p><strong>Authors:</strong> {{ comment.submission.authors }}</p>
+  <p><strong>Paper: </strong> <a href="{{ path('uploads_submission', { submission: comment.submission.id, secret: comment.secret }) }}">{{ comment.submission.filename }}</a></p>
+  <p><strong>Abstract:</strong> {{ comment.submission.abstract }}</p>
+  {% if commentGuidance %}{{ commentGuidance|raw }}{% endif %}
+  {{ form_start(commentForm) }}
+    {{ form_row(commentForm.title) }}
+    {{ form_row(commentForm.file) }}
+    {{ form_row(commentForm._token) }}
+    <div class="buttons">
+      <button type="submit">Upload Comments</button>
+    </div>
+  {{ form_end(commentForm) }}
+{% endblock %}

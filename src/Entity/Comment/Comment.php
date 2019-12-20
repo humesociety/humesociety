@@ -36,11 +36,7 @@ class Comment extends Invitation
      * The submission concerned.
      *
      * @var Submission
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     inversedBy="comments",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
     private $submission;
@@ -49,11 +45,7 @@ class Comment extends Invitation
      * The user invited to comment.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="comments",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;

@@ -34,11 +34,7 @@ class Review extends Invitation
      * The submission being reviewed.
      *
      * @var Submission
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     inversedBy="reviews",
-     *     cascade={"refresh"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
      */
     private $submission;
@@ -47,11 +43,7 @@ class Review extends Invitation
      * The user invited to review.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="reviews",
-     *     cascade={"refresh"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;

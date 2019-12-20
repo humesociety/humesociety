@@ -213,7 +213,7 @@ class SubmissionController extends AbstractController
         Review $review
     ): Response {
         $reviews->deleteReview($review);
-        $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked.");
+        $this->addFlash('notice', "Review invitation to {$review->getUser()} has been deleted.");
         return $this->redirectToRoute('admin_conference_submission_reviews', [
             'submission' => $submission->getId()
         ]);
@@ -330,6 +330,29 @@ class SubmissionController extends AbstractController
     }
 
     /**
+     * Route for deleting/revoking a comment invitation.
+     *
+     * @param Request $request Symfony's request object.
+     * @param CommentHandler $comments The comment handler.
+     * @param Submission $submission The submission.
+     * @param Comment $comment The comment.
+     * @return Response
+     * @Route("/details/{submission}/delete-comment/{comment}", name="delete_comment")
+     */
+    public function deleteComment(
+        Request $request,
+        CommentHandler $comments,
+        Submission $submission,
+        Comment $comment
+    ): Response {
+        $comments->deleteComment($comment);
+        $this->addFlash('notice', "Comment invitation to {$comment->getUser()} has been deleted.");
+        return $this->redirectToRoute('admin_conference_submission_comments', [
+            'submission' => $submission->getId()
+        ]);
+    }
+
+    /**
      * Route for handling chairs for a submission.
      *
      * @param Request $request Symfony's request object.
@@ -395,5 +418,28 @@ class SubmissionController extends AbstractController
 
         // render and return the page
         return $this->render('admin/conference/submission/chair.twig', $twigs);
+    }
+
+    /**
+     * Route for deleting/revoking a chair invitation.
+     *
+     * @param Request $request Symfony's request object.
+     * @param ChairHandler $chairs The chair handler.
+     * @param Submission $submission The submission.
+     * @param Chair $chair The chair invitation.
+     * @return Response
+     * @Route("/details/{submission}/delete-chair/{chair}", name="delete_chair")
+     */
+    public function deleteChair(
+        Request $request,
+        ChairHandler $chairs,
+        Submission $submission,
+        Chair $chair
+    ): Response {
+        $chairs->deleteChair($chair);
+        $this->addFlash('notice', "Chair invitation to {$chair->getUser()} has been deleted.");
+        return $this->redirectToRoute('admin_conference_submission_chair', [
+            'submission' => $submission->getId()
+        ]);
     }
 }

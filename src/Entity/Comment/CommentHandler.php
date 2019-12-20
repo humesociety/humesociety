@@ -66,6 +66,17 @@ class CommentHandler
     }
 
     /**
+     * Get a comment from its secret.
+     *
+     * @param string $secret The comment secret.
+     * @return Comment|null
+     */
+    public function getCommentBySecret(string $secret): ?Comment
+    {
+        return $this->repository->findOneBySecret($secret);
+    }
+
+    /**
      * Save/update a comment.
      *
      * @param Comment $comment The comment to save/update.

@@ -128,10 +128,7 @@ class Conference
      * The submissions to this conference.
      *
      * @var Submission[]
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     mappedBy="conference",
-     *     cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
      * @ORM\JoinColumn(nullable=false)
      */
     private $submissions;
@@ -140,10 +137,7 @@ class Conference
      * The papers for this conference.
      *
      * @var Paper[]
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Paper\Paper",
-     *     mappedBy="conference",
-     *     cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Paper\Paper", mappedBy="conference")
      * @ORM\JoinColumn(nullable=false)
      */
     private $papers;

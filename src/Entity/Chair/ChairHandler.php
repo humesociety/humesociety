@@ -55,6 +55,17 @@ class ChairHandler
     }
 
     /**
+     * Get a chair invitation from its secret.
+     *
+     * @param string $secret The chair invitation secret.
+     * @return Chair|null
+     */
+    public function getChairBySecret(string $secret): ?Chair
+    {
+        return $this->repository->findOneBySecret($secret);
+    }
+
+    /**
      * Save/update a chair.
      *
      * @param Chair $chair The chair to save/update.

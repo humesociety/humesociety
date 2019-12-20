@@ -7,12 +7,37 @@
     {% block body %}
       {% if submission.comment %}
         <h2>Commentator Assigned</h2>
-        <p>{{ submission.comment.user }} has accepted the invitation to comment on this paper.</p>
-        {% if submission.comment.submitted %}
-          <p>{{ submission.comment.user }} has submitted their comments: <a href="{{ path('uploads_comments', { comments: submission.comment.id }) }}"></a>.</p>
-        {% else %}
-          <p>{{ submission.comment.user }} has not yet submitted their comments. <a href="">Send a reminder email</a>.</p>
-        {% endif %}
+        <div class="list">
+          <div class="invitation">
+            <div class="invitation-heading">
+              <div class="title">
+                <h3>{{ submission.comment.user }}</h3>
+                <h4>Invitation sent on {{ submission.comment.dateInvitationSent|date('m/d/Y') }}
+              </div>
+              {% include 'admin/conference/submission/_invitation-status.twig' with { invitation: submission.comment } %}
+            </div>
+            <div class="invitation-body">
+              <div class="actions">
+                <div class="action">
+                  <a href="{{ path('invitation_comment', { secret: submission.comment.secret }) }}" class="button create">View Invitation Page</a>
+                </div>
+                {% if submission.comment.status == 'pending' or submission.comment.status == 'accepted' %}
+                  <div class="action">
+                    <a href="{{ path('admin_conference_submission_email_comment_reminder', { comment: submission.comment.id }) }}" class="button">Email Reminder</a>
+                    {% include 'admin/conference/submission/_reminder-summary.twig' with { invitation: submission.comment } %}
+                  </div>
+                {% elseif submission.comment.status == 'submitted' %}
+                  <div class="action">
+                    <a href="{{ path('uploads_comments', { comments: submission.comment.id }) }}">View Comments File</a>
+                  </div>
+                {% endif %}
+                <div class="action">
+                  <a href="{{ path('admin_conference_submission_delete_comment', { submission: submission.id, comment: submission.comment.id }) }}" class="button delete">Delete Invitation</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       {% else %}
         <h2>Invite Someone to Comment on this Paper</h2>
         {% include 'admin/_form/invitation-existing.twig' %}
@@ -21,18 +46,29 @@
         {% if submission.comments|length > 0 %}
           <div class="list">
             {% for comment in submission.comments %}
-              <div class="list-item">
-                <div class="heading">
-                  <div class="left">
+              <div class="invitation">
+                <div class="invitation-heading">
+                  <div class="title">
                     <h3>{{ comment.user }}</h3>
+                    <h4>Invitation sent on {{ comment.dateInvitationSent|date('m/d/Y') }}
                   </div>
-                  {% if comment.status == 'pending' or comment.status == 'accepted' %}
-                    <div class="right reminder">
-                      <a href="{{ path('admin_conference_submission_email_comment_reminder', { comment: comment.id }) }}" class="button">email reminder</a>
-                      {% include 'admin/_include/reminder-summary.twig' with { invitation: comment } %}
+                  {% include 'admin/conference/submission/_invitation-status.twig' with { invitation: comment } %}
+                </div>
+                <div class="invitation-body">
+                  <div class="actions">
+                    <div class="action">
+                      <a href="{{ path('invitation_comment', { secret: comment.secret }) }}" class="button create">View Invitation Page</a>
                     </div>
-                  {% endif %}
-                  <div class="right status"><i class="{{ comment.statusIcon }}"></i> {{ comment.status }}</div>
+                    {% if comment.status == 'pending' or comment.status == 'accepted' %}
+                      <div class="action">
+                        <a href="{{ path('admin_conference_submission_email_comment_reminder', { comment: comment.id }) }}" class="button">Email Reminder</a>
+                        {% include 'admin/conference/submission/_reminder-summary.twig' with { invitation: comment } %}
+                      </div>
+                    {% endif %}
+                    <div class="action">
+                      <a href="{{ path('admin_conference_submission_delete_comment', { submission: submission.id, comment: comment.id }) }}" class="button delete">Delete Invitation</a>
+                    </div>
+                  </div>
                 </div>
               </div>
             {% endfor %}

@@ -248,7 +248,7 @@ class UserHandler
             }, $organisers)).' <conference@humesociety.org>'
             : 'Conference Organisers <vicepresident@humesociety.org>';
         */
-        $organisersDisplay = 'Ann Level, Saul Traiger <conference@humesociety.org>';
+        $organisersDisplay = 'Ann Levey, Saul Traiger <conference@humesociety.org>';
         return [
             $evptDisplay => 'vicepresident',
             $techDisplay => 'web',

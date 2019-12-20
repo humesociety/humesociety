@@ -22,18 +22,16 @@ class TextController extends AbstractController
      * Route for viewing conference text variables and email templates.
      *
      * @param TextHandler $texts The text handler.
-     * @param string $tab The initially visible tab.
      * @return Response
-     * @Route("/{tab}", name="index", requirements={"tab": "%conference_text_group_ids%"})
+     * @Route("/", name="index")
      */
-    public function index(TextHandler $texts, string $tab = 'submission'): Response
+    public function index(TextHandler $texts): Response
     {
         // initialise the twig variables
         $twigs = [
             'area' => 'conference',
             'subarea' => 'text',
-            'tab' => $tab,
-            'textGroups' => $texts->getConferenceTextGroups()
+            'texts' => $texts->getConferenceTexts()
         ];
 
         // render and return the page

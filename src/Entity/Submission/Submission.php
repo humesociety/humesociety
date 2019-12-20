@@ -40,11 +40,7 @@ class Submission
      * The user who submitted the paper.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="submissions",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -53,11 +49,7 @@ class Submission
      * The conference the paper is submitted to.
      *
      * @var Conference
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Conference\Conference",
-     *     inversedBy="submissions",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions")
      * @ORM\JoinColumn(nullable=false)
      */
     private $conference;

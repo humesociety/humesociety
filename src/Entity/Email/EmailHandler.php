@@ -22,7 +22,7 @@ class EmailHandler
     /**
      * Twig.
      *
-     * @var \Twig_Environment
+     * @var \Twig\Environment
      */
     private $templating;
 
@@ -51,7 +51,7 @@ class EmailHandler
      * Constructor function.
      *
      * @param \Swift_Mailer $mailer Swift Mailer.
-     * @param \Twig_Environment $templating Twig.
+     * @param \Twig\Environment $templating Twig.
      * @param ParameterBagInterface $params Symfony's parameter bag interface.
      * @param EmailTemplateHandler $emailTemplates The email template handler.
      * @param UserHandler $users The user handler.
@@ -59,7 +59,7 @@ class EmailHandler
      */
     public function __construct(
         \Swift_Mailer $mailer,
-        \Twig_Environment $templating,
+        \Twig\Environment $templating,
         ParameterBagInterface $params,
         EmailTemplateHandler $emailTemplates,
         UserHandler $users

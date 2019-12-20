@@ -35,11 +35,7 @@ class Chair extends Invitation
      * The submission concerned.
      *
      * @var Submission
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     inversedBy="chairs",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="chairs")
      * @ORM\JoinColumn(nullable=false)
      */
     private $submission;
@@ -48,11 +44,7 @@ class Chair extends Invitation
      * The user invited to chair.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="chairs",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="chairs")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;

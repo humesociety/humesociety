@@ -2,86 +2,119 @@
   border-left: 1px solid $grey;
   border-right: 1px solid $grey;
   margin-bottom: 1em;
-  .list-item {
-    border-left: 3px solid transparent;
-    border-top: 1px solid $grey;
-    border-bottom: 1px solid $grey;
-    margin-bottom: -1px;
-    &:hover {
-      background: lighten($grey, 12%);
-      border-left-color: $green;
+}
+
+.submission, .invitation {
+  border-left: 3px solid transparent;
+  border-top: 1px solid $grey;
+  border-bottom: 1px solid $grey;
+  margin-bottom: -1px;
+  &:hover {
+    background: lighten($grey, 12%);
+    border-left-color: $green;
+  }
+}
+
+.submission-heading, .invitation-heading {
+  display: flex;
+  align-items: stretch;
+  .title, .status {
+    padding: .5em;
+  }
+  .title {
+    flex: 1;
+    h3, h4 {
+      margin-bottom: 0;
+      font-weight: normal;
     }
-    .heading {
+    h3 {
+      font-size: 1.125em;
+    }
+    h4 {
+      font-size: 1em;
+    }
+  }
+}
+
+.status { // within headings, and also within review summaries in submission-bodies
+  .fas {
+    display: inline-block;
+    width: 2em;
+    text-align: center;
+  }
+  &.pending {
+    color: orange;
+  }
+  &.declined {
+    color: maroon;
+  }
+  &.accepted, &.submitted {
+    color: $green;
+  }
+}
+
+.submission-body {
+  padding: .5em;
+  input {
+    margin: 0;
+  }
+  p {
+    margin: 0;
+  }
+}
+
+.review-summary {
+  display: flex;
+  border-top: 1px solid $grey;
+  &:hover {
+    background: $grey;
+  }
+  .user, .status {
+    padding: .25em .5em;
+  }
+  .user {
+    flex: 1;
+  }
+}
+
+.view-type {
+  display: none;
+  &.active {
+    display: block;
+  }
+}
+
+.review-comments {
+  display: none;
+  pre {
+    margin: .5em;
+    background: #fff;
+    font-family: $sans;
+  }
+  &.is-active {
+    display: block;
+  }
+}
+
+.actions {
+  display: flex;
+  a {
+    cursor: pointer;
+  }
+  .action {
+    padding: .5em;
+    &:first-child {
+      flex: 1;
+    }
+    &:not(:first-child) {
+      flex-basis: 10em;
       display: flex;
-      align-items: stretch;
-      .left, .right {
-        padding: .5em;
-      }
-      .left {
-        flex: 1;
-        h3, h4 {
-          margin-bottom: 0;
-          font-weight: normal;
-        }
-        h3 {
-          font-size: 1.125em;
-        }
-        h4 {
-          font-size: 1em;
-        }
-      }
-      .right {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        border-left: 1px solid $grey;
-        border-bottom: 1px solid $grey;
-        margin-bottom: -1px;
-        &.reminder {
-          flex-basis: 14em;
-        }
-        &.status {
-          flex-basis: 6em;
-        }
-        &.delete {
-          .button .fas {
-            padding-right: 0;
-          }
-        }
-        .button {
-          padding: .25em .75em;
-        }
-        p {
-          margin-bottom: 0;
-        }
-        a {
-          cursor: pointer;
-        }
-      }
+      flex-direction: column;
+      align-items: center;
     }
-    .body {
-      padding: .5em;
-      input {
-        margin: 0;
-      }
-      .view-type {
-        display: none;
-        &.active {
-          display: block;
-        }
-      }
-    }
-    .review-comments {
-      display: none;
-      pre {
-        margin: .5em;
-        background: #fff;
-        font-family: $sans;
-      }
-      &.is-active {
-        display: block;
-      }
-    }
+  }
+  .button {
+    display: inline-block;
+    padding: .25em .75em;
   }
 }

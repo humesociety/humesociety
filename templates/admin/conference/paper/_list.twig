@@ -1,23 +1,33 @@
 {% if conference.papers|length > 0 %}
   <div class="list">
     {% for paper in conference.papers %}
-      <div class="list-item">
-        <div class="heading">
-          <div class="left">
-            <h3>{% if paper.submitted %}
-              <a href="{{ path('uploads_paper', { paper: paper.id }) }}">{{ paper }}</a>
-            {% else %}
-              {{ paper }}
-            {% endif %}</h3>
-            <h4>by {{ paper.user }}</h4>
+      <div class="invitation">
+        <div class="invitation-heading">
+          <div class="title">
+            <h3>{{ paper }}, by {{ paper.user }}</h3>
+            <h4>Invitation sent on {{ paper.dateInvitationSent|date('m/d/Y') }}</h4>
           </div>
-          {% if paper.status == 'pending' %}
-            <div class="right reminder">
-              <a href="{{ path('admin_conference_paper_reminder', { paper: paper.id }) }}" class="button">email reminder</a>
-              {% include 'admin/_include/reminder-summary.twig' with { invitation: paper } %}
+          {% include 'admin/conference/submission/_invitation-status.twig' with { invitation: paper } %}
+        </div>
+        <div class="invitation-body">
+          <div class="actions">
+            <div class="action">
+              <a href="{{ path('invitation_paper', { secret: paper.secret }) }}" class="button create">View Invitation Page</a>
             </div>
-          {% endif %}
-          <div class="right status"><i class="{{ paper.statusIcon }}"></i> {{ paper.status }}</div>
+            {% if paper.status == 'submitted' %}
+              <div class="action">
+                <a href="{{ path('uploads_paper', { paper: paper.id }) }}">Download Paper</a>
+              </div>
+            {% elseif paper.status == 'pending' %}
+              <div class="action">
+                <a href="{{ path('admin_conference_paper_reminder', { paper: paper.id }) }}" class="button">email reminder</a>
+                {% include 'admin/conference/submission/_reminder-summary.twig' with { invitation: paper } %}
+              </div>
+            {% endif %}
+            <div class="action">
+              <a href="{{ path('admin_conference_paper_delete', { paper: paper.id }) }}" class="button delete">Delete Invitation</a>
+            </div>
+          </div>
         </div>
       </div>
     {% endfor %}

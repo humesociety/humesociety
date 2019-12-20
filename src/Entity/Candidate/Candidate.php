@@ -59,7 +59,7 @@ class Candidate
      * our records predate this web site.
      *
      * @var User|null
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="candidacies", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="candidacies")
      */
     private $user;
 

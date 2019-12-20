@@ -16,18 +16,29 @@
         {% if submission.chairs|length > 0 %}
           <div class="list">
             {% for chair in submission.chairs %}
-              <div class="list-item">
-                <div class="heading">
-                  <div class="left">
+              <div class="invitation">
+                <div class="invitation-heading">
+                  <div class="title">
                     <h3>{{ chair.user }}</h3>
+                    <h4>Invitation sent on {{ chair.dateInvitationSent|date('m/d/Y') }}
                   </div>
-                  {% if chair.status == 'pending' %}
-                    <div class="right reminder">
-                      <a href="{{ path('admin_conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">email reminder</a>
-                      {% include 'admin/_include/reminder-summary.twig' with { invitation: chair } %}
+                  {% include 'admin/conference/submission/_invitation-status.twig' with { invitation: chair } %}
+                </div>
+                <div class="invitation-body">
+                  <div class="actions">
+                    <div class="action">
+                      <a href="{{ path('invitation_chair', { secret: chair.secret }) }}" class="button create">View Invitation Page</a>
                     </div>
-                  {% endif %}
-                  <div class="right status"><i class="{{ chair.statusIcon }}"></i> {{ chair.status }}</div>
+                    {% if chair.status == 'pending' %}
+                      <div class="action">
+                        <a href="{{ path('admin_conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">Email Reminder</a>
+                        {% include 'admin/conference/submission/_reminder-summary.twig' with { invitation: chair } %}
+                      </div>
+                    {% endif %}
+                    <div class="action">
+                      <a href="{{ path('admin_conference_submission_delete_chair', { submission: submission.id, chair: chair.id }) }}" class="button delete">Delete Invitation</a>
+                    </div>
+                  </div>
                 </div>
               </div>
             {% endfor %}

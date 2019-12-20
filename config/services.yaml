@@ -41,7 +41,7 @@ parameters:
 
     society_email_template_ids: welcome|reminder
     conference_email_template_group_ids: submission|review|comment|chair|paper
-    conference_email_template_ids: submission-acknowledgement|submission-acceptance|submission-rejection|submission-reminder|submission-comments-submitted|review-invitation|review-invitation-reminder|review-submission-reminder|comment-invitation|comment-invitation-reminder|comment-paper-submitted|comment-submission-reminder|chair-invitation|chair-invitation-reminder|paper-invitation|paper-invitation-reminder
+    conference_email_template_ids: submission-acknowledgement|submission-acceptance|submission-rejection|submission-reminder|submission-comments-submitted|review-invitation|review-invitation-reminder|review-submission-reminder|review-acknowledgement|comment-invitation|comment-invitation-reminder|comment-paper-submitted|comment-submission-reminder|comment-acknowledgement|chair-invitation|chair-invitation-reminder|chair-acknowledgement|paper-invitation|paper-invitation-reminder|paper-acknowledgement
 
     email_templates:
         # society email templates
@@ -97,6 +97,11 @@ parameters:
             sender: conference
             title: Review Submission Reminder
             description: The review submission email can be sent out at any time to users who have accepted an invitation to review a paper, but have not yet submitted their review.
+        review-acknowledgement:
+            group: review
+            sender: conference
+            title: Review Acknowledgement
+            description: The review acknowledgement email is sent to each reviewer after they have submitted their review.
         # comment-related email templates
         comment-invitation:
             group: comment
@@ -118,6 +123,11 @@ parameters:
             sender: conference
             title: Comment Submission Reminder
             description: The comment submission email can be sent out at any time to users who have accepted an invitation to comment on a paper, but have not yet submitted their comments.
+        comment-acknowledgement:
+            group: comment
+            sender: conference
+            title: Comment Acknowledgement
+            description: The comment acknowledgement email is sent to each commentator after they have submitted their comments.
         # chair-related email templates
         chair-invitation:
             group: chair
@@ -129,6 +139,11 @@ parameters:
             sender: conference
             title: Chair Invitation Reminder
             description: The chair invitation reminder email can be sent out at any time to users who have not yet responded to an invitation to chair a session.
+        chair-acknowledgement:
+            group: chair
+            sender: conference
+            title: Chair Acknowledgement
+            description: The chair acknowledgement email is sent to each chair after they have accepted an invitation to chair a session.
         # paper-related email templates
         paper-invitation:
             group: paper
@@ -140,6 +155,11 @@ parameters:
             sender: conference
             title: Paper Invitation Reminder
             description: The paper invitation reminder email can be sent out at any time to users who have been invited to present at the Hume Conference, but have not yet submitted their paper.
+        paper-acknowledgement:
+            group: paper
+            sender: conference
+            title: Invited Paper Acknowledgement
+            description: The invited paper acknowledgement email is sent to each invited speaker after they have submitted their paper.
 
     news_category_ids: society|members|conferences|fellowships|jobs
     news_categories:
@@ -149,45 +169,23 @@ parameters:
         fellowships: Fellowships and Awards
         jobs: Job Advertisements
 
-    conference_text_group_ids: submission|review|comment|chair|paper
-    conference_text_ids: submission-guidance|review-guidance|review-acknowledgement|comment-guidance|comment-acknowledgement|chair-guidance|chair-acknowledgement|paper-guidance|paper-acknowledgement
+    conference_text_ids: submission-guidance|review-guidance|comment-guidance|chair-guidance|paper-guidance
     conference_texts:
         submission-guidance:
-            group: submission
             title: Submission Guidance
             description: The submission guidance text is shown directly above the submission form.
         review-guidance:
-            group: review
             title: Review Guidance
             description: The review guidance text is shown directly above the review form.
-        review-acknowledgement:
-            group: review
-            title: Review Acknowledgement
-            description: The review acknowledgement text is shown to each reviewer after they have submitted their review.
         comment-guidance:
-            group: comment
             title: Comment Guidance
             description: The comment guidance text is shown directly above the form for submitting comments on a paper.
-        comment-acknowledgement:
-            group: comment
-            title: Comment Acknowledgement
-            description: The comment acknowledgement text is shown to each commentator after they have submitted their comments.
         chair-guidance:
-            group: chair
             title: Chair Guidance
             description: The chair guidance text is shown directly above the form for replying to an invitation to chair a session.
-        chair-acknowledgement:
-            group: chair
-            title: Chair Acknowledgement
-            description: The review acknowledgement text is shown to each chair after they have accepted an invitation to chair a session.
         paper-guidance:
-            group: paper
             title: Invited Paper Guidance
             description: The invited paper guidance text is shown directly above the form for submitting an invited paper.
-        paper-acknowledgement:
-            group: paper
-            title: Invited Paper Acknowledgement
-            description: The invited paper acknowledgement text is shown to each invited speaker after they have submitted their paper.
 
     countries:
         AFG: Afghanistan

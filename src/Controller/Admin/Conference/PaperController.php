@@ -131,4 +131,23 @@ class PaperController extends AbstractController
         $this->addFlash('notice', "A reminder email has been sent to {$paper->getUser()}.");
         return $this->redirectToRoute('admin_conference_paper_index');
     }
+
+    /**
+     * Route for deleting/revoking a paper invitation.
+     *
+     * @param Request $request Symfony's request object.
+     * @param PeperHandler $papers The paper handler.
+     * @param Paper $paper The paper.
+     * @return Response
+     * @Route("/delete/{paper}", name="delete")
+     */
+    public function delete(
+        Request $request,
+        PaperHandler $papers,
+        Paper $paper
+    ): Response {
+        $papers->deletePaper($paper);
+        $this->addFlash('notice', "Paper invitation to {$paper->getUser()} has been deleted.");
+        return $this->redirectToRoute('admin_conference_paper_index');
+    }
 }

@@ -6,6 +6,7 @@ use App\Entity\Chair\ChairHandler;
 use App\Entity\Comment\CommentType;
 use App\Entity\Comment\CommentHandler;
 use App\Entity\Conference\ConferenceHandler;
+use App\Entity\Email\ConferenceEmailHandler;
 use App\Entity\Email\SystemEmailHandler;
 use App\Entity\Paper\PaperHandler;
 use App\Entity\Paper\PaperType;
@@ -29,7 +30,8 @@ class InvitationController extends AbstractController
      *
      * @param Request $request Symfony's request object.
      * @param ConferenceHandler $conferences The conference handler.
-     * @param SystemEmailHandler $systemEmails The conference email handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param SystemEmailHandler $systemEmails The system email handler.
      * @param ReviewHandler $reviews The review handler.
      * @param TextHandler $texts The text handler.
      * @param string $secret The review's secret.
@@ -41,6 +43,7 @@ class InvitationController extends AbstractController
     public function review(
         Request $request,
         ConferenceHandler $conferences,
+        ConferenceEmailHandler $conferenceEmails,
         SystemEmailHandler $systemEmails,
         ReviewHandler $reviews,
         TextHandler $texts,
@@ -64,6 +67,7 @@ class InvitationController extends AbstractController
         if ($review->getStatus() === 'pending' && $reply) {
             $review->setAccepted($reply === 'accept');
             $reviews->saveReview($review);
+            // notify the conference organisers
             $systemEmails->sendReviewResponseNotification($review);
         }
 
@@ -91,10 +95,12 @@ class InvitationController extends AbstractController
                     // submit the review
                     $review->setDateSubmitted(new \DateTime('today'));
                     $reviews->saveReview($review);
+
+                    // notify the conference organisers
                     $systemEmails->sendReviewSubmissionNotification($review);
 
-                    // add the thank you message to the twig variables
-                    $twigs['reviewThanks'] = $texts->getTextContentByLabel('review-acknowledgement');
+                    // send the thank you email to the reviewer
+                    $conferenceEmails->sendReviewEmail($review, 'review-acknowledgement');
 
                     // render and return the page
                     return $this->render('site/invitation/review/submitted.twig', $twigs);
@@ -112,9 +118,6 @@ class InvitationController extends AbstractController
                 return $this->render('site/invitation/review/declined.twig', $twigs);
 
             case 'submitted':
-                // add the thank you message to the twig variables
-                $twigs['reviewThanks'] = $texts->getTextContentByLabel('review-acknowledgement');
-
                 // render and return the page
                 return $this->render('site/invitation/review/submitted.twig', $twigs);
         }
@@ -125,7 +128,8 @@ class InvitationController extends AbstractController
      *
      * @param Request $request Symfony's request object.
      * @param ConferenceHandler $conferences The conference handler.
-     * @param SystemEmailHandler $systemEmails The conference email handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param SystemEmailHandler $systemEmails The system email handler.
      * @param CommentHandler $comments The comment handler.
      * @param TextHandler $texts The text handler.
      * @param string $secret The comment's secret.
@@ -136,6 +140,7 @@ class InvitationController extends AbstractController
     public function comment(
         Request $request,
         ConferenceHandler $conferences,
+        ConferenceEmailHandler $conferenceEmails,
         SystemEmailHandler $systemEmails,
         CommentHandler $comments,
         TextHandler $texts,
@@ -159,6 +164,7 @@ class InvitationController extends AbstractController
         if ($comment->getStatus() === 'pending' && $reply) {
             $comment->setAccepted($reply === 'accept');
             $comments->saveComment($comment);
+            // notify the conference organisers
             $systemEmails->sendCommentResponseNotification($comment);
         }
 
@@ -186,10 +192,15 @@ class InvitationController extends AbstractController
                     // submit the comment
                     $comment->setDateSubmitted();
                     $comments->saveComment($comment);
+
+                    // notify the conference organisers
                     $systemEmails->sendCommentSubmissionNotification($comment);
 
-                    // add the thank you message to the twig variables
-                    $twigs['commentThanks'] = $texts->getTextContentByLabel('comment-acknowledgement');
+                    // notify the author of the paper
+                    $conferenceEmails->sendSubmissionEmail($comment->getSubmission(), 'submission-comments-submitted');
+
+                    // send the thank you email to the commentator
+                    $conferenceEmails->sendCommentEmail('comment-acknowledgement');
 
                     // render and return the page
                     return $this->render('site/invitation/comment/submitted.twig', $twigs);
@@ -207,9 +218,6 @@ class InvitationController extends AbstractController
                 return $this->render('site/invitation/comment/declined.twig', $twigs);
 
             case 'submitted':
-                // add the thank you message to the twig variables
-                $twigs['commentThanks'] = $texts->getTextContentByLabel('comment-acknowledgement');
-
                 // render and return the page
                 return $this->render('site/invitation/comment/submitted.twig', $twigs);
         }
@@ -219,7 +227,8 @@ class InvitationController extends AbstractController
      * Route for handling a chair invitation.
      *
      * @param ConferenceHandler $conferences The conference handler.
-     * @param SystemEmailHandler $systemEmails The conference email handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
+     * @param SystemEmailHandler $systemEmails The system email handler.
      * @param ChairHandler $chairs The comment handler.
      * @param TextHandler $texts The text handler.
      * @param string $secret The comment's secret.
@@ -229,6 +238,7 @@ class InvitationController extends AbstractController
      */
     public function chair(
         ConferenceHandler $conferences,
+        ConferenceEmailHandler $conferenceEmails,
         SystemEmailHandler $systemEmails,
         ChairHandler $chairs,
         TextHandler $texts,
@@ -251,8 +261,11 @@ class InvitationController extends AbstractController
         // maybe handle the reply
         if ($chair->getStatus() === 'pending' && $reply) {
             $chair->setAccepted($reply === 'accept');
-            $chair->saveComment($chair);
+            $chairs->saveChair($chair);
+            // notify the conference organisers
             $systemEmails->sendChairResponseNotification($chair);
+            // send the thank you email to the chair
+            $conferenceEmails->sendChairEmail('chair-acknowledgement');
         }
 
         // initialise the twig variables
@@ -275,9 +288,6 @@ class InvitationController extends AbstractController
                 return $this->render('site/invitation/chair/decide.twig', $twigs);
 
             case 'accepted':
-                // add the thank you message to the twig variables
-                $twigs['chairThanks'] = $texts->getTextContentByLabel('chair-acknowledgement');
-
                 // render and return the page
                 return $this->render('site/invitation/chair/accepted.twig', $twigs);
 
@@ -292,6 +302,7 @@ class InvitationController extends AbstractController
      *
      * @param Request $request Symfony's request object.
      * @param ConferenceHandler $conferences The conference handler.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
      * @param SystemEmailHandler $systemEmails The system email handler.
      * @param PaperHandler $papers The paper handler.
      * @param TextHandler $texts The text handler.
@@ -302,6 +313,7 @@ class InvitationController extends AbstractController
     public function paper(
         Request $request,
         ConferenceHandler $conferences,
+        ConferenceEmailHandler $conferenceEmails,
         SystemEmailHandler $systemEmails,
         PaperHandler $papers,
         TextHandler $texts,
@@ -342,10 +354,12 @@ class InvitationController extends AbstractController
                     $paper->setAccepted(true);
                     $paper->setDateSubmitted();
                     $papers->savePaper($paper);
+
+                    // notify the conference organisers
                     $systemEmails->sendPaperSubmissionNotification($paper);
 
-                    // add the thank you message to the twig variables
-                    $twigs['paperThanks'] = $texts->getTextContentByLabel('paper-acknowledgement');
+                    // send the thank you email to the author
+                    $conferenceEmails->sendPaperEmail($paper, 'paper-acknowledgement');
 
                     // render and return the page
                     return $this->render('site/invitation/paper/submitted.twig', $twigs);
@@ -359,9 +373,6 @@ class InvitationController extends AbstractController
                 return $this->render('site/invitation/paper/submit.twig', $twigs);
 
             case 'submitted':
-                // add the thank you message to the twig variables
-                $twigs['paperThanks'] = $texts->getTextContentByLabel('paper-acknowledgement');
-
                 // render and return the page
                 return $this->render('site/invitation/paper/submitted.twig', $twigs);
         }

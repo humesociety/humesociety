@@ -5,7 +5,7 @@
   {% set count = invitation.invitationReminderEmails %}
   {% set date = invitation.dateLastInvitationReminderSent %}
 {% endif %}
-<p>{{ count }} reminder{% if count != 1 %}s{% endif %} sent</p>
+<span>{{ count }} reminder{% if count != 1 %}s{% endif %} sent</span>
 {% if count > 0 %}
-  <p>last reminder: {{ date|date('m/d/Y') }}</p>
+  <span>last reminder: {{ date|date('m/d/Y') }}</span>
 {% endif %}

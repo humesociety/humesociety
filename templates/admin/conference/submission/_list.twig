@@ -3,36 +3,38 @@
   <p>Click on the title of a submission to view more details and download the paper. From there you can also manage the reviews for that paper, enter your decision, and send an email informing the user of that decision.</p>
   <div class="list" id="submissions">
     {% for submission in conference.submissions %}
-      <div class="list-item" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
-        <div class="heading">
-          <div class="left">
+      <div class="submission" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
+        <div class="submission-heading">
+          <div class="title">
             <h3><a href="{{ path('admin_conference_submission_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
             <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
           </div>
-          {% if submission.status == 'accepted' and submission.decisionEmailed %}
-            <div class="right reminder">
-              <a href="{{ path('admin_conference_submission_email_submission_reminder', { submission: submission.id }) }}" class="button">email reminder</a>
-              {% include 'admin/_include/reminder-summary.twig' with { invitation: submission } %}
-            </div>
-          {% endif %}
-          <div class="right status"><i class="{{ submission.statusIcon }}"></i> {{ submission.status }}</div>
+          {% include 'admin/conference/submission/_invitation-status.twig' with { invitation: submission } %}
         </div>
-        <div class="body">
-          <div class="view-type active" data-type="keywords">
-            <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
-          </div>
-          <div class="view-type" data-type="reviews">
-            {% if submission.reviews|length > 0 %}
-              {% for review in submission.reviews %}
-                <div class="review">
-                  <div class="user">{{ review.user }}</div>
-                  <div class="status {{ review.status }}">{{ review.status }}<i class="fas {{ review.statusIcon }}"></i></div>
-                </div>
-              {% endfor %}
-            {% else %}
-              <p>No one has been invited to review this submission.</p>
-            {% endif %}
-          </div>
+        <div class="submission-body view-type active" data-type="keywords">
+          <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+        </div>
+        <div class="submission-body view-type" data-type="reviews">
+          {% if submission.reviews|length > 0 %}
+            {% for review in submission.reviews %}
+              <div class="review-summary">
+                <div class="user">{{ review.user }}</div>
+                {% include 'admin/conference/submission/_invitation-status.twig' with { invitation: review } %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>No one has been invited to review this submission.</p>
+          {% endif %}
+        </div>
+        <div class="submission-body view-type" data-type="reminders">
+          {% if submission.status == 'accepted' and submission.decisionEmailed %}
+            <div class="reminder">
+              <a href="{{ path('admin_conference_submission_email_submission_reminder', { submission: submission.id }) }}" class="button">email reminder</a>
+              {% include 'admin/conference/submission/_reminder-summary.twig' with { invitation: submission } %}
+            </div>
+          {% else %}
+            <p>No reminders can be sent for this submission.</p>
+          {% endif %}
         </div>
       </div>
     {% endfor %}
