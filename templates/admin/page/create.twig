@@ -1,0 +1,26 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Create Page{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Page{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_page_index') }}" class="button" data-menu="page_section"><i class="fas fa-chevron-left"></i> Back to Page List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <nav class="tabs">
+        <a data-tab="edit" class="is-active">Edit</a>
+        <a data-tab="preview">Preview</a>
+      </nav>
+      <div class="tab-pane is-active" id="edit">
+        {% include 'admin/_form/page/create.twig' %}
+      </div>
+      <div class="tab-pane" id="preview">
+        {% include 'admin/page/_preview.twig' %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

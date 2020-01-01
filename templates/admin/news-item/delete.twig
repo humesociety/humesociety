@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Delete News Item{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete “{{ newsItem }}” ({{ newsItem.date|date('m/d/Y') }}){% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_news-item_index', { category: newsItem.category }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to News Item List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/news-item/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

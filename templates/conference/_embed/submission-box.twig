@@ -1,0 +1,20 @@
+<div class="box">
+  <div class="box-header">
+    <h1>{{ submission.id }}. {{ submission }}</h1>
+    <div class="box-header-right">
+      <div class="input">
+        <a href="{{ path('conference_submission_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Submissions</a>
+      </div>
+    </div>
+  </div>
+  <div class="box-body content">
+    <nav class="tabs">
+      <a href="{{ path('conference_submission_view', { submission: submission.id }) }}"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
+      <a href="{{ path('conference_submission_reviews', { submission: submission.id }) }}"{% if tab == 'reviews' %} class="is-active"{% endif %}>Reviews</a>
+      <a href="{{ path('conference_submission_decision', { submission: submission.id }) }}"{% if tab == 'decision' %} class="is-active"{% endif %}>Decision</a>
+      <a href="{{ path('conference_submission_comments', { submission: submission.id }) }}"{% if tab == 'comments' %} class="is-active"{% endif %}>Comments</a>
+      <a href="{{ path('conference_submission_chair', { submission: submission.id }) }}"{% if tab == 'chair' %} class="is-active"{% endif %}>Chair</a>
+    </nav>
+    {% block body %}{% endblock %}
+  </div>
+</div>

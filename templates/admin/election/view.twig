@@ -1,0 +1,33 @@
+{% extends 'admin/_layout-society.twig' %}
+
+{% block title %}Elections{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Elections{% endblock %}
+    {% block header_right %}
+      {% if elections %}
+        <div class="input">
+          <label for="show-start">Decade:</label>
+          <select data-filter="decade" data-table="elections">
+            {% for d in decades %}
+          <option value="{{ d }}"{% if d == decade %} selected="selected"{% endif %}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="input">
+        <a href="{{ path('admin_election_create') }}" class="button create"><i class="fas fa-plus"></i>Create Election</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <p>Committee membership records and election records are closely integrated; the database stores a record of election <em>candidates</em>, and a <em>member</em> of the executive committee is simply a candidate who is marked as elected. When creating a new election, you need only specify the year. This should be <em>the first year of the relevant term of office</em>, rather than the present year; typically this will be the year <em>after</em> the present year. Once the election is created and its candidates have been entered into the database, you can mark the election as <em>open</em>. A voting form will then be made available on any page with the <em>Committee Voting</em> template. It will remain there until you mark the election as <em>closed</em>.</p>
+      <p>While an election is running, the total number of votes for each candidate is recorded (anonymously), as well as the total number of members to have voted. When an election is closed, the total number of voting members (i.e. members in good standing) is saved in the database; in this way a record of election turnout can be preserved. Once the election is over, you can mark the relevant candidates as <em>elected</em>. They will then be considered as committee members, and be displayed on any pages with the <em>Society Governance</em> template.</p>
+      {% if elections %}
+        {% include 'admin/election/_list.twig' %}
+      {% else %}
+        <p>There are no elections in the database. Click the ‘Create Election’ button to begin adding elections.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

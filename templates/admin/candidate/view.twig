@@ -1,0 +1,76 @@
+{% extends 'admin/_layout-society.twig' %}
+
+{% block title %}Committee Members{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Committee Members{% endblock %}
+    {% block header_right %}
+      {% if evpts or execs %}
+        <div class="input">
+          <label for="show-start">Year:</label>
+          <select data-range="start-end" data-table="offices">
+            {% for year in years|reverse %}
+              <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="input">
+        <a href="{{ path('admin_candidate_create') }}" class="button create"><i class="fas fa-plus"></i>Create Candidate</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <p>This list shows past and present committee members (which is also displayed on pages using the Society Governance template). Note that committee members are <em>candidates</em> for office who are marked as <em>elected</em>, and the records show here are closely integrated with the online elections.</p>
+      {% if evpts or execs %}
+        <table class="loading" id="offices">
+          {% if evpts %}
+            <thead>
+              <tr>
+                <th>Executive Vice President-Treasurer</th>
+                <th>Term</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for evpt in evpts %}
+                <tr data-start="{{ evpt.start }}" data-end="{{ evpt.end }}">
+                  <td>{{ evpt.firstname }} {{ evpt.lastname }}</td>
+                  <td>{{ evpt.start }} - {{ evpt.end }}</td>
+                  <td class="controls">
+                    <a href="{{ path('admin_candidate_edit', { id: evpt.id }) }}">Edit</a>
+                    <a href="{{ path('admin_candidate_delete', { id: evpt.id }) }}">Delete</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% endif %}
+          {% if execs %}
+            <thead>
+              <tr>
+                <th>Committee Members</th>
+                <th>Term</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for exec in execs %}
+                <tr data-start="{{ exec.start }}" data-end="{{ exec.end }}">
+                  <td>{{ exec.firstname }} {{ exec.lastname }}{% if exec.president %} (President){% endif %}</td>
+                  <td>{{ exec.start }} - {{ exec.end }}</td>
+                  <td class="controls">
+                    <a href="{{ path('admin_candidate_edit', { id: exec.id }) }}">Edit</a>
+                    <a href="{{ path('admin_candidate_delete', { id: exec.id }) }}">Delete</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          {% endif %}
+        </table>
+      {% else %}
+        <p>There are no membership records in the database. Click the ‘Create Candidate’ button to begin adding records.</p>
+      {% endif %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

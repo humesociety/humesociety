@@ -1,0 +1,22 @@
+{% extends 'conference/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('conference_user_index') }}"{% if subarea == 'all' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user"></i></span>
+      <span class="link-text">All Users</span>
+    </a>
+    <a href="{{ path('conference_user_reviewer') }}"{% if subarea == 'reviewer' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user"></i></span>
+      <span class="link-text">Reviewer Volunteers</span>
+    </a>
+    <a href="{{ path('conference_user_commentator') }}"{% if subarea == 'commentator' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user"></i></span>
+      <span class="link-text">Commentator Volunteers</span>
+    </a>
+    <a href="{{ path('conference_user_chair') }}"{% if subarea == 'chair' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user"></i></span>
+      <span class="link-text">Chair Volunteers</span>
+    </a>
+  </div>
+{% endblock %}

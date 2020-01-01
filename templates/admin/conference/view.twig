@@ -1,0 +1,32 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Conferences{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conferences{% endblock %}
+    {% block header_right %}
+      {% if conferences | length > 0 %}
+        <div class="input">
+          <label for="show-decade">Decade:</label>
+          <select data-filter="decade" data-table="conferences">
+            {% for d in decades %}
+          <option value="{{ d }}"{% if decade == d %} selected="selected"{% endif %}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="input">
+        <a href="{{ path('admin_conference_create') }}" class="button create"><i class="fas fa-plus"></i>Create Conference</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <p>Details of conferences stored in the database can be edited here. Any page on the web site using the 'Forthcoming Conferences' or 'Past Conferences' templates will automatically be updated to reflect any changes made.</p>
+      {% if conferences %}
+        {% include 'admin/conference/_list.twig' %}
+      {% else %}
+        <p>There are no conferences in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

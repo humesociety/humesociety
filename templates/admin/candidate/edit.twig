@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-society.twig' %}
+
+{% block title %}Edit Candidate{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit Record for {{ candidate }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_candidate_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Committee Members List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/candidate/update.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

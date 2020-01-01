@@ -1,0 +1,17 @@
+{% extends 'journal/base.twig' %}
+
+{% block title %}Upload Article{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+{% block title %}Upload Article{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('journal_issue_edit', { id: issue.id, tab: 'articles' }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issue {{ issue.volume }}.{{ issue.number }}</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'journal/_form/article/create.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

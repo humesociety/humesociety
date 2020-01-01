@@ -1,0 +1,16 @@
+{% extends 'conference/_layout-manager.twig' %}
+
+{% block title %}Guidance Text{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Guidance Text{% endblock %}
+    {% block body %}
+      <p>From here you can edit the guidance text that appears to users and reviewers on this site above submission forms. Text should be marked up as HTML; if you are unfamiliar with HTML, please ask the technical director for help formatting this text appropriately.</p>
+      {% for text in texts %}
+        <h4><a href="{{ path('conference_text_edit', { label: text.label }) }}">Edit {{ text.title }} Text</a></h4>
+        <p>{{ text.description }}</p>
+      {% endfor %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

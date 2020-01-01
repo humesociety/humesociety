@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-society.twig' %}
+
+{% block title %}Delete Election{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete Election for {{ election.year }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_election_index', { decade: election.decade }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/election/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

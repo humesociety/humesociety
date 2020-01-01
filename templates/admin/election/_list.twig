@@ -1,0 +1,40 @@
+<table class="loading" id="elections">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Status</th>
+      <th>Votes</th>
+      <th>Run-off Votes</th>
+      <th>Population</th>
+      <th>Turnout</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for election in elections %}
+      <tr data-decade="{{ election.decade }}">
+        <td>{{ election.year }}</td>
+        <td>{{ election.status }}</td>
+        <td>{{ election.votes }}</td>
+        <td>{{ election.runOffVotes }}</td>
+        <td>{{ election.population }}</td>
+        <td>{% if election.turnout is not null %}{{ election.turnout }}%{% else %}-{% endif %}</td>
+        <td class="controls">
+          {% if election.open %}
+            <a href="{{ path('admin_election_close', { id: election.id }) }}">Close</a>
+          {% else %}
+            <a href="{{ path('admin_election_open', { id: election.id }) }}">Open</a>
+            {% if election.runOffOpen %}
+              <a href="{{ path('admin_election_close_runoff', { id: election.id }) }}">Close Run-Off</a>
+            {% else %}
+              <a href="{{ path('admin_election_open_runoff', { id: election.id }) }}">Open Run-Off</a>
+              <a href="{{ path('admin_election_edit', { id: election.id }) }}">Edit</a>
+            {% endif %}
+          {% endif %}
+          <a href="{{ path('admin_election_candidates', { id: election.id }) }}">Candidates</a>
+          <a href="{{ path('admin_election_delete', { id: election.id }) }}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

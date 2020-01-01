@@ -44,7 +44,7 @@ class DataController extends AbstractController
      * @param UserHandler $users The user handler.
      * @return Response
      * @Route("/users", name="users")
-     * @IsGranted("ROLE_ADMIN")
+     * @IsGranted("ROLE_EVPT")
      */
     public function users(SerializerInterface $serializer, UserHandler $users): Response
     {

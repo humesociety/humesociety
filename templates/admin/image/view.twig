@@ -1,0 +1,20 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Images{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Images{% endblock %}
+    {% block header_right %}
+      {% include 'admin/_form/image/upload.twig' %}
+    {% endblock %}
+    {% block body %}
+      <p>Any image files uploaded here will be available to use in the pages on this site. To display an image, use the code <code>&lt;img src="/uploads/images/filename"&gt;</code> in the content of the page.
+      {% if images %}
+        {% include 'admin/image/_list.twig' %}
+      {% else %}
+        <p>There are no images in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

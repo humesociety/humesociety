@@ -1,0 +1,12 @@
+{% extends 'conference/_layout-manager.twig' %}
+
+{% block title %}Conference Details{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Conference Deadline{% endblock %}
+    {% block body %}
+      {% include 'conference/_form/conference/deadline.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

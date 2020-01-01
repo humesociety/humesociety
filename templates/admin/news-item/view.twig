@@ -1,0 +1,32 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}News Items{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}News Items{% endblock %}
+    {% block header_right %}
+      {% if newsItems|length > 0 %}
+        <div class="input">
+          <label for="show-category">Category:</label>
+          <select id="show-category" data-filter="category" data-table="newsItems">
+            {% for key, name in categories %}
+              <option value="{{ key }}"{% if category == key %} selected="selected"{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="input">
+    <a href="{{ path('admin_news-item_create') }}" class="button create"{% if newsItems|length > 0 %} data-menu="show-category"{% endif %}><i class="fas fa-plus"></i> Create News Item</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <p>Current news items are displayed either on the home page (for society news), or on pages using the relevant template (members news appears on the Members News template, etc.). One the end date for a news item has passed, it will appear instead on pages using the Archived News template.</p>
+      {% if newsItems|length > 0 %}
+        {% include 'admin/news-item/_list.twig' %}
+      {% else %}
+        <p>There are no news items in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

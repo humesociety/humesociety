@@ -1,0 +1,31 @@
+{% extends 'journal/base.twig' %}
+
+{% block title %}Edit Journal Issues{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Issues{% endblock %}
+    {% block header_right %}
+      {% if issues | length > 0 %}
+        <div class="input">
+          <label for="show-decade">Decade:</label>
+          <select data-filter="decade" data-table="issues">
+            {% for d in decades %}
+              <option value="{{ d }}"{% if decade == d %} selected="selected"{% endif %}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="input">
+        <a href="{{ path('journal_issue_create') }}" class="button create"><i class="fas fa-plus"></i> Create Issue</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% if issues|length > 0 %}
+        {% include 'journal/issue/_list.twig' %}
+      {% else %}
+        <p>There are no issues in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

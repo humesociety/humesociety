@@ -20,9 +20,10 @@ security:
                 path: security_logout
     access_control:
         - { path: ^/account, roles: ROLE_USER }
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_EVPT }
+        - { path: ^/conference-manager, roles: ROLE_ORGANISER }
+        - { path: ^/journal-manager, roles: ROLE_EDITOR }
+        - { path: ^/tech, roles: ROLE_TECH }
     role_hierarchy:
-        ROLE_TECH: [ROLE_EVPT, ROLE_ADMIN, ROLE_ORGANISER, ROLE_EDITOR]
-        ROLE_EVPT: [ROLE_ADMIN, ROLE_ORGANISER, ROLE_EDITOR]
-        ROLE_ORGANISER: ROLE_ADMIN
-        ROLE_EDITOR: ROLE_ADMIN
+        ROLE_TECH: [ROLE_EVPT, ROLE_ORGANISER, ROLE_EDITOR]
+        ROLE_EVPT: [ROLE_ORGANISER, ROLE_EDITOR]

@@ -222,6 +222,48 @@ class UserHandler
     }
 
     /**
+     * Get users willing to review.
+     *
+     * @return User[]
+     */
+    public function getReviewVolunteers(): array
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToReview = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get users willing to comment.
+     *
+     * @return User[]
+     */
+    public function getCommentVolunteers(): array
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToComment = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get users willing to review.
+     *
+     * @return User[]
+     */
+    public function getChairVolunteers(): array
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToChair = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Get official society email addresses.
      *
      * @throws \Doctrine\ORM\NonUniqueResultException

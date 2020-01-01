@@ -1,0 +1,21 @@
+{% extends 'admin/_layout-society.twig' %}
+
+{% block title %}Edit Election{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit Election for {{ election.year }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_election_index', { decade: election.decade }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% if election.open %}
+        <p>Election data cannot be edited while the election is open.</p>
+      {% else %}
+        {% include 'admin/_form/election/update.twig' %}
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

@@ -90,6 +90,7 @@
     margin: .5em;
     background: #fff;
     font-family: $sans;
+    white-space: pre-wrap;
   }
   &.is-active {
     display: block;

@@ -1,0 +1,35 @@
+{% extends 'journal/base.twig' %}
+
+{% block title %}Mailing Addresses{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Mailing Addresses for Members receiving <i>Hume Studies</i>{% endblock %}
+    {% block header_right %}
+    {% endblock %}
+    {% block body %}
+      {% if users|length > 0 %}
+        {% for user in users %}
+          <pre>
+{% if user.mailingAddress %}
+{{ user.mailingAddress }}
+{% else %}
+{{ user.firstname }} {{ user.lastname }}
+{% if user.department %}{{ user.department }}
+{% endif %}
+{% if user.institution %}{{ user.institution }}
+{% endif %}
+{% if user.city %}{{ user.city }}
+{% endif %}
+{% if user.state %}{{ user.state }}
+{% endif %}
+{% if user.country %}{{ countries[user.country] }}{% endif %}
+{% endif %}
+          </pre>
+        {% endfor %}
+      {% else %}
+        <p>There are no members who have elected to recieve a copy of <i>Hume Studies</i> in the database.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

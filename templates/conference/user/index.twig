@@ -1,0 +1,17 @@
+{% extends 'conference/_layout-users.twig' %}
+
+{% block title %}Active Users{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Activate Any User{% endblock %}
+    {% block header_right %}
+      <a href="{{ path('conference_user_create') }}" class="button create"><i class="fas fa-plus"></i> Create Invited User</a>
+    {% endblock %}
+    {% block body %}
+      {% include 'conference/user/_help.twig' %}
+      <p>The list on this page includes every user in our database. Using the links in the right-hand navigation menu, you can view only those users who have explicitly indicated a willingness to review, comment, or chair a session.</p>
+      {% include 'conference/user/_list.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

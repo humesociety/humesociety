@@ -1,0 +1,48 @@
+{% apply spaceless %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/{% block favicon %}hume{% endblock %}.ico">
+    {{ encore_entry_link_tags('journal') }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>{% block title %}{% endblock %} - Journal Manager</title>
+  </head>
+  <body class="grid">
+    <header class="header">
+      <div class="header-left">
+        <a href="{{ path('journal_issue_index') }}"{% if subarea == 'issue' %} class="is-active"{% endif %}>
+          <span class="icon"><i class="far fa-file-pdf"></i></span>
+          <span class="link-text">Issues</span>
+        </a>
+        <a href="{{ path('journal_mailing_index') }}"{% if subarea == 'mailing' %} class="is-active"{% endif %}>
+          <span class="icon"><i class="far fa-envelope"></i></span>
+          <span class="link-text">Mailing List</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <a href="{{ path('society_index') }}">Back to Main Site</a>
+        <a href="{{ path('security_logout') }}">Sign Out</a>
+      </div>
+    </header>
+    <nav class="sidebar">
+      {% block sidebar %}{% endblock %}
+    </nav>
+    <main class="page">
+      {% for message in app.flashes('notice') %}
+        <div class="notification success">{{ message }}</div>
+      {% endfor %}
+      {% for message in app.flashes('error') %}
+        <div class="notification error">{{ message }}</div>
+      {% endfor %}
+      {% block main %}{% endblock %}
+    </main>
+    {{ encore_entry_script_tags('journal') }}
+  </body>
+</html>
+{% endapply %}

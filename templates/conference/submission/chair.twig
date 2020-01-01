@@ -1,0 +1,52 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Submission Chair{% endblock %}
+
+{% block main %}
+  {% embed 'conference/_embed/submission-box.twig' %}
+    {% block body %}
+      {% if submission.chair %}
+        <h2>Chair Assigned</h2>
+        <p>{{ submission.chair.user }} has accepted the invitation to chair the session for this paper.</p>
+      {% else %}
+        <h2>Invite Someone to Chair the Session for this Paper</h2>
+        {% include 'conference/_form/invitation/existing.twig' %}
+        {% include 'conference/_form/invitation/new.twig' %}
+        <h2>Current Invitations</h2>
+        {% if submission.chairs|length > 0 %}
+          <div class="list">
+            {% for chair in submission.chairs %}
+              <div class="invitation">
+                <div class="invitation-heading">
+                  <div class="title">
+                    <h3>{{ chair.user }}</h3>
+                    <h4>Invitation sent on {{ chair.dateInvitationSent|date('m/d/Y') }}
+                  </div>
+                  {% include 'conference/submission/_invitation-status.twig' with { invitation: chair } %}
+                </div>
+                <div class="invitation-body">
+                  <div class="actions">
+                    <div class="action">
+                      <a href="{{ path('invitation_chair', { secret: chair.secret }) }}" class="button create">View Invitation Page</a>
+                    </div>
+                    {% if chair.status == 'pending' %}
+                      <div class="action">
+                        <a href="{{ path('conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">Email Reminder</a>
+                        {% include 'conference/submission/_reminder-summary.twig' with { invitation: chair } %}
+                      </div>
+                    {% endif %}
+                    <div class="action">
+                      <a href="{{ path('conference_submission_delete_chair', { submission: submission.id, chair: chair.id }) }}" class="button delete">Delete Invitation</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No one has been invited to chair the session for this paper.</p>
+        {% endif %}
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}
