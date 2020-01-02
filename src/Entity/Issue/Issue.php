@@ -305,6 +305,6 @@ class Issue
     public function getMonth(): ?string
     {
         $months = ['April/November', 'April', 'November', $this->name];
-        return $this->number ? $months[$this->number] : null;
+        return ($this->number !== null) ? $months[$this->number] : null;
     }
 }
