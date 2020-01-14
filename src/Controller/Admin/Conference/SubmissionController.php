@@ -208,10 +208,12 @@ class SubmissionController extends AbstractController
      */
     public function deleteReview(
         Request $request,
+        ConferenceEmailHandler $conferenceEmails,
         ReviewHandler $reviews,
         Submission $submission,
         Review $review
     ): Response {
+        $conferenceEmails->sendReviewEmail($review, 'review-invitation-cancellation');
         $reviews->deleteReview($review);
         $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked.");
         return $this->redirectToRoute('admin_conference_submission_reviews', [
