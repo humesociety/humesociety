@@ -197,7 +197,7 @@ class SubmissionController extends AbstractController
     /**
      * Route for deleting/revoking a review invitation.
      *
-     * @param Request $request Symfony's request object.
+     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
      * @param ReviewHandler $reviews The review handler.
      * @param Submission $submission The submission.
      * @param Review $review The review.
@@ -205,7 +205,6 @@ class SubmissionController extends AbstractController
      * @Route("/details/{submission}/delete-review/{review}", name="delete_review")
      */
      public function deleteReview(
-         Request $request,
          ConferenceEmailHandler $conferenceEmails,
          ReviewHandler $reviews,
          Submission $submission,
@@ -213,8 +212,8 @@ class SubmissionController extends AbstractController
      ): Response {
          $conferenceEmails->sendReviewEmail($review, 'review-invitation-cancellation');
          $reviews->deleteReview($review);
-         $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked.");
-         return $this->redirectToRoute('admin_conference_submission_reviews', [
+         $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked, and the cancellation email sent.");
+         return $this->redirectToRoute('conference_submission_reviews', [
              'submission' => $submission->getId()
          ]);
      }
