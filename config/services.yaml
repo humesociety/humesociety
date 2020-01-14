@@ -87,6 +87,11 @@ parameters:
             sender: conference
             title: Review Invitation
             description: The review invitation email is sent out to users who you invite to review a paper.
+        review-invitation-cancellation:
+            group: review
+            sender: conference
+            title: Review Invitation Cancellation
+            description: The review invitation cancellation email is sent out to invited reviewers when you revoke their invitation.
         review-invitation-reminder:
             group: review
             sender: conference

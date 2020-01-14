@@ -204,18 +204,20 @@ class SubmissionController extends AbstractController
      * @return Response
      * @Route("/details/{submission}/delete-review/{review}", name="delete_review")
      */
-    public function deleteReview(
-        Request $request,
-        ReviewHandler $reviews,
-        Submission $submission,
-        Review $review
-    ): Response {
-        $reviews->deleteReview($review);
-        $this->addFlash('notice', "Review invitation to {$review->getUser()} has been deleted.");
-        return $this->redirectToRoute('conference_submission_reviews', [
-            'submission' => $submission->getId()
-        ]);
-    }
+     public function deleteReview(
+         Request $request,
+         ConferenceEmailHandler $conferenceEmails,
+         ReviewHandler $reviews,
+         Submission $submission,
+         Review $review
+     ): Response {
+         $conferenceEmails->sendReviewEmail($review, 'review-invitation-cancellation');
+         $reviews->deleteReview($review);
+         $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked.");
+         return $this->redirectToRoute('admin_conference_submission_reviews', [
+             'submission' => $submission->getId()
+         ]);
+     }
 
     /**
      * Route for recording the decision for a submission.
