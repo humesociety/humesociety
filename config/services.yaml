@@ -41,7 +41,7 @@ parameters:
 
     society_email_template_ids: welcome|reminder
     conference_email_template_group_ids: submission|review|comment|chair|paper
-    conference_email_template_ids: submission-acknowledgement|submission-acceptance|submission-rejection|submission-reminder|submission-comments-submitted|review-invitation|review-invitation-reminder|review-submission-reminder|review-acknowledgement|comment-invitation|comment-invitation-reminder|comment-paper-submitted|comment-submission-reminder|comment-acknowledgement|chair-invitation|chair-invitation-reminder|chair-acknowledgement|paper-invitation|paper-invitation-reminder|paper-acknowledgement
+    conference_email_template_ids: submission-acknowledgement|submission-acceptance|submission-rejection|submission-reminder|submission-comments-submitted|review-invitation|review-invitation-cancellation|review-invitation-reminder|review-submission-reminder|review-acknowledgement|comment-invitation|comment-invitation-reminder|comment-paper-submitted|comment-submission-reminder|comment-acknowledgement|chair-invitation|chair-invitation-reminder|chair-acknowledgement|paper-invitation|paper-invitation-reminder|paper-acknowledgement
 
     email_templates:
         # society email templates
