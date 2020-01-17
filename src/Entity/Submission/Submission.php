@@ -734,7 +734,9 @@ class Submission
         $accepted = 0;
         $submitted = 0;
         foreach ($this->reviews as $review) {
-            $invited += 1;
+            if ($review->getStatus() !== 'declined') {
+                $invited += 1;
+            }
             if ($review->isAccepted()) {
                 $accepted += 1;
             }
@@ -765,7 +767,9 @@ class Submission
         $accepted = 0;
         $submitted = 0;
         foreach ($this->comments as $comment) {
-            $invited += 1;
+            if ($comment->getStatus() !== 'declined') {
+                $invited += 1;
+            }
             if ($comment->isAccepted()) {
                 $accepted += 1;
             }
@@ -795,7 +799,9 @@ class Submission
         $invited = 0;
         $accepted = 0;
         foreach ($this->chairs as $chair) {
-            $invited += 1;
+            if ($chair->getStatus() !== 'declined') {
+                $invited += 1;
+            }
             if ($chair->isAccepted()) {
                 $accepted += 1;
             }
