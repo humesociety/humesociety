@@ -480,6 +480,18 @@ class Conference
     }
 
     /**
+     * Get the accepted submissions for this conference.
+     *
+     * @return Collection
+     */
+    public function getAcceptedSubmissions(): Collection
+    {
+        return $this->submissions->filter(function ($submission) {
+            return ($submission->getStatus() === 'accepted' || $submission->getStatus() === 'submitted');
+        });
+    }
+
+    /**
      * Get the papers for this conference.
      *
      * @return Collection

@@ -6,7 +6,7 @@
   {% embed 'admin/_embed/box.twig' %}
 {% block title %}Chairs{% endblock %}
     {% block header_right %}
-      {% if conference.submissions|length > 0 %}
+      {% if conference.acceptedSubmissions|length > 0 %}
         <div class="input">
           <label for="show-progress">Progress:</label>
           <select id="show-progress" data-filter="progress" data-table="submissions">
@@ -19,11 +19,11 @@
       {% endif %}
     {% endblock %}
     {% block body %}
-      {% if conference.submissions|length > 0 %}
-        <p>Below is a list of all the submissions to the {{ conference }}. Using the dropdown menus above you can filter the list by keyword and status. Keywords are entered by users when they submit their paper, but can then be edited here however you wish. Users will not see the modifications you make to their keywords.</p>
-        <p>Click on the title of a submission to view more details and download the paper. From there you can also manage the reviews for that paper, enter your decision, and send an email informing the user of that decision.</p>
+      {% if conference.acceptedSubmissions|length > 0 %}
+        <p>Below is a list of all the <em>accepted</em> submissions to the {{ conference }}, showing the chair invitations for each submission. Using the dropdown menu above you can filter the list by chair assignment progress, to show only papers with no chair invitations or no assigned chair.</p>
+        <p>Click on the title of a submission to view and manage its chair invitations.</p>
         <div class="list" id="submissions">
-          {% for submission in conference.submissions %}
+          {% for submission in conference.acceptedSubmissions %}
             <div class="submission" data-progress="{{ submission.chairProgress }}" data-keyword="{{ submission.keywords }}">
               <div class="submission-heading">
                 <div class="title">
@@ -47,7 +47,7 @@
           {% endfor %}
         </div>
       {% else %}
-        <p>There are no submissions for the {{ conference }}.</p>
+        <p>There are no accepted submissions for the {{ conference }}.</p>
       {% endif %}
     {% endblock %}
   {% endembed %}
