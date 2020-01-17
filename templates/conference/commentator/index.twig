@@ -28,7 +28,7 @@
             <div class="submission" data-progress="{{ submission.commentProgress }}" data-keyword="{{ submission.keywords }}">
               <div class="submission-heading">
                 <div class="title">
-                  <h3><a href="{{ path('conference_submission_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
+                  <h3><a href="{{ path('conference_commentator_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
                   <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
                 </div>
               </div>
