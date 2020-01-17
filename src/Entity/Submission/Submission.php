@@ -849,4 +849,22 @@ class Submission
         // otherwise no
         return false;
     }
+
+    /**
+     * Get average review grade as a number between 1 and 4.
+     *
+     * @return int|null
+     */
+    public function getReviewGradeAverage(): ?int
+    {
+        $submittedReviews = 0;
+        $gradeTotal = 0;
+        foreach ($this->reviews as $review) {
+            if ($review->getStatus() === 'submitted') {
+                $submittedReviews += 1;
+                $gradeTotal += $review->getGradeNumber();
+            }
+        }
+        return ($submittedReviews > 0) ? ($gradeTotal / $submittedReviews) : null;
+    }
 }

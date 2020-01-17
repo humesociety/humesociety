@@ -146,6 +146,27 @@ class Review extends Invitation
     }
 
     /**
+     * Get the reviewer's grade as a integer between 1 and 4.
+     *
+     * @return int|null
+     */
+    public function getGradeNumber(): ?int
+    {
+        switch ($this->grade) {
+            case 'A':
+                return 4;
+            case 'B':
+                return 3;
+            case 'C':
+                return 2;
+            case 'D':
+                return 1;
+            case null:
+                return null;
+        }
+    }
+
+    /**
      * Set the reviewer's grade.
      *
      * @var string $grade The reviewer's grade.

@@ -31,12 +31,18 @@
                   <h3><a href="{{ path('conference_review_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
                   <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
                 </div>
+                {% if submission.reviewGradeAverage %}
+                  <div class="status">average score: {{ submission.reviewGradeAverage }}</div>
+                {% endif %}
               </div>
               <div class="submission-body">
                 {% if submission.reviews|length > 0 %}
                   {% for review in submission.reviews %}
                     <div class="review-summary">
                       <div class="user">{{ review.user }}</div>
+                      {% if review.gradeNumber %}
+                        <div class="status">score: {{ review.gradeNumber }}</div>
+                      {% endif %}
                       {% include 'conference/submission/_invitation-status.twig' with { invitation: review } %}
                     </div>
                   {% endfor %}
