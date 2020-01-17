@@ -1,0 +1,6 @@
+<nav class="tabs">
+<a href="{{ path('conference_submission_view', { submission: submission.id }) }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>Details &amp; Decision</a>
+  <a href="{{ path('conference_review_view', { submission: submission.id }) }}"{% if subarea == 'review' %} class="is-active"{% endif %}>Reviews</a>
+  <a href="{{ path('conference_commentator_view', { submission: submission.id }) }}"{% if subarea == 'commentator' %} class="is-active"{% endif %}>Commentator</a>
+  <a href="{{ path('conference_chair_view', { submission: submission.id }) }}"{% if subarea == 'chair' %} class="is-active"{% endif %}>Chair</a>
+</nav>

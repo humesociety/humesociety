@@ -3,8 +3,15 @@
 {% block title %}Submission Chair{% endblock %}
 
 {% block main %}
-  {% embed 'conference/_embed/submission-box.twig' %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}{{ submission.id }}. {{ submission }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('conference_chair_index') }}" class="button"><i class="fas fa-chevron-left"></i>All Chairs</a>
+      </div>
+    {% endblock %}
     {% block body %}
+      {% include 'conference/submission/_submission-tabs.twig' %}
       {% if submission.chair %}
         <h2>Chair Assigned</h2>
         <p>{{ submission.chair.user }} has accepted the invitation to chair the session for this paper.</p>
@@ -31,12 +38,12 @@
                     </div>
                     {% if chair.status == 'pending' %}
                       <div class="action">
-                        <a href="{{ path('conference_submission_email_chair_reminder', { chair: chair.id }) }}" class="button">Email Reminder</a>
+                        <a href="{{ path('conference_chair_email_reminder', { chair: chair.id }) }}" class="button">Email Reminder</a>
                         {% include 'conference/submission/_reminder-summary.twig' with { invitation: chair } %}
                       </div>
                     {% endif %}
                     <div class="action">
-                      <a href="{{ path('conference_submission_delete_chair', { submission: submission.id, chair: chair.id }) }}" class="button delete">Delete Invitation</a>
+                      <a href="{{ path('conference_chair_delete', { submission: submission.id, chair: chair.id }) }}" class="button delete">Delete Invitation</a>
                     </div>
                   </div>
                 </div>

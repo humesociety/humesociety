@@ -29,8 +29,7 @@ table {
         }
       }
       &.hidden {
-        display: table-row;
-        visibility: collapse;
+        visibility: hidden; // I wanted to use collapse so the columns stay the same width, but it doesn't work on Safari :(
       }
       &.is-active {
         background: lighten($green, 30%);

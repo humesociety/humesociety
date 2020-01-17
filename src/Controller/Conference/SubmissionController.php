@@ -83,159 +83,27 @@ class SubmissionController extends AbstractController
     }
 
     /**
-    * Create the initial twig variables for a submission-related page (used in subsequent routes).
-    *
-    * @param Submission $submission The submission.
-    * @param string $tab The tab/page on display.
-    * @return array
-    */
-    private function createSubmissionTwigs(Submission $submission, string $tab): array
-    {
-        return [
-            'area' => 'paper',
-            'subarea' => 'submission',
-            'tab' => $tab,
-            'submission' => $submission
-        ];
-    }
-
-    /**
      * Route for viewing submission details.
-     *
-     * @param ConferenceHandler $conferences The conference handler.
-     * @param Submission $submission The submission.
-     * @return Response
-     * @Route("/details/{submission}", name="view")
-     */
-    public function view(
-        ConferenceHandler $conferences,
-        Submission $submission
-    ): Response {
-        // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'details');
-
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
-        if ($submission->getConference() !== $conference) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // render and return the page
-        return $this->render('conference/submission/view.twig', $twigs);
-    }
-
-    /**
-     * Route for handling reviews for a submission.
-     *
-     * @param Request $request Symfony's request object.
-     * @param ConferenceHandler $conferences The conference handler.
-     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
-     * @param ReviewHandler $reviews The review handler.
-     * @param UserHandler $users The user handler.
-     * @param Submission $submission The submission.
-     * @return Response
-     * @Route("/details/{submission}/reviews", name="reviews")
-     */
-    public function reviews(
-        Request $request,
-        ConferenceHandler $conferences,
-        ConferenceEmailHandler $conferenceEmails,
-        ReviewHandler $reviews,
-        UserHandler $users,
-        Submission $submission
-    ): Response {
-        // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'reviews');
-
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
-        if ($submission->getConference() !== $conference) {
-            throw $this->createNotFoundException('Page not found.');
-        }
-
-        // create and handle the review invitation form for existing users
-        $review1 = new Review($submission);
-        $invitationExistingForm = $this->createForm(InvitationTypeExisting::class, $review1);
-        $invitationExistingForm->handleRequest($request);
-        if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
-            $reviews->saveReview($review1);
-            $conferenceEmails->sendReviewEmail($review1, 'review-invitation');
-            $this->addFlash('notice', "A review invitation email has been sent to {$review1->getUser()}.");
-        }
-
-        // create and handle the review invitation form for new users
-        $review2 = new Review($submission);
-        $invitationNewForm = $this->createForm(InvitationTypeNew::class, $review2);
-        $invitationNewForm->handleRequest($request);
-        if ($invitationNewForm->isSubmitted() && $invitationNewForm->isValid()) {
-            $user = $users->createInvitedUser($review2);
-            $existing = $users->getUserByEmail($user->getEmail());
-            if ($existing) {
-                $error = new FormError('There is already a user with this email address in the database.');
-                $invitationNewForm->get('email')->addError($error);
-            } else {
-                $users->saveUser($user);
-                $review2->setUser($user);
-                $reviews->saveReview($review2);
-                $conferenceEmails->sendReviewEmail($review2, 'review-invitation');
-                $this->addFlash('notice', "A review invitation email has been sent to {$review2->getUser()}.");
-            }
-        }
-
-        // add additional twig variables
-        $twigs['invitationExistingForm'] = $invitationExistingForm->createView();
-        $twigs['invitationNewForm'] = $invitationNewForm->createView();
-
-        // render and return the page
-        return $this->render('conference/submission/reviews.twig', $twigs);
-    }
-
-    /**
-     * Route for deleting/revoking a review invitation.
-     *
-     * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
-     * @param ReviewHandler $reviews The review handler.
-     * @param Submission $submission The submission.
-     * @param Review $review The review.
-     * @return Response
-     * @Route("/details/{submission}/delete-review/{review}", name="delete_review")
-     */
-     public function deleteReview(
-         ConferenceEmailHandler $conferenceEmails,
-         ReviewHandler $reviews,
-         Submission $submission,
-         Review $review
-     ): Response {
-         $conferenceEmails->sendReviewEmail($review, 'review-invitation-cancellation');
-         $reviews->deleteReview($review);
-         $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked, and the cancellation email sent.");
-         return $this->redirectToRoute('conference_submission_reviews', [
-             'submission' => $submission->getId()
-         ]);
-     }
-
-    /**
-     * Route for recording the decision for a submission.
      *
      * @param Request $request Symfony's request object.
      * @param ConferenceHandler $conferences The conference handler.
      * @param SubmissionHandler $submissions The submission handler.
      * @param Submission $submission The submission.
      * @return Response
-     * @Route("/details/{submission}/decision", name="decision")
+     * @Route("/view/{submission}", name="view")
      */
-    public function decision(
-        Request $request,
-        ConferenceHandler $conferences,
-        SubmissionHandler $submissions,
-        Submission $submission
+    public function view(
+      Request $request,
+      ConferenceHandler $conferences,
+      SubmissionHandler $submissions,
+      Submission $submission
     ): Response {
         // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'decision');
+        $twigs = [
+            'area' => 'paper',
+            'subarea' => 'submission',
+            'submission' => $submission
+        ];
 
         // look for the current conference
         $conference = $conferences->getCurrentConference();
@@ -257,188 +125,85 @@ class SubmissionController extends AbstractController
         $twigs['submissionDecisionForm'] = $submissionDecisionForm->createView();
 
         // render and return the page
-        return $this->render('conference/submission/decision.twig', $twigs);
+        return $this->render('conference/submission/view.twig', $twigs);
     }
 
     /**
-     * Route for handling comments for a submission.
+     * Route for sending a decision email to a user who submitted a paper.
      *
-     * @param Request $request Symfony's request object.
-     * @param CommentHandler $comments The comment handler.
      * @param ConferenceHandler $conferences The conference handler.
      * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
-     * @param UserHandler $users The user handler.
      * @param Submission $submission The submission.
      * @return Response
-     * @Route("/details/{submission}/comments", name="comments")
+     * @Route("/email/decision/{submission}", name="email_decision")
      */
-    public function comments(
-        Request $request,
-        CommentHandler $comments,
+    public function emailDecision(
         ConferenceHandler $conferences,
         ConferenceEmailHandler $conferenceEmails,
-        UserHandler $users,
         Submission $submission
     ): Response {
-        // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'comments');
-
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
-        if ($submission->getConference() !== $conference) {
+        // throw 404 error if the submission is not for the current conference
+        if ($submission->getConference() !== $conferences->getCurrentConference()) {
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // create and handle the comment invitation form for existing users
-        $comment1 = new Comment($submission);
-        $invitationExistingForm = $this->createForm(InvitationTypeExisting::class, $comment1);
-        $invitationExistingForm->handleRequest($request);
-        if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
-            $comments->saveComment($comment1);
-            $conferenceEmails->sendCommentEmail($comment1, 'comment-invitation');
-            $this->addFlash('notice', "A comment invitation email has been sent to {$comment1->getUser()}.");
+        // check the email can be sent
+        if ($submission->getDecisionEmailed() || $submission->getStatus() === 'pending') {
+            throw $this->createNotFoundException('Page not found.');
         }
 
-        // create and handle the comment invitation form for new users
-        $comment2 = new Comment($submission);
-        $invitationNewForm = $this->createForm(InvitationTypeNew::class, $comment2);
-        $invitationNewForm->handleRequest($request);
-        if ($invitationNewForm->isSubmitted() && $invitationNewForm->isValid()) {
-            $user = $users->createInvitedUser($comment2);
-            $existing = $users->getUserByEmail($user->getEmail());
-            if ($existing) {
-                $error = new FormError('There is already a user with this email address in the database.');
-                $invitationNewForm->get('email')->addError($error);
-            } else {
-                $users->saveUser($user);
-                $comment2->setUser($user);
-                $comments->saveComment($comment2);
-                $conferenceEmails->sendCommentEmail($comment2, 'comment-invitation');
-                $this->addFlash('notice', "A comment invitation email has been sent to {$comment2->getUser()}.");
-            }
+        switch ($submission->getStatus()) {
+            case 'accepted':
+                $conferenceEmails->sendSubmissionEmail($submission, 'submission-acceptance');
+                break;
+
+            case 'rejected':
+                $conferenceEmails->sendSubmissionEmail($submission, 'submission-rejection');
+                break;
         }
 
-        // add additional twig variables
-        $twigs['invitationExistingForm'] = $invitationExistingForm->createView();
-        $twigs['invitationNewForm'] = $invitationNewForm->createView();
+        // add flashbag notice
+        $notice = "{$submission->getUser()} has been sent an email informing them of the decision.";
+        $this->addFlash('notice', $notice);
 
-        // render and return the page
-        return $this->render('conference/submission/comments.twig', $twigs);
-    }
-
-    /**
-     * Route for deleting/revoking a comment invitation.
-     *
-     * @param Request $request Symfony's request object.
-     * @param CommentHandler $comments The comment handler.
-     * @param Submission $submission The submission.
-     * @param Comment $comment The comment.
-     * @return Response
-     * @Route("/details/{submission}/delete-comment/{comment}", name="delete_comment")
-     */
-    public function deleteComment(
-        Request $request,
-        CommentHandler $comments,
-        Submission $submission,
-        Comment $comment
-    ): Response {
-        $comments->deleteComment($comment);
-        $this->addFlash('notice', "Comment invitation to {$comment->getUser()} has been deleted.");
-        return $this->redirectToRoute('conference_submission_comments', [
+        // return a redirect to the submission page
+        return $this->redirectToRoute('conference_submission_view', [
             'submission' => $submission->getId()
         ]);
     }
 
     /**
-     * Route for handling chairs for a submission.
+     * Route for sending a submission remdinder email to a user who's paper has been accepted'.
      *
-     * @param Request $request Symfony's request object.
-     * @param ChairHandler $chairs The chair handler.
      * @param ConferenceHandler $conferences The conference handler.
      * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
-     * @param UserHandler $users The user handler.
      * @param Submission $submission The submission.
      * @return Response
-     * @Route("/details/{submission}/chair", name="chair")
+     * @Route("/email/reminder/{submission}", name="email_reminder")
      */
-    public function chair(
-        Request $request,
-        ChairHandler $chairs,
+    public function emailReminder(
         ConferenceHandler $conferences,
         ConferenceEmailHandler $conferenceEmails,
-        UserHandler $users,
         Submission $submission
     ): Response {
-        // initialise the twig variables
-        $twigs = $this->createSubmissionTwigs($submission, 'chair');
-
-        // look for the current conference
-        $conference = $conferences->getCurrentConference();
-
-        // throw a 404 error if there isn't one or if it isn't the conference of the given submission
-        if ($submission->getConference() !== $conference) {
+        // throw 404 error if the submission is not for the current conference
+        if ($submission->getConference() !== $conferences->getCurrentConference()) {
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // create and handle the chair invitation form for existing users
-        $chair1 = new Chair($submission);
-        $invitationExistingForm = $this->createForm(InvitationTypeExisting::class, $chair1);
-        $invitationExistingForm->handleRequest($request);
-        if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
-            $chairs->saveChair($chair1);
-            $conferenceEmails->sendChairEmail($chair1, 'comment-invitation');
-            $this->addFlash('notice', "A chair invitation email has been sent to {$chair1->getUser()}.");
+        // check the email can be sent
+        if ($submission->getStatus() !== 'accepted' || !$submission->getDecisionEmailed()) {
+            throw $this->createNotFoundException('Page not found.');
         }
 
-        // create and handle the chair invitation form for new users
-        $chair2 = new Chair($submission);
-        $invitationNewForm = $this->createForm(InvitationTypeNew::class, $chair2);
-        $invitationNewForm->handleRequest($request);
-        if ($invitationNewForm->isSubmitted() && $invitationNewForm->isValid()) {
-            $user = $users->createInvitedUser($chair2);
-            $existing = $users->getUserByEmail($user->getEmail());
-            if ($existing) {
-                $error = new FormError('There is already a user with this email address in the database.');
-                $invitationNewForm->get('email')->addError($error);
-            } else {
-                $users->saveUser($user);
-                $chair2->setUser($user);
-                $chairs->saveChair($chair2);
-                $conferenceEmails->sendChairEmail($chair2, 'chair-invitation');
-                $this->addFlash('notice', "A chair invitation email has been sent to {$chair2->getUser()}.");
-            }
-        }
+        // send the reminder email
+        $conferenceEmails->sendSubmissionEmail($submission, 'submission-reminder');
 
-        // add additional twig variables
-        $twigs['invitationExistingForm'] = $invitationExistingForm->createView();
-        $twigs['invitationNewForm'] = $invitationNewForm->createView();
+        // add flashbag notice
+        $notice = "{$submission->getUser()} has been sent an email reminding them to submit their paper.";
+        $this->addFlash('notice', $notice);
 
-        // render and return the page
-        return $this->render('conference/submission/chair.twig', $twigs);
-    }
-
-    /**
-     * Route for deleting/revoking a chair invitation.
-     *
-     * @param Request $request Symfony's request object.
-     * @param ChairHandler $chairs The chair handler.
-     * @param Submission $submission The submission.
-     * @param Chair $chair The chair invitation.
-     * @return Response
-     * @Route("/details/{submission}/delete-chair/{chair}", name="delete_chair")
-     */
-    public function deleteChair(
-        Request $request,
-        ChairHandler $chairs,
-        Submission $submission,
-        Chair $chair
-    ): Response {
-        $chairs->deleteChair($chair);
-        $this->addFlash('notice', "Chair invitation to {$chair->getUser()} has been deleted.");
-        return $this->redirectToRoute('conference_submission_chair', [
-            'submission' => $submission->getId()
-        ]);
+        // return a redirect to the submission page
+        return $this->redirectToRoute('conference_submission_view');
     }
 }

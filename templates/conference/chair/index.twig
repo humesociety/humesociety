@@ -1,29 +1,19 @@
 {% extends 'conference/_layout-papers.twig' %}
 
-{% block title %}Submissions{% endblock %}
+{% block title %}Chairs{% endblock %}
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Submissions{% endblock %}
+{% block title %}Chairs{% endblock %}
     {% block header_right %}
       {% if conference.submissions|length > 0 %}
         <div class="input">
-          <label for="show-keyword">Keyword:</label>
-          <select id="show-keyword" data-include="keyword" data-table="submissions">
+          <label for="show-progress">Progress:</label>
+          <select id="show-progress" data-filter="progress" data-table="submissions">
             <option value="all">all</option>
-            {% for keyword in keywords %}
-              <option value="{{ keyword }}">{{ keyword }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="input">
-          <label for="show-status">Status:</label>
-          <select id="show-status" data-filter="status" data-table="submissions">
-            <option value="all">all</option>
-            <option value="pending">pending</option>
-            <option value="rejected">rejected</option>
-            <option value="accepted">accepted</option>
-            <option value="submitted">submitted</option>
+            <option value="invitedLT1">invited &lt; 1</option>
+            <option value="acceptedLT1">1 invited, accepted &lt; 1</option>
+            <option value="accepted1">1 accepted</option>
           </select>
         </div>
       {% endif %}
@@ -34,16 +24,24 @@
         <p>Click on the title of a submission to view more details and download the paper. From there you can also manage the reviews for that paper, enter your decision, and send an email informing the user of that decision.</p>
         <div class="list" id="submissions">
           {% for submission in conference.submissions %}
-            <div class="submission" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
+            <div class="submission" data-progress="{{ submission.chairProgress }}" data-keyword="{{ submission.keywords }}">
               <div class="submission-heading">
                 <div class="title">
                   <h3><a href="{{ path('conference_submission_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
                   <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
                 </div>
-                {% include 'conference/submission/_invitation-status.twig' with { invitation: submission } %}
               </div>
               <div class="submission-body">
-                <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+                {% if submission.chairs|length > 0 %}
+                  {% for chair in submission.chairs %}
+                    <div class="review-summary">
+                      <div class="user">{{ chair.user }}</div>
+                      {% include 'conference/submission/_invitation-status.twig' with { invitation: chair } %}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <p>No one has been invited to chair the session on this paper.</p>
+                {% endif %}
               </div>
             </div>
           {% endfor %}

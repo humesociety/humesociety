@@ -3,8 +3,15 @@
 {% block title %}Submission Reviews{% endblock %}
 
 {% block main %}
-  {% embed 'conference/_embed/submission-box.twig' %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}{{ submission.id }}. {{ submission }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('conference_review_index') }}" class="button"><i class="fas fa-chevron-left"></i>All Reviews</a>
+      </div>
+    {% endblock %}
     {% block body %}
+      {% include 'conference/submission/_submission-tabs.twig' %}
       <h2>Invite Someone to Review this Paper</h2>
       {% include 'conference/_form/invitation/existing.twig' %}
       {% include 'conference/_form/invitation/new.twig' %}
@@ -32,12 +39,12 @@
                     </div>
                   {% elseif review.status == 'pending' or review.status == 'accepted' %}
                     <div class="action">
-                      <a href="{{ path('conference_submission_email_review_reminder', { review: review.id }) }}" class="button">Email Reminder</a>
+                      <a href="{{ path('conference_review_email_reminder', { review: review.id }) }}" class="button">Email Reminder</a>
                       {% include 'conference/submission/_reminder-summary.twig' with { invitation: review } %}
                     </div>
                   {% endif %}
                   <div class="action">
-                    <a href="{{ path('conference_submission_delete_review', { submission: submission.id, review: review.id }) }}" class="button delete">Delete Invitation</a>
+                    <a href="{{ path('conference_review_delete', { submission: submission.id, review: review.id }) }}" class="button delete">Delete Invitation</a>
                   </div>
                 </div>
                 {% if review.submitted %}

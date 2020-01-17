@@ -724,6 +724,92 @@ class Submission
     }
 
     /**
+     * Get the progress of the submission through the review process.
+     *
+     * @return string
+     */
+    public function getReviewProgress(): string
+    {
+        $invited = 0;
+        $accepted = 0;
+        $submitted = 0;
+        foreach ($this->reviews as $review) {
+            $invited += 1;
+            if ($review->isAccepted()) {
+                $accepted += 1;
+            }
+            if ($review->isSubmitted()) {
+                $submitted += 1;
+            }
+        }
+        if ($invited < 2) {
+            return 'invitedLT2';
+        }
+        if ($accepted < 2) {
+            return 'acceptedLT2';
+        }
+        if ($submitted < 2) {
+            return 'submittedLT2';
+        }
+        return 'submitted2';
+    }
+
+    /**
+     * Get the progress of the submission through the commentator assignment process.
+     *
+     * @return string
+     */
+    public function getCommentProgress(): string
+    {
+        $invited = 0;
+        $accepted = 0;
+        $submitted = 0;
+        foreach ($this->comments as $comment) {
+            $invited += 1;
+            if ($comment->isAccepted()) {
+                $accepted += 1;
+            }
+            if ($comment->isSubmitted()) {
+                $submitted += 1;
+            }
+        }
+        if ($invited < 1) {
+            return 'invitedLT1';
+        }
+        if ($accepted < 1) {
+            return 'acceptedLT1';
+        }
+        if ($submitted < 1) {
+            return 'submittedLT1';
+        }
+        return 'submitted1';
+    }
+
+    /**
+     * Get the progress of the submission through the commentator assignment process.
+     *
+     * @return string
+     */
+    public function getChairProgress(): string
+    {
+        $invited = 0;
+        $accepted = 0;
+        foreach ($this->chairs as $chair) {
+            $invited += 1;
+            if ($chair->isAccepted()) {
+                $accepted += 1;
+            }
+        }
+        if ($invited < 1) {
+            return 'invitedLT1';
+        }
+        if ($accepted < 1) {
+            return 'acceptedLT1';
+        }
+        return 'accepted1';
+    }
+
+    /**
      * Get whether the given user has permission to view this submission.
      *
      * @param User|null $user The currently logged in user (if any).
