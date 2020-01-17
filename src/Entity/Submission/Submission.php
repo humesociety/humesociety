@@ -853,9 +853,9 @@ class Submission
     /**
      * Get average review grade as a number between 1 and 4.
      *
-     * @return int|null
+     * @return float|null
      */
-    public function getReviewGradeAverage(): ?int
+    public function getReviewGradeAverage(): ?float
     {
         $submittedReviews = 0;
         $gradeTotal = 0;
