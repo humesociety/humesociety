@@ -5,11 +5,6 @@
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
     {% block title %}Send Membership Email{% endblock %}
-    {% block header_right %}
-      <div class="input">
-        <a href="{{ path('admin_email_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Emails</a>
-      </div>
-    {% endblock %}
     {% block body %}
       <nav class="tabs">
         <a class="is-active" data-tab="edit">Send</a>
@@ -17,7 +12,7 @@
         <a data-tab="help">Help</a>
       </nav>
       <div class="tab-pane is-active" id="edit">
-        {% include 'admin/_form/email/send.twig' %}
+        {% include 'admin/_form/email/membership.twig' %}
       </div>
       <div class="tab-pane" id="preview">
         {% include 'admin/email/_preview.twig' %}

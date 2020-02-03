@@ -274,7 +274,7 @@ class UserHandler
         $evpt = $this->getVicePresident();
         $evptDisplay = $evpt
             ? $evpt->getFullname().' <vicepresident@humesociety.org>'
-            : 'Executive Vice-President Treasrer <vicepresident@humesociety.org>';
+            : 'Executive Vice-President Treasurer <vicepresident@humesociety.org>';
         $tech = $this->getTechnicalDirector();
         $techDisplay = $tech
             ? $tech->getFullname().' <web@humesociety.org>'

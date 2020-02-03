@@ -1,0 +1,11 @@
+{{ form_start(emailForm) }}
+  {{ form_row(emailForm.sender) }}
+  {{ form_row(emailForm.recipient) }}
+  {{ form_row(emailForm.subject) }}
+  {{ form_row(emailForm.attachment) }}
+  {{ form_row(emailForm.content) }}
+  {{ form_row(emailForm._token) }}
+  <div class="buttons">
+    <button type="submit" class="button create">Send Email</button>
+  </div>
+{{ form_end(emailForm) }}

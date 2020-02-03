@@ -1,15 +1,13 @@
 {% extends 'admin/_layout-emails.twig' %}
 
-{% block title %}Emails{% endblock %}
+{% block title %}Edit Email Templates{% endblock %}
 
 {% block main %}
   {% embed 'admin/_embed/box.twig' %}
-    {% block title %}Emails{% endblock %}
+    {% block title %}Edit Email Templates{% endblock %}
     {% block header_right %}
     {% endblock %}
     {% block body %}
-      <h4><a href="{{ path('admin_email_send') }}">Send Membership Email</a></h4>
-      <p>Create and send one-off emails to all members in good standing and/or in arrears.</p>
       {% for template in emailTemplates %}
         <h4><a href="{{ path('admin_email_edit', { label: template.label }) }}">Edit {{ template.title }} Email</a></h4>
         <p>{{ template.description }}</p>

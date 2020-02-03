@@ -48,36 +48,17 @@ class SocietyEmailHandler
     }
 
     /**
-     * Send an email to all members.
+     * Send an email.
      *
-     * @param bool $current Whether to send to current members.
-     * @param bool $lapsed Whether to send to lapsed members.
-     * @param bool $declining Whether to include members declining to receive emails.
-     * @param Email The email to send.
+     * @param Email $email The email to send.
+     * @param User[] $recipientUsers The recipients.
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      * @return array
      */
-    public function sendMembershipEmail(bool $current, bool $lapsed, bool $declining, Email $email): array
+    public function sendEmail(Email $email, array $recipientUsers): array
     {
-        // get the recipients of the email
-        $recipientUsers = [];
-        if ($current) {
-            foreach ($this->users->getMembersInGoodStanding() as $user) {
-                if ($declining || $user->getReceiveEmail()) {
-                    $recipientUsers[] = $user;
-                }
-            }
-        }
-        if ($lapsed) {
-            foreach ($this->users->getMembersInArrears() as $user) {
-                if ($declining || $user->getReceiveEmail()) {
-                    $recipientUsers[] = $user;
-                }
-            }
-        }
-
         // if there's an attachment, save it
         if ($email->getAttachment()) {
             $email->getAttachment()->move($this->attachmentsDir, $email->getAttachment()->getClientOriginalName());
@@ -109,6 +90,41 @@ class SocietyEmailHandler
             'goodRecipients' => $goodRecipients,
             'badRecipients' => $badRecipients
         ];
+    }
+
+    /**
+     * Send an email to all members.
+     *
+     * @param bool $current Whether to send to current members.
+     * @param bool $lapsed Whether to send to lapsed members.
+     * @param bool $declining Whether to include members declining to receive emails.
+     * @param Email $email The email to send.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     * @return array
+     */
+    public function sendMembershipEmail(bool $current, bool $lapsed, bool $declining, Email $email): array
+    {
+        // get the recipients of the email
+        $recipientUsers = [];
+        if ($current) {
+            foreach ($this->users->getMembersInGoodStanding() as $user) {
+                if ($declining || $user->getReceiveEmail()) {
+                    $recipientUsers[] = $user;
+                }
+            }
+        }
+        if ($lapsed) {
+            foreach ($this->users->getMembersInArrears() as $user) {
+                if ($declining || $user->getReceiveEmail()) {
+                    $recipientUsers[] = $user;
+                }
+            }
+        }
+
+        // send the email and return the results
+        return $this->sendEmail($email, $recipientUsers);
     }
 
     /**
