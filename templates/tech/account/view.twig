@@ -15,6 +15,7 @@
               <th>ORGANISER</th>
               <th>EDITOR</th>
               <th>EVPT</th>
+              <th>PRES</th>
               <th>TECH</th>
             </tr>
           </thead>
@@ -31,6 +32,9 @@
                 </td>
                 <td>
                   <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_EVPT' in user.roles %} checked="checked"{% endif %} data-role="ROLE_EVPT" data-user="{{ user.id }}"></label>
+                </td>
+                <td>
+                  <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_PRES' in user.roles %} checked="checked"{% endif %} data-role="ROLE_PRES" data-user="{{ user.id }}"></label>
                 </td>
                 <td>
                   <label class="checkbox-wrapper"><input type="checkbox"{% if 'ROLE_TECH' in user.roles %} checked="checked"{% endif %} data-role="ROLE_TECH" data-user="{{ user.id }}"></label>

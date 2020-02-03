@@ -180,6 +180,20 @@ class UserHandler
     }
 
     /**
+     * Get current president.
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return User|null
+     */
+    public function getPresident(): ?User
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_PRES%\'')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Get current technical director.
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -275,15 +289,19 @@ class UserHandler
         $evptDisplay = $evpt
             ? $evpt->getFullname().' <vicepresident@humesociety.org>'
             : 'Executive Vice-President Treasurer <vicepresident@humesociety.org>';
+        $pres = $this->getPresident();
+        $presDisplay = $pres
+            ? $pres->getFullname().' <president@humesociety.org>'
+            : 'President <vicepresident@humesociety.org>';
         $tech = $this->getTechnicalDirector();
         $techDisplay = $tech
             ? $tech->getFullname().' <web@humesociety.org>'
             : 'Technical Director <vicepresident@humesociety.org>';
-        $organisers = $this->getConferenceOrganisers();
         /*
         N.B. will have to fix this properly next year; after we agreed to do it this way, Saul changed
         his mind, so I'm just hard coding it for now so as not to complicate things while the review
         process is underway
+        $organisers = $this->getConferenceOrganisers();
         $organisersDisplay = (sizeof($organisers) > 0)
             ? implode(', ', array_map(function ($organiser) {
                 return $organiser->getFullname();
@@ -293,6 +311,7 @@ class UserHandler
         $organisersDisplay = 'Ann Levey, Saul Traiger <conference@humesociety.org>';
         return [
             $evptDisplay => 'vicepresident',
+            $presDisplay => 'president',
             $techDisplay => 'web',
             $organisersDisplay => 'conference'
         ];

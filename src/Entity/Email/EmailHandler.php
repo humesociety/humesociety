@@ -85,7 +85,13 @@ class EmailHandler
                 $name = $evpt ? $evpt->getFullname() : 'Executive Vice-President Treasurer';
                 return ['vicepresident@humesociety.org' => $name];
 
+            case 'president':
+                $pres = $this->users->getPresident();
+                $name = $pres ? $evpt->getFullname() : 'President';
+                return ['president@humesociety.org' => $name];
+
             case 'conference':
+                /* change this back after this conference (see also UserHandler::getOfficialEmails)
                 $organisers = $this->users->getConferenceOrganisers();
                 $name = 'Conference Organisers';
                 if (sizeof($organisers) > 0) {
@@ -93,6 +99,8 @@ class EmailHandler
                         return $organiser->getFullname();
                     }, $organisers));
                 }
+                */
+                $name = 'Ann Levey, Saul Traiger <conference@humesociety.org>';
                 return ['conference@humesociety.org' => $name];
 
             case 'web': // fallthrough
