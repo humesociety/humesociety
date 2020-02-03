@@ -603,6 +603,7 @@ class User implements UserInterface
                 'ROLE_MEMBER',
                 'ROLE_TECH',
                 'ROLE_EVPT',
+                'ROLE_PRES',
                 'ROLE_ORGANISER',
                 'ROLE_EDITOR'
             ];
