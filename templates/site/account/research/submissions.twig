@@ -51,12 +51,10 @@
         {% endif %}
         {% if submission.status != 'pending' %}
           {% for review in submission.reviews %}
-            <div class="tab-pane" id="review{{ loop.index }}">
-              <div class="tab-pane{% if loop.first %} is-active{% endif %}" id="review{{ loop.index }}">
-                <p><strong>Grade:</strong> {{ review.grade }}</p>
-                <p><strong>Comments</strong></p>
-                <pre>{{ review.comments }}</pre>
-              </div>
+            <div class="tab-pane{% if loop.first %} is-active{% endif %}" id="review{{ loop.index }}">
+              <p><strong>Grade:</strong> {{ review.grade }}</p>
+              <p><strong>Comments</strong></p>
+              <pre>{{ review.comments }}</pre>
             </div>
           {% endfor %}
         {% endif %}
