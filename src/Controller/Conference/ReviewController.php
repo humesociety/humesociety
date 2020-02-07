@@ -2,19 +2,14 @@
 
 namespace App\Controller\Conference;
 
-use App\Entity\Chair\Chair;
-use App\Entity\Chair\ChairHandler;
-use App\Entity\Comment\Comment;
-use App\Entity\Comment\CommentHandler;
 use App\Entity\Conference\ConferenceHandler;
 use App\Entity\Email\ConferenceEmailHandler;
 use App\Entity\Review\Review;
+use App\Entity\Review\ReviewCommentsType;
 use App\Entity\Review\ReviewHandler;
 use App\Entity\Invitation\InvitationTypeExisting;
 use App\Entity\Invitation\InvitationTypeNew;
 use App\Entity\Submission\Submission;
-use App\Entity\Submission\SubmissionTypeDecision;
-use App\Entity\Submission\SubmissionHandler;
 use App\Entity\User\UserHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -197,5 +192,54 @@ class ReviewController extends AbstractController
          return $this->redirectToRoute('conference_review_view', [
              'submission' => $review->getSubmission()->getId()
          ]);
+     }
+
+     /**
+      * Route for editing the reviewer's comments as shown to the author.
+      *
+      * @param Request $request Symfony's request object.
+      * @param ConferenceHandler $conferences The conference handler.
+      * @param ReviewHandler $reviews The review handler.
+      * @param Review $review The review.
+      * @return Response
+      * @Route("/edit-comments/{review}", name="edit_comments")
+      */
+     public function editComments(
+         Request $request,
+         ConferenceHandler $conferences,
+         ReviewHandler $reviews,
+         Review $review
+     ): Response {
+         // initialise the twig variables
+         $twigs = [
+             'area' => 'paper',
+             'subarea' => 'review',
+             'submission' => $review->getSubmission()
+         ];
+
+         // look for the current conference
+         $conference = $conferences->getCurrentConference();
+
+         // throw a 404 error if there isn't one or if it isn't the conference of the given submission
+         if ($review->getSubmission()->getConference() !== $conference) {
+             throw $this->createNotFoundException('Page not found.');
+         }
+
+         // create and handle the comments form
+         $reviewCommentsForm = $this->createForm(ReviewCommentsType::class, $review);
+         $reviewCommentsForm->handleRequest($request);
+         if ($reviewCommentsForm->isSubmitted() && $reviewCommentsForm->isValid()) {
+             $reviews->saveReview($review);
+             $this->addFlash('notice', "Comments as shown to the author for {$review} have been edited.");
+             return $this->redirectToRoute('conference_review_view', [
+               'submission' => $review->getSubmission()->getId()
+             ]);
+         }
+
+         // add additional twig variables
+         $twigs['reviewCommentsForm'] = $reviewCommentsForm->createView();
+
+         // render and return the page
+         return $this->render('conference/review/edit-comments.twig', $twigs);
      }
 }

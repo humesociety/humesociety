@@ -1,0 +1,18 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Edit Review Comments{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}{{ submission.id }}. {{ submission }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('conference_review_view', { submission: submission.id }) }}" class="button"><i class="fas fa-chevron-left"></i>Reviews for this Paper</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <p>When you record a decision for this paper and email the author, the reviewers’ comments will be made available to that author through their account area on this site. By default, they will be shown the comments as submitted by the reviewer. Use this form to edit those comments first if necessary; the author will be shown what you enter into this box instead of the original comments.</p>
+      {% include 'conference/_form/review/edit-comments.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

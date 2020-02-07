@@ -65,6 +65,15 @@ class Review extends Invitation
     private $comments;
 
     /**
+     * The reviewer's comments as shown to the author - potentially edited
+     * by the conference organisers.
+     *
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $commentsForAuthor;
+
+    /**
      * Constructor function.
      *
      * @var Submission $submission The submission being reviewed.
@@ -81,6 +90,7 @@ class Review extends Invitation
         $this->user = null;
         $this->grade = null;
         $this->comments = null;
+        $this->commentsForAuthor = null;
     }
 
     /**
@@ -197,6 +207,28 @@ class Review extends Invitation
     public function setComments(string $comments)
     {
         $this->comments = $comments;
+        return $this;
+    }
+
+    /**
+     * Get the reviewer's comments as shown to the author.
+     *
+     * @return string|null
+     */
+    public function getCommentsForAuthor(): ?string
+    {
+        return $this->commentsForAuthor ? $this->commentsForAuthor : $this->comments;
+    }
+
+    /**
+     * Set the reviewer's comments as shown to the author.
+     *
+     * @var string $commentsForAuthor The reviewer's comments as show to the author.
+     * @return self
+     */
+    public function setCommentsForAuthor(string $commentsForAuthor)
+    {
+        $this->commentsForAuthor = $commentsForAuthor;
         return $this;
     }
 }

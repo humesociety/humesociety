@@ -50,6 +50,9 @@
                 {% if review.submitted %}
                   <div class="review-comments" data-review="{{ review.id }}">
                     <pre>{{ review.comments }}</pre>
+                    <div class="review-actions">
+                      <a href="{{ path('conference_review_edit_comments', { review: review.id }) }}" class="button">View/Edit Comments as Shown to the Author</a>
+                    </div>
                   </div>
                 {% endif %}
               </div>

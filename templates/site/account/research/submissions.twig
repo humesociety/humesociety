@@ -14,8 +14,10 @@
           <a data-tab="comments">Commentator</a>
         {% endif %}
         {% if submission.status != 'pending' %}
-          {% for reviews in submission.reviews %}
-            <a data-tab="review{{ loop.index }}">Review {{ loop.index }}</a>
+          {% for review in submission.reviews %}
+            {% if review.status == 'submitted' %}
+              <a data-tab="review{{ loop.index }}">Review {{ loop.index }}</a>
+            {% endif %}
           {% endfor %}
         {% endif %}
       </nav>
@@ -51,11 +53,13 @@
         {% endif %}
         {% if submission.status != 'pending' %}
           {% for review in submission.reviews %}
-            <div class="tab-pane" id="review{{ loop.index }}">
-              <p><strong>Grade:</strong> {{ review.grade }}</p>
-              <p><strong>Comments</strong></p>
-              <pre>{{ review.comments }}</pre>
-            </div>
+            {% if review.status == 'submitted' %}
+              <div class="tab-pane" id="review{{ loop.index }}">
+                <p><strong>Grade:</strong> {{ review.grade }}</p>
+                <p><strong>Comments</strong></p>
+                <pre>{{ review.commentsForAuthor }}</pre>
+              </div>
+            {% endif %}
           {% endfor %}
         {% endif %}
       </div>

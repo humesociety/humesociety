@@ -86,14 +86,18 @@
 
 .review-comments {
   display: none;
-  pre {
-    margin: .5em;
-    background: #fff;
-    font-family: $sans;
-    white-space: pre-wrap;
-  }
+  padding: .5em;
   &.is-active {
     display: block;
+  }
+  pre {
+    background: #fff;
+    font-family: $sans;
+    margin-bottom: .5em;
+  }
+  .review-actions {
+    display: flex;
+    justify-content: flex-end;
   }
 }
 
