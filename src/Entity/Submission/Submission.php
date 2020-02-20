@@ -119,6 +119,15 @@ class Submission
     private $accepted;
 
     /**
+     * Whether the the author has confirmed they will attend the conference (null means decision
+     * pending; false means rejected).
+     *
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $confirmed;
+
+    /**
      * The date the user was emailed informing them of the decision (null if not yet emailed).
      *
      * @var \DateTimeInterface|null
@@ -286,6 +295,7 @@ class Submission
         $this->filename = null;
         $this->finalFilename = null;
         $this->accepted = null;
+        $this->confirmed = null;
         $this->dateDecisionEmailed = null;
         $this->submissionReminderEmails = 0;
         $this->dateLastSubmissionReminderSent = null;
@@ -518,6 +528,28 @@ class Submission
     }
 
     /**
+     * Get whether the has confirmed attendance (null means the decision is pending).
+     *
+     * @return bool|null
+     */
+    public function isConfirmed(): ?bool
+    {
+        return $this->confirmed;
+    }
+
+    /**
+     * Set whether the author has confirmed attendance.
+     *
+     * @param bool|null $confirmed Whether the author has confirmed.
+     * @return self
+     */
+    public function setConfirmed(?bool $confirmed): self
+    {
+        $this->confirmed = $confirmed;
+        return $this;
+    }
+
+    /**
      * Get the date when the user was emailed the decision (if any).
      *
      * @return \DateTimeInterface|null
@@ -692,6 +724,12 @@ class Submission
         if ($this->finalFilename !== null) {
             return 'submitted';
         }
+        if ($this->confirmed === true) {
+            return 'confirmed';
+        }
+        if ($this->confirmed === false) {
+            return 'declined';
+        }
         if ($this->accepted === true) {
             return 'accepted';
         }
@@ -711,6 +749,12 @@ class Submission
         switch ($this->getStatus()) {
             case 'submitted':
                 return 'fas fa-check-double';
+
+            case 'confirmed':
+                return 'fas fa-check-double';
+
+            case 'declined':
+                return 'fas fa-times';
 
             case 'accepted':
                 return 'fas fa-check';

@@ -84,6 +84,30 @@ class SystemEmailHandler
     }
 
     /**
+     * Send submission confirmation notification email to conference organisers.
+     *
+     * @param Submission $submission The submission concerned.
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     * @return void
+     */
+    public function sendSubmissionConfirmationNotification(Submission $submission)
+    {
+        $email = new Email();
+        if ($submission->isConfirmed()) {
+            $email->setSubject("{$submission->getConference()}: Attendance Confirmed");
+        } else {
+            $email->setSubject("{$submission->getConference()}: Attendance Declined");
+        }
+        $email->setSender('web')
+            ->setRecipient($this->conferenceOrganisers)
+            ->setTemplate('submission-confirmed')
+            ->addTwig('submission', $submission);
+        $this->emails->sendEmail($email);
+    }
+
+    /**
      * Send submission final version notification email to conference organisers.
      *
      * @param Submission $submission The submission concerned.

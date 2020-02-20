@@ -4,21 +4,21 @@
   <div class="section content">
     <h4>Submissions for the {{ conference }}</h4>
     {% if submission == null and conference.open %}
-      <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Pacific Time) on {#{{ conference.deadline|date('F jS') }}#}November 15th. Please submit your paper using the form below.</p>
+      <p class="conference-notice">Submissions for the {{ conference }} in {{ conference.town }} are now open. They will remain open until midnight (Pacific Time) on {{ conference.deadline|date('F jS') }}. Please submit your paper using the form below.</p>
       {% if guidanceText is defined %}{{ guidanceText|raw }}{% endif %}
       {% include 'site/_form/conference-submission.twig' %}
     {% elseif submission %}
       <nav class="tabs">
         <a data-tab="decision" class="is-active">Decision</a>
-        {% if submission.accepted %}
-          <a data-tab="comments">Commentator</a>
-        {% endif %}
         {% if submission.status != 'pending' %}
           {% for review in submission.reviews %}
             {% if review.status == 'submitted' %}
               <a data-tab="review{{ loop.index }}">Review {{ loop.index }}</a>
             {% endif %}
           {% endfor %}
+        {% endif %}
+        {% if submission.accepted %}
+          <a data-tab="comments">Commentator</a>
         {% endif %}
       </nav>
       <div class="tab-panes">
@@ -27,16 +27,35 @@
             <p>Thank you for submitting your paper, {{ submission }}. We will email you when a decision has been made. You can also check the status of your submission on this page at any time.</p>
           {% elseif submission.status == 'rejected' %}
             <p>We regret to inform you that your paper has not been accepted for the {{ conference }}. You can read your reviewers&rsquo; comments via the tabs above.</p>
-          {% elseif submission.status == 'accepted' or submission.status == 'submitted' %}
+          {% else %}
             <p>We are pleased to inform you that your paper has been accepted for the {{ conference }}. You can read your reviewers&rsquo; comments and see details about the commentator for you paper via the tabs above.</p>
-            {% if submission.status == 'submitted' %}
-              <p>Thank you for uploading the final version of your paper.</p>
-            {% else %}
-              <p>Please use the form below to upload the final version of your paper.</p>
+            {% if submission.status == 'accepted' %}
+              <p>Please indicate whether you will be able to deliver your paper at the {{ conference }} using the buttons below.</p>
+              <div class="invitation-buttons">
+                <a href="{{ path('account_research_submissions', { reply: 'decline' }) }}" class="button delete">Decline Invitation</a>
+                <a href="{{ path('account_research_submissions', { reply: 'accept' }) }}" class="button create">Accept Invitation</a>
+              </div>
+            {% elseif submission.status == 'declined' %}
+              <p>You have declined the invitation to deliver your paper at the {{ conference }}. Thank you for letting us know.</p>
+            {% elseif submission.status == 'confirmed' %}
+              <p>Thank you for confirming your attendance at the {{ conference }}. Please use the form below to upload the final version of your paper.</p>
               {% include 'site/_form/conference-submission-final.twig' %}
+            {% else %}
+              <p>Thank you for uploading the final version of your paper.</p>
             {% endif %}
           {% endif %}
         </div>
+        {% if submission.status != 'pending' %}
+          {% for review in submission.reviews %}
+            {% if review.status == 'submitted' %}
+              <div class="tab-pane" id="review{{ loop.index }}">
+                <p><strong>Grade:</strong> {{ review.grade }}</p>
+                <p><strong>Comments</strong></p>
+                <pre>{{ review.commentsForAuthor }}</pre>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
         {% if submission.accepted %}
           <div class="tab-pane" id="comments">
             {% if submission.comment %}
@@ -50,17 +69,6 @@
               <p>A commentator has not yet been assigned to your paper.</p>
             {% endif %}
           </div>
-        {% endif %}
-        {% if submission.status != 'pending' %}
-          {% for review in submission.reviews %}
-            {% if review.status == 'submitted' %}
-              <div class="tab-pane" id="review{{ loop.index }}">
-                <p><strong>Grade:</strong> {{ review.grade }}</p>
-                <p><strong>Comments</strong></p>
-                <pre>{{ review.commentsForAuthor }}</pre>
-              </div>
-            {% endif %}
-          {% endfor %}
         {% endif %}
       </div>
     {% endif %}

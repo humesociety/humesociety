@@ -75,12 +75,13 @@ class ResearchController extends AbstractController
      * @param SystemEmailHandler $systemEmails The system email handler.
      * @param SubmissionHandler $submissions The submission handler.
      * @param TextHandler $texts The text handler.
+     * @param string|null $reply
      * @return Response
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
-     * @Route("/submissions", name="submissions")
+     * @Route("/submissions/{reply}", name="submissions", requirements={"reply": "accept|decline"})
      * @IsGranted("ROLE_USER")
      */
     public function submissions(
@@ -89,7 +90,8 @@ class ResearchController extends AbstractController
         ConferenceEmailHandler $conferenceEmails,
         SystemEmailHandler $systemEmails,
         SubmissionHandler $submissions,
-        TextHandler $texts
+        TextHandler $texts,
+        ?string $reply = null
     ): Response {
         // look for the current conference
         $conference = $conferences->getCurrentConference();
@@ -133,17 +135,28 @@ class ResearchController extends AbstractController
             $twigs['submissionForm'] = $submissionForm->createView();
         }
 
-        // if the user's paper was accepted and the final version hasn't been uploaded yet...
-        if ($submission && $submission->isAccepted() && $submission->getFinalFilename() === null) {
-            // create and handle the submission final version upload form
-            $finalSubmissionForm = $this->createForm(SubmissionTypeFinal::class, $submission);
-            $finalSubmissionForm->handleRequest($request);
-            if ($finalSubmissionForm->isSubmitted() && $finalSubmissionForm->isValid()) {
+        // if there is a paper and it has been accepted...
+        if ($submission && $submission->isAccepted()) {
+            // maybe handle the reply...
+            if ($reply) {
+                $submission->setConfirmed($reply === 'accept');
                 $submissions->saveSubmission($submission);
-                $systemEmails->sendSubmissionFinalNotification($submission);
-                $this->addFlash('success', 'The final version of your paper has been uploaded.');
+                // notify the conference organisers
+                $systemEmails->sendSubmissionConfirmationNotification($submission);
             }
-            $twigs['finalSubmissionForm'] = $finalSubmissionForm->createView();
+
+            // if the author has confirmed, but the final version hasn't been uploaded yet...
+            if ($submission->isConfirmed() && $submission->getFinalFilename() === null) {
+                // create and handle the submission final version upload form
+                $finalSubmissionForm = $this->createForm(SubmissionTypeFinal::class, $submission);
+                $finalSubmissionForm->handleRequest($request);
+                if ($finalSubmissionForm->isSubmitted() && $finalSubmissionForm->isValid()) {
+                    $submissions->saveSubmission($submission);
+                    $systemEmails->sendSubmissionFinalNotification($submission);
+                    $this->addFlash('success', 'The final version of your paper has been uploaded.');
+                }
+                $twigs['finalSubmissionForm'] = $finalSubmissionForm->createView();
+            }
         }
 
         // render and return the page
