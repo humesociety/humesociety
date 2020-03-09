@@ -487,7 +487,31 @@ class Conference
     public function getAcceptedSubmissions(): Collection
     {
         return $this->submissions->filter(function ($submission) {
-            return ($submission->getStatus() === 'accepted' || $submission->getStatus() === 'submitted');
+            return $submission->isAccepted();
+        });
+    }
+
+    /**
+     * Get the confirmed submissions for this conference.
+     *
+     * @return Collection
+     */
+    public function getAcceptedSubmissions(): Collection
+    {
+        return $this->submissions->filter(function ($submission) {
+            return $submission->isConfirmed();
+        });
+    }
+
+    /**
+     * Get the accepted submissions that have not been declined.
+     *
+     * @return Collection
+     */
+    public function getNonDeclinedSubmissions(): Collection
+    {
+        return $this->submissions->filter(function ($submission) {
+            return $submission->isAccepted() && ($submission->isConfirmed() !== false);
         });
     }
 
