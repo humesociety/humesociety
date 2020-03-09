@@ -496,7 +496,7 @@ class Conference
      *
      * @return Collection
      */
-    public function getAcceptedSubmissions(): Collection
+    public function getConfirmedSubmissions(): Collection
     {
         return $this->submissions->filter(function ($submission) {
             return $submission->isConfirmed();
