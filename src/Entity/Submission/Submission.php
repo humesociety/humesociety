@@ -889,6 +889,18 @@ class Submission
                     return true;
                 }
             }
+            foreach ($this->comments as $comment) {
+                // the secret from any accepted comment is ok
+                if ($comment->getSecret() === $secret && $comment->isAccepted()) {
+                    return true;
+                }
+            }
+            foreach ($this->chairs as $chair) {
+                // the secret from any accepted chair is ok
+                if ($chair->getSecret() === $secret && $chair->isAccepted()) {
+                    return true;
+                }
+            }
         }
         // otherwise no
         return false;
