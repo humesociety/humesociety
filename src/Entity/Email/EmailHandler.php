@@ -87,7 +87,7 @@ class EmailHandler
 
             case 'president':
                 $pres = $this->users->getPresident();
-                $name = $pres ? $evpt->getFullname() : 'President';
+                $name = $pres ? $pres->getFullname() : 'President';
                 return ['president@humesociety.org' => $name];
 
             case 'conference':
