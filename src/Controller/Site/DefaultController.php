@@ -276,8 +276,10 @@ class DefaultController extends AbstractController
                     $twigs['ordinary'] = 1;
                     $twigs['votingForm'] = $votingRunOffForm->createView();
                 }
-                $twigs['election'] = $election ? $election : null;
                 $twigs['election'] = $electionRunOff ? $electionRunOff : null;
+                if ($twigs['election'] == null) {
+                    $twigs['election'] = $election ? $election : null;
+                }
                 return $this->render('site/templates/committee-voting.twig', $twigs);
 
             default:
