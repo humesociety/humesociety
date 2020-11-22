@@ -99,8 +99,12 @@ class ReviewController extends AbstractController
         $invitationExistingForm->handleRequest($request);
         if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
             $reviews->saveReview($review1);
-            $conferenceEmails->sendReviewEmail($review1, 'review-invitation');
-            $this->addFlash('notice', "A review invitation email has been sent to {$review1->getUser()}.");
+            try {
+                $conferenceEmails->sendReviewEmail($review1, 'review-invitation');
+                $this->addFlash('notice', "A review invitation email has been sent to {$review1->getUser()}.");
+            } catch (\Error $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
         }
 
         // create and handle the review invitation form for new users
@@ -117,8 +121,12 @@ class ReviewController extends AbstractController
                 $users->saveUser($user);
                 $review2->setUser($user);
                 $reviews->saveReview($review2);
-                $conferenceEmails->sendReviewEmail($review2, 'review-invitation');
-                $this->addFlash('notice', "A review invitation email has been sent to {$review2->getUser()}.");
+                try {
+                    $conferenceEmails->sendReviewEmail($review2, 'review-invitation');
+                    $this->addFlash('notice', "A review invitation email has been sent to {$review2->getUser()}.");
+                } catch (\Error $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
         }
 
@@ -146,9 +154,13 @@ class ReviewController extends AbstractController
          Submission $submission,
          Review $review
      ): Response {
-         $conferenceEmails->sendReviewEmail($review, 'review-invitation-cancellation');
-         $reviews->deleteReview($review);
-         $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked, and the cancellation email sent.");
+         try {
+            $conferenceEmails->sendReviewEmail($review, 'review-invitation-cancellation');
+            $reviews->deleteReview($review);
+            $this->addFlash('notice', "Review invitation to {$review->getUser()} has been revoked, and the cancellation email sent.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
+        }
          return $this->redirectToRoute('conference_review_view', [
              'submission' => $submission->getId()
          ]);
@@ -173,22 +185,28 @@ class ReviewController extends AbstractController
              throw $this->createNotFoundException('Page not found.');
          }
 
-         // send an email if the review is pending or accepted; otherwise return 404 error
-         switch ($review->getStatus()) {
-             case 'pending':
-                 $conferenceEmails->sendReviewEmail($review, 'review-invitation-reminder');
-                 break;
+         // throw 404 error if the review is neither pending nor accepted
+         if ($review->getStatus() !== 'pending' && $review->getStatus() !== 'accepted') {
+            throw $this->createNotFoundException('Page not found.');
+        }
 
-             case 'accepted':
-                 $conferenceEmails->sendReviewEmail($review, 'review-submission-reminder');
-                 break;
+        // try to send an email
+        try {
+            switch ($review->getStatus()) {
+                case 'pending':
+                    $conferenceEmails->sendReviewEmail($review, 'review-invitation-reminder');
+                    break;
+   
+                case 'accepted':
+                    $conferenceEmails->sendReviewEmail($review, 'review-submission-reminder');
+                    break;
+            }
+            $this->addFlash('notice', "A reminder email has been sent to {$review->getUser()}.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
+        }
 
-             default:
-                 throw $this->createNotFoundException('Page not found.');
-         }
-
-         // add flashbag notice, and then redirect to the details page for the relevant submission
-         $this->addFlash('notice', "A reminder email has been sent to {$review->getUser()}.");
+         // redirect to the details page for the relevant submission
          return $this->redirectToRoute('conference_review_view', [
              'submission' => $review->getSubmission()->getId()
          ]);

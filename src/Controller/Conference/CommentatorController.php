@@ -104,8 +104,12 @@ class CommentatorController extends AbstractController
         $invitationExistingForm->handleRequest($request);
         if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
             $comments->saveComment($comment1);
-            $conferenceEmails->sendCommentEmail($comment1, 'comment-invitation');
-            $this->addFlash('notice', "A comment invitation email has been sent to {$comment1->getUser()}.");
+            try {
+                $conferenceEmails->sendCommentEmail($comment1, 'comment-invitation');
+                $this->addFlash('notice', "A comment invitation email has been sent to {$comment1->getUser()}.");
+            } catch (\Error $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
         }
 
         // create and handle the comment invitation form for new users
@@ -122,8 +126,12 @@ class CommentatorController extends AbstractController
                 $users->saveUser($user);
                 $comment2->setUser($user);
                 $comments->saveComment($comment2);
-                $conferenceEmails->sendCommentEmail($comment2, 'comment-invitation');
-                $this->addFlash('notice', "A comment invitation email has been sent to {$comment2->getUser()}.");
+                try {
+                    $conferenceEmails->sendCommentEmail($comment2, 'comment-invitation');
+                    $this->addFlash('notice', "A comment invitation email has been sent to {$comment2->getUser()}.");
+                } catch (\Error $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
         }
 
@@ -177,22 +185,28 @@ class CommentatorController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // send an email if the review is pending or accepted; otherwise return 404 error
-        switch ($comment->getStatus()) {
-            case 'pending':
-                $conferenceEmails->sendCommentEmail($comment, 'comment-invitation-reminder');
-                break;
-
-            case 'accepted':
-                $conferenceEmails->sendCommentEmail($comment, 'comment-submission-reminder');
-                break;
-
-            default:
-                throw $this->createNotFoundException('Page not found.');
+        // throw 404 error if the review is neither pending nor accepted
+        if ($comment->getStatus() !== 'pending' && $comment->getStatus() !== 'accepted') {
+            throw $this->createNotFoundException('Page not found.');
         }
 
-        // add flashbag notice, and then redirect to the details page for the relevant submission
-        $this->addFlash('notice', "A reminder email has been sent to {$comment->getUser()}.");
+        // try to send an email if the review is pending or accepted
+        try {
+            switch ($comment->getStatus()) {
+                case 'pending':
+                    $conferenceEmails->sendCommentEmail($comment, 'comment-invitation-reminder');
+                    break;
+    
+                case 'accepted':
+                    $conferenceEmails->sendCommentEmail($comment, 'comment-submission-reminder');
+                    break;
+            }
+            $this->addFlash('notice', "A reminder email has been sent to {$comment->getUser()}.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
+        }
+
+        // redirect to the details page for the relevant submission
         return $this->redirectToRoute('conference_commentator_view', [
             'submission' => $comment->getSubmission()->getId()
         ]);

@@ -104,8 +104,12 @@ class ChairController extends AbstractController
         $invitationExistingForm->handleRequest($request);
         if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
             $chairs->saveChair($chair1);
-            $conferenceEmails->sendChairEmail($chair1, 'comment-invitation');
-            $this->addFlash('notice', "A chair invitation email has been sent to {$chair1->getUser()}.");
+            try {
+                $conferenceEmails->sendChairEmail($chair1, 'comment-invitation');
+                $this->addFlash('notice', "A chair invitation email has been sent to {$chair1->getUser()}.");
+            } catch (\Error $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
         }
 
         // create and handle the chair invitation form for new users
@@ -122,8 +126,12 @@ class ChairController extends AbstractController
                 $users->saveUser($user);
                 $chair2->setUser($user);
                 $chairs->saveChair($chair2);
-                $conferenceEmails->sendChairEmail($chair2, 'chair-invitation');
-                $this->addFlash('notice', "A chair invitation email has been sent to {$chair2->getUser()}.");
+                try {
+                    $conferenceEmails->sendChairEmail($chair2, 'chair-invitation');
+                    $this->addFlash('notice', "A chair invitation email has been sent to {$chair2->getUser()}.");
+                } catch (\Error $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
         }
 
@@ -177,18 +185,20 @@ class ChairController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // send an email if the invitation is pending; otherwise throw 404 error
-        switch ($chair->getStatus()) {
-            case 'pending':
-                $conferenceEmails->sendChairEmail($chair, 'chair-invitation-reminder');
-                break;
-
-            default:
-                throw $this->createNotFoundException('Page not found.');
+        // throw 404 error if the review is not pending
+        if ($chair->getStatus() !== 'pending') {
+            throw $this->createNotFoundException('Page not found.');
         }
 
-        // add flashbag notice, and then redirect to the details page for the relevant submission
-        $this->addFlash('notice', "A reminder email has been sent to {$chair->getUser()}.");
+        // try to send an email
+        try {
+            $conferenceEmails->sendChairEmail($chair, 'chair-invitation-reminder');
+            $this->addFlash('notice', "A reminder email has been sent to {$chair->getUser()}.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
+        }
+
+        // redirect to the details page for the relevant submission
         return $this->redirectToRoute('conference_chair_view', [
             'submission' => $chair->getSubmission()->getId()
         ]);

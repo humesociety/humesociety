@@ -152,19 +152,21 @@ class SubmissionController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        switch ($submission->getStatus()) {
-            case 'accepted':
-                $conferenceEmails->sendSubmissionEmail($submission, 'submission-acceptance');
-                break;
-
-            case 'rejected':
-                $conferenceEmails->sendSubmissionEmail($submission, 'submission-rejection');
-                break;
+        // try to send the email
+        try {
+            switch ($submission->getStatus()) {
+                case 'accepted':
+                    $conferenceEmails->sendSubmissionEmail($submission, 'submission-acceptance');
+                    break;
+    
+                case 'rejected':
+                    $conferenceEmails->sendSubmissionEmail($submission, 'submission-rejection');
+                    break;
+            }
+            $this->addFlash('notice', "{$submission->getUser()} has been sent an email informing them of the decision.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
         }
-
-        // add flashbag notice
-        $notice = "{$submission->getUser()} has been sent an email informing them of the decision.";
-        $this->addFlash('notice', $notice);
 
         // return a redirect to the submission page
         return $this->redirectToRoute('conference_submission_view', [
@@ -196,12 +198,13 @@ class SubmissionController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // send the reminder email
-        $conferenceEmails->sendSubmissionEmail($submission, 'submission-reminder');
-
-        // add flashbag notice
-        $notice = "{$submission->getUser()} has been sent an email reminding them to submit their paper.";
-        $this->addFlash('notice', $notice);
+        // try to send the reminder email
+        try {
+            $conferenceEmails->sendSubmissionEmail($submission, 'submission-reminder');
+            $this->addFlash('notice', "{$submission->getUser()} has been sent an email reminding them to submit their paper.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
+        }
 
         // return a redirect to the submission page
         return $this->redirectToRoute('conference_submission_view');

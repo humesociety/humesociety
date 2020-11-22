@@ -62,8 +62,12 @@ class PaperController extends AbstractController
         $invitationExistingForm->handleRequest($request);
         if ($invitationExistingForm->isSubmitted() && $invitationExistingForm->isValid()) {
             $papers->savePaper($paper1);
-            $conferenceEmails->sendPaperEmail($paper1, 'paper-invitation');
-            $this->addFlash('notice', "An invitation email has been sent to {$paper1->getUser()}.");
+            try {
+                $conferenceEmails->sendPaperEmail($paper1, 'paper-invitation');
+                $this->addFlash('notice', "An invitation email has been sent to {$paper1->getUser()}.");
+            } catch (\Error $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
         }
 
         // create and handle the new speaker invitation form
@@ -80,8 +84,12 @@ class PaperController extends AbstractController
                 $users->saveUser($user);
                 $paper2->setUser($user);
                 $papers->savePaper($paper2);
-                $conferenceEmails->sendPaperEmail($paper2, 'paper-invitation');
-                $this->addFlash('notice', "An invitation email has been sent to {$paper2->getUser()}.");
+                try {
+                    $conferenceEmails->sendPaperEmail($paper2, 'paper-invitation');
+                    $this->addFlash('notice', "An invitation email has been sent to {$paper2->getUser()}.");
+                } catch (\Error $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
         }
 
@@ -116,18 +124,20 @@ class PaperController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        // send an email if the paper hasn't been submitted; otherwise throw 404 error
-        switch ($paper->getStatus()) {
-            case 'pending':
-                $conferenceEmails->sendPaperEmail($paper, 'paper-invitation-reminder');
-                break;
-
-            default:
-                throw $this->createNotFoundException('Page not found.');
+        // throw a 404 error if the paper isn't pending
+        if ($paper->getStatus() !== 'pending') {
+            throw $this->createNotFoundException('Page not found.');
         }
 
-        // add flashbag notice, and then redirect to the details page for the relevant submission
-        $this->addFlash('notice', "A reminder email has been sent to {$paper->getUser()}.");
+        // try to send an email
+        try {
+            $conferenceEmails->sendPaperEmail($paper, 'paper-invitation-reminder');
+            $this->addFlash('notice', "A reminder email has been sent to {$paper->getUser()}.");
+        } catch (\Error $error) {
+            $this->addFlash('error', $error->getMessage());
+        }
+
+        // redirect to the details page for the relevant submission
         return $this->redirectToRoute('conference_paper_index');
     }
 
