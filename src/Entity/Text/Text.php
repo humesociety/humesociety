@@ -46,13 +46,6 @@ class Text
     private $content;
 
     /**
-     * The text variable's group. This is not stored in the database, but in the services.yml file.
-     *
-     * @var string
-     */
-    private $group;
-
-    /**
      * The text variable's title. This is not stored in the database, but in the services.yml file.
      *
      * @var string
@@ -79,7 +72,6 @@ class Text
         $this->label = $label;
         $this->content = null;
         // fixed properties (defined in services.yml)
-        $this->group = null;
         $this->title = null;
         $this->description = null;
     }
@@ -145,28 +137,6 @@ class Text
     public function setContent(string $content): self
     {
         $this->content = $content;
-        return $this;
-    }
-
-    /**
-     * Get the text variable's group (null when the object is first created).
-     *
-     * @return string|null
-     */
-    public function getGroup(): ?string
-    {
-        return $this->group;
-    }
-
-    /**
-     * Set the text variable's group.
-     *
-     * @param string $group The text variable's group.
-     * @return self
-     */
-    public function setGroup(string $group): self
-    {
-        $this->group = $group;
         return $this;
     }
 

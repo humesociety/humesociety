@@ -1,0 +1,58 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Submissions{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Submissions{% endblock %}
+    {% block header_right %}
+      {% if conference.submissions|length > 0 %}
+        <div class="input">
+          <label for="show-keyword">Keyword:</label>
+          <select id="show-keyword" data-include="keyword" data-table="submissions">
+            <option value="all">all</option>
+            {% for keyword in keywords %}
+              <option value="{{ keyword }}">{{ keyword }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="input">
+          <label for="show-status">Status:</label>
+          <select id="show-status" data-filter="status" data-table="submissions">
+            <option value="all">all</option>
+            <option value="pending">pending</option>
+            <option value="rejected">rejected</option>
+            <option value="accepted">accepted</option>
+            <option value="declined">declined</option>
+            <option value="confirmed">confirmed</option>
+            <option value="submitted">submitted</option>
+          </select>
+        </div>
+      {% endif %}
+    {% endblock %}
+    {% block body %}
+      {% if conference.submissions|length > 0 %}
+        <p>Below is a list of all the submissions to the {{ conference }}, showing the keywords for each submission. Using the dropdown menus above you can filter the list by keyword and status. Keywords are entered by users when they submit their paper, but can also be edited here however you wish. Users will not see the modifications you make to their keywords.</p>
+        <p>Click on the title of a submission to view more details, download the paper, and record your decision..</p>
+        <div class="list" id="submissions">
+          {% for submission in conference.submissions %}
+            <div class="submission" data-status="{{ submission.status }}" data-keyword="{{ submission.keywords }}">
+              <div class="submission-heading">
+                <div class="title">
+                  <h3><a href="{{ path('conference_submission_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
+                  <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
+                </div>
+                {% include 'conference/submission/_invitation-status.twig' with { invitation: submission } %}
+              </div>
+              <div class="submission-body">
+                <input type="text" value="{{ submission.keywords }}" data-keywords="{{ submission.id }}">
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>There are no submissions for the {{ conference }}.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

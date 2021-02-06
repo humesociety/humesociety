@@ -1,0 +1,19 @@
+{{ form_start(newsItemForm) }}
+{{ form_row(newsItemForm.category) }}
+{{ form_row(newsItemForm.title) }}
+<div class="columns">
+  <div class="column">
+    {{ form_row(newsItemForm.date) }}
+  </div>
+  <div class="column">
+    {{ form_row(newsItemForm.end) }}
+  </div>
+</div>
+{{ form_row(newsItemForm.content) }}
+{{ form_row(newsItemForm._token) }}
+<div class="buttons">
+  {% block buttons %}
+    <button class="button create" type="submit">Create</button>
+  {% endblock %}
+</div>
+{{ form_end(newsItemForm) }}

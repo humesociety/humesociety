@@ -116,7 +116,7 @@ class User implements UserInterface
      * committee.
      *
      * @var Candidate[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Candidate\Candidate", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Candidate\Candidate", mappedBy="user")
      * @ORM\JoinColumn(nullable=false)
      */
     private $candidacies;
@@ -603,6 +603,7 @@ class User implements UserInterface
                 'ROLE_MEMBER',
                 'ROLE_TECH',
                 'ROLE_EVPT',
+                'ROLE_PRES',
                 'ROLE_ORGANISER',
                 'ROLE_EDITOR'
             ];

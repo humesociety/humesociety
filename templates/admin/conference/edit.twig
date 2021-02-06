@@ -1,0 +1,31 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Edit Conference{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit the {{ conference }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_conference_index', { decade: conference.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <div class="tabs">
+        <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
+        <a data-tab="files"{% if tab == 'files' %} class="is-active"{% endif %}>Files</a>
+      </div>
+      <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
+        {% include 'admin/_form/conference/update.twig' %}
+      </div>
+      <div class="tab-pane{% if tab == 'files' %} is-active{% endif %}" id="files">
+        {% include 'admin/_form/conference/file/upload.twig' %}
+        {% if conference.uploads|length > 0 %}
+          {% include 'admin/conference/_list-files.twig' %}
+        {% else %}
+          <p>There are no files associated with this conference.</p>
+        {% endif %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

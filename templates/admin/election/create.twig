@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-society.twig' %}
+
+{% block title %}Create Election{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Election{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_election_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Election List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/election/create.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

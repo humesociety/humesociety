@@ -17,7 +17,7 @@ keywords.forEach((keyword) => {
     if (keyword.value.length === 0) return
     const submissionId = keyword.dataset.keywords
     const keywords = keyword.value
-    const url = `/admin/conference/submission/keywords/${submissionId}/${keywords}`
+    const url = `/conference-manager/submission/keywords/${submissionId}/${keywords}`
     window.fetch(url).then((response) => {
       response.json().then((data) => {
         if (data.ok) {

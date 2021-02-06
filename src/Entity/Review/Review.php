@@ -34,11 +34,7 @@ class Review extends Invitation
      * The submission being reviewed.
      *
      * @var Submission
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     inversedBy="reviews",
-     *     cascade={"refresh"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Submission\Submission", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
      */
     private $submission;
@@ -47,11 +43,7 @@ class Review extends Invitation
      * The user invited to review.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="reviews",
-     *     cascade={"refresh"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -73,6 +65,15 @@ class Review extends Invitation
     private $comments;
 
     /**
+     * The reviewer's comments as shown to the author - potentially edited
+     * by the conference organisers.
+     *
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $commentsForAuthor;
+
+    /**
      * Constructor function.
      *
      * @var Submission $submission The submission being reviewed.
@@ -89,6 +90,7 @@ class Review extends Invitation
         $this->user = null;
         $this->grade = null;
         $this->comments = null;
+        $this->commentsForAuthor = null;
     }
 
     /**
@@ -154,6 +156,27 @@ class Review extends Invitation
     }
 
     /**
+     * Get the reviewer's grade as a integer between 1 and 4.
+     *
+     * @return int|null
+     */
+    public function getGradeNumber(): ?int
+    {
+        switch ($this->grade) {
+            case 'A':
+                return 4;
+            case 'B':
+                return 3;
+            case 'C':
+                return 2;
+            case 'D':
+                return 1;
+            case null:
+                return null;
+        }
+    }
+
+    /**
      * Set the reviewer's grade.
      *
      * @var string $grade The reviewer's grade.
@@ -184,6 +207,28 @@ class Review extends Invitation
     public function setComments(string $comments)
     {
         $this->comments = $comments;
+        return $this;
+    }
+
+    /**
+     * Get the reviewer's comments as shown to the author.
+     *
+     * @return string|null
+     */
+    public function getCommentsForAuthor(): ?string
+    {
+        return $this->commentsForAuthor ? $this->commentsForAuthor : $this->comments;
+    }
+
+    /**
+     * Set the reviewer's comments as shown to the author.
+     *
+     * @var string $commentsForAuthor The reviewer's comments as show to the author.
+     * @return self
+     */
+    public function setCommentsForAuthor(string $commentsForAuthor)
+    {
+        $this->commentsForAuthor = $commentsForAuthor;
         return $this;
     }
 }

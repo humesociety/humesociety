@@ -1,0 +1,26 @@
+{% extends 'conference/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('conference_submission_index') }}"{% if subarea == 'submission' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-word"></i></span>
+      <span class="link-text">Submissions</span>
+    </a>
+    <a href="{{ path('conference_review_index') }}"{% if subarea == 'review' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-gavel"></i></span>
+      <span class="link-text">Reviews</span>
+    </a>
+    <a href="{{ path('conference_commentator_index') }}"{% if subarea == 'commentator' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-chalkboard-teacher"></i></span>
+      <span class="link-text">Commentators</span>
+    </a>
+    <a href="{{ path('conference_chair_index') }}"{% if subarea == 'chair' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-chair"></i></span>
+      <span class="link-text">Chairs</span>
+    </a>
+    <a href="{{ path('conference_paper_index') }}"{% if subarea == 'paper' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-microphone"></i></span>
+      <span class="link-text">Invited Papers</span>
+    </a>
+  </div>
+{% endblock %}

@@ -84,11 +84,7 @@ class Issue
      * The issue's articles.
      *
      * @var Article[]
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Article\Article",
-     *     mappedBy="issue",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\OneToMany(targetEntity="App\Entity\Article\Article", mappedBy="issue")
      * @ORM\OrderBy({"position" = "ASC"})
      * @Groups("json")
      */
@@ -309,6 +305,6 @@ class Issue
     public function getMonth(): ?string
     {
         $months = ['April/November', 'April', 'November', $this->name];
-        return $this->number ? $months[$this->number] : null;
+        return ($this->number !== null) ? $months[$this->number] : null;
     }
 }

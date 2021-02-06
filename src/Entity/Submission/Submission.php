@@ -40,11 +40,7 @@ class Submission
      * The user who submitted the paper.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="submissions",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="submissions")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -53,11 +49,7 @@ class Submission
      * The conference the paper is submitted to.
      *
      * @var Conference
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Conference\Conference",
-     *     inversedBy="submissions",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="submissions")
      * @ORM\JoinColumn(nullable=false)
      */
     private $conference;
@@ -125,6 +117,15 @@ class Submission
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $accepted;
+
+    /**
+     * Whether the the author has confirmed they will attend the conference (null means decision
+     * pending; false means rejected).
+     *
+     * @var bool|null
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $confirmed;
 
     /**
      * The date the user was emailed informing them of the decision (null if not yet emailed).
@@ -294,6 +295,7 @@ class Submission
         $this->filename = null;
         $this->finalFilename = null;
         $this->accepted = null;
+        $this->confirmed = null;
         $this->dateDecisionEmailed = null;
         $this->submissionReminderEmails = 0;
         $this->dateLastSubmissionReminderSent = null;
@@ -526,6 +528,28 @@ class Submission
     }
 
     /**
+     * Get whether the has confirmed attendance (null means the decision is pending).
+     *
+     * @return bool|null
+     */
+    public function isConfirmed(): ?bool
+    {
+        return $this->confirmed;
+    }
+
+    /**
+     * Set whether the author has confirmed attendance.
+     *
+     * @param bool|null $confirmed Whether the author has confirmed.
+     * @return self
+     */
+    public function setConfirmed(?bool $confirmed): self
+    {
+        $this->confirmed = $confirmed;
+        return $this;
+    }
+
+    /**
      * Get the date when the user was emailed the decision (if any).
      *
      * @return \DateTimeInterface|null
@@ -700,6 +724,12 @@ class Submission
         if ($this->finalFilename !== null) {
             return 'submitted';
         }
+        if ($this->confirmed === true) {
+            return 'confirmed';
+        }
+        if ($this->confirmed === false) {
+            return 'declined';
+        }
         if ($this->accepted === true) {
             return 'accepted';
         }
@@ -720,6 +750,12 @@ class Submission
             case 'submitted':
                 return 'fas fa-check-double';
 
+            case 'confirmed':
+                return 'fas fa-check-double';
+
+            case 'declined':
+                return 'fas fa-times';
+
             case 'accepted':
                 return 'fas fa-check';
 
@@ -729,6 +765,98 @@ class Submission
             case 'pending':
                 return 'fas fa-hourglass-half';
         }
+    }
+
+    /**
+     * Get the progress of the submission through the review process.
+     *
+     * @return string
+     */
+    public function getReviewProgress(): string
+    {
+        $invited = 0;
+        $accepted = 0;
+        $submitted = 0;
+        foreach ($this->reviews as $review) {
+            if ($review->getStatus() !== 'declined') {
+                $invited += 1;
+            }
+            if ($review->isAccepted()) {
+                $accepted += 1;
+            }
+            if ($review->isSubmitted()) {
+                $submitted += 1;
+            }
+        }
+        if ($invited < 2) {
+            return 'invitedLT2';
+        }
+        if ($accepted < 2) {
+            return 'acceptedLT2';
+        }
+        if ($submitted < 2) {
+            return 'submittedLT2';
+        }
+        return 'submitted2';
+    }
+
+    /**
+     * Get the progress of the submission through the commentator assignment process.
+     *
+     * @return string
+     */
+    public function getCommentProgress(): string
+    {
+        $invited = 0;
+        $accepted = 0;
+        $submitted = 0;
+        foreach ($this->comments as $comment) {
+            if ($comment->getStatus() !== 'declined') {
+                $invited += 1;
+            }
+            if ($comment->isAccepted()) {
+                $accepted += 1;
+            }
+            if ($comment->isSubmitted()) {
+                $submitted += 1;
+            }
+        }
+        if ($invited < 1) {
+            return 'invitedLT1';
+        }
+        if ($accepted < 1) {
+            return 'acceptedLT1';
+        }
+        if ($submitted < 1) {
+            return 'submittedLT1';
+        }
+        return 'submitted1';
+    }
+
+    /**
+     * Get the progress of the submission through the commentator assignment process.
+     *
+     * @return string
+     */
+    public function getChairProgress(): string
+    {
+        $invited = 0;
+        $accepted = 0;
+        foreach ($this->chairs as $chair) {
+            if ($chair->getStatus() !== 'declined') {
+                $invited += 1;
+            }
+            if ($chair->isAccepted()) {
+                $accepted += 1;
+            }
+        }
+        if ($invited < 1) {
+            return 'invitedLT1';
+        }
+        if ($accepted < 1) {
+            return 'acceptedLT1';
+        }
+        return 'accepted1';
     }
 
     /**
@@ -761,8 +889,38 @@ class Submission
                     return true;
                 }
             }
+            foreach ($this->comments as $comment) {
+                // the secret from any accepted comment is ok
+                if ($comment->getSecret() === $secret && $comment->isAccepted()) {
+                    return true;
+                }
+            }
+            foreach ($this->chairs as $chair) {
+                // the secret from any accepted chair is ok
+                if ($chair->getSecret() === $secret && $chair->isAccepted()) {
+                    return true;
+                }
+            }
         }
         // otherwise no
         return false;
+    }
+
+    /**
+     * Get average review grade as a number between 1 and 4.
+     *
+     * @return float|null
+     */
+    public function getReviewGradeAverage(): ?float
+    {
+        $submittedReviews = 0;
+        $gradeTotal = 0;
+        foreach ($this->reviews as $review) {
+            if ($review->getStatus() === 'submitted') {
+                $submittedReviews += 1;
+                $gradeTotal += $review->getGradeNumber();
+            }
+        }
+        return ($submittedReviews > 0) ? ($gradeTotal / $submittedReviews) : null;
     }
 }

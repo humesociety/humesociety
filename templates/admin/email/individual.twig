@@ -1,0 +1,26 @@
+{% extends 'admin/_layout-emails.twig' %}
+
+{% block title %}Send Individual Email{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Send Individual Email{% endblock %}
+    {% block body %}
+      <nav class="tabs">
+        <a class="is-active" data-tab="edit">Send</a>
+        <a data-tab="preview">Preview</a>
+        <a data-tab="help">Help</a>
+      </nav>
+      <div class="tab-pane is-active" id="edit">
+        {% include 'admin/_form/email/individual.twig' %}
+      </div>
+      <div class="tab-pane" id="preview">
+        {% include 'admin/email/_preview.twig' %}
+      </div>
+      <div class="tab-pane" id="help">
+        {% include 'admin/email/_help.twig' %}
+        {% include 'admin/email/_user-variables.twig' %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'admin/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('admin_email_index') }}"{% if subarea == 'templates' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-envelope"></i></span>
+      <span class="link-text">Edit Email Templates</span>
+    </a>
+    <a href="{{ path('admin_email_membership') }}"{% if subarea == 'membership' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fa fa-users"></i></span>
+      <span class="link-text">Send Membership Email</span>
+    </a>
+    <a href="{{ path('admin_email_individual') }}"{% if subarea == 'individual' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fa fa-user"></i></span>
+      <span class="link-text">Send Individual Email</span>
+    </a>
+  </div>
+{% endblock %}

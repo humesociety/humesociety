@@ -6,8 +6,19 @@
   <a href="{{ path('account_pay') }}"{% if page.slug == 'pay' %} class="is-active"{% endif %}>{% if app.user.isMember %}Pay Dues{% else %}Join the Society{% endif %}</a>
   <a href="{{ path('account_password') }}"{% if page.slug == 'password' %} class="is-active"{% endif %}>Change Password</a>
   <a href="{{ path('security_logout') }}">Sign Out</a>
-  {% if is_granted('ROLE_ADMIN') %}
+  {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR') or is_granted('ROLE_ORGANISER') or  is_granted('ROLE_TECH') %}
     <br>
+  {% endif %}
+  {% if is_granted('ROLE_EVPT') %}
     <a href="{{ path('admin_index') }}">Site Admin</a>
+  {% endif %}
+  {% if is_granted('ROLE_EDITOR') %}
+    <a href="{{ path('journal_index') }}">Journal Manager</a>
+  {% endif %}
+  {% if is_granted('ROLE_ORGANISER') %}
+    <a href="{{ path('conference_index') }}">Conference Manager</a>
+  {% endif %}
+  {% if is_granted('ROLE_TECH') %}
+    <a href="{{ path('tech_index') }}">User Manager</a>
   {% endif %}
 {% endblock %}

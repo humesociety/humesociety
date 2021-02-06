@@ -1,0 +1,33 @@
+{% extends 'conference/_layout-emails.twig' %}
+
+{% block title %}Edit Email Template{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit {{ emailTemplate }} Email{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('conference_email_index', { tab: emailTemplate.group }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Email Templates List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <nav class="tabs">
+        <a class="is-active" data-tab="edit">Edit</a>
+        <a data-tab="preview">Preview</a>
+        <a data-tab="help">Help</a>
+      </nav>
+      <div class="tab-pane is-active" id="edit">
+        {% include 'admin/_form/email/update.twig' %}
+      </div>
+      <div class="tab-pane" id="preview">
+        {% include 'admin/email/_preview.twig' %}
+      </div>
+      <div class="tab-pane" id="help">
+        {% include 'admin/email/_help.twig' %}
+        {% include 'admin/email/_user-variables.twig' %}
+        {% include 'conference/email/_submission-variables.twig' %}
+        {% include 'conference/email/_conference-variables.twig' %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

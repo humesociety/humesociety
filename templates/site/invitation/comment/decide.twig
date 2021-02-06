@@ -1,0 +1,13 @@
+{% extends 'site/invitation/_layout.twig' %}
+
+{% block main %}
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
+  <p>Thank you for considering our invitation to comment on this paper for the {{ comment.submission.conference }}. Please indicate your response using the buttons below. If you accept the invitation, the paper will be made available to download from this page.</p>
+  <div class="invitation-buttons">
+    <a href="{{ path('invitation_comment', { secret: comment.secret, reply: 'decline' }) }}" class="button delete">Decline Invitation</a>
+    <a href="{{ path('invitation_comment', { secret: comment.secret, reply: 'accept' }) }}" class="button create">Accept Invitation</a>
+  </div>
+  <p><strong>Title:</strong> {{ comment.submission.title }}</p>
+  <p><strong>Authors:</strong> {{ comment.submission.authors }}</p>
+  <p><strong>Abstract:</strong> {{ comment.submission.abstract }}</p>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'conference/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('conference_email_index') }}"{% if subarea == 'email' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-envelope"></i></span>
+      <span class="link-text">Email Templates</span>
+    </a>
+  </div>
+{% endblock %}

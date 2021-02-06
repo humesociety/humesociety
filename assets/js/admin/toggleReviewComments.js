@@ -5,7 +5,8 @@ const links = document.querySelectorAll('[data-action="toggle-review-comments"]'
 
 links.forEach((link) => {
   link.addEventListener('click', (e) => {
-    const comments = link.parentElement.parentElement.parentElement.querySelector('.review-comments')
+    const review = link.dataset.review
+    const comments = document.querySelector(`.review-comments[data-review="${review}"]`)
     if (link.innerHTML === 'Show Comments') {
       link.innerHTML = 'Hide Comments'
     } else {

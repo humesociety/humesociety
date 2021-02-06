@@ -1,0 +1,17 @@
+{% extends 'journal/base.twig' %}
+
+{% block title %}Delete Journal Issue{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete Issue {{ issue }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('journal_issue_index', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'journal/_form/issue/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

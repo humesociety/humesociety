@@ -1,0 +1,34 @@
+{{ form_start(conferenceForm) }}
+  <div class="columns{% if hideBasics is defined and hideBasics %} hidden{% endif %}">
+    <div class="column">
+      {{ form_row(conferenceForm.number) }}
+    </div>
+    <div class="column">
+      {{ form_row(conferenceForm.year) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(conferenceForm.startDate) }}
+    </div>
+    <div class="column">
+      {{ form_row(conferenceForm.endDate) }}
+    </div>
+  </div>
+  {{ form_row(conferenceForm.institution) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(conferenceForm.town) }}
+    </div>
+    <div class="column">
+      {{ form_row(conferenceForm.country) }}
+    </div>
+  </div>
+  {{ form_row(conferenceForm.website) }}
+  {{ form_row(conferenceForm._token) }}
+  <div class="buttons">
+    {% block buttons %}
+      <button class="button create" type="submit">Create</button>
+    {% endblock %}
+  </div>
+{{ form_end(conferenceForm) }}

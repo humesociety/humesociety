@@ -1,0 +1,15 @@
+{{ form_start(reviewerForm) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(reviewerForm.firstname) }}
+    </div>
+    <div class="column">
+      {{ form_row(reviewerForm.lastname) }}
+    </div>
+  </div>
+  {{ form_row(reviewerForm.email) }}
+  {{ form_row(reviewerForm._token) }}
+  <div class="buttons">
+    <button class="button create" type="submit">Create</button>
+  </div>
+{{ form_end(reviewerForm) }}

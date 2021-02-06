@@ -1,0 +1,35 @@
+{% if users|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>User</th>
+        <th>Reviews</th>
+        <th>Comments</th>
+        <th>Chairs</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr{% if user.active %} class="is-active"{% endif %}>
+          <td><input type="checkbox"{% if user.active %} checked="checked"{% endif %} data-action="toggle-user-active" data-user="{{ user.id }}" id="toggle-user-{{ user.id }}"></td>
+          <td>
+            <label for="toggle-user-{{ user.id }}">{{ user }}</label>
+            <span class="user-keywords">{{ user.keywords }}</span>
+          </td>
+          <td>
+            {{ user.submittedReviews|length }} / {{ user.reviews|length }}
+          </td>
+          <td>
+            {{ user.submittedComments|length }} / {{ user.comments|length }}
+          </td>
+          <td>
+            {{ user.acceptedChairs|length }} / {{ user.chairs|length }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>There are no users in the database.</p>
+{% endif %}

@@ -1,0 +1,67 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Submission Reviews{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}{{ submission.id }}. {{ submission }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('conference_review_index') }}" class="button"><i class="fas fa-chevron-left"></i>All Reviews</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'conference/submission/_submission-tabs.twig' %}
+      <h2>Invite Someone to Review this Paper</h2>
+      {% include 'conference/_form/invitation/existing.twig' %}
+      {% include 'conference/_form/invitation/new.twig' %}
+      <h2>Current Invitations</h2>
+      {% if submission.reviews|length > 0 %}
+        <div class="list">
+          {% for review in submission.reviews %}
+            <div class="invitation">
+              <div class="invitation-heading">
+                <div class="title">
+                  <h3>{{ review.user }}</h3>
+                  <h4>Invitation sent on {{ review.dateInvitationSent|date('m/d/Y') }}
+                </div>
+                {% include 'conference/submission/_invitation-status.twig' with { invitation: review } %}
+              </div>
+              <div class="invitation-body">
+                <div class="actions">
+                  <div class="action">
+                    <a href="{{ path('invitation_review', { secret: review.secret }) }}" class="button create">View Invitation Page</a>
+                  </div>
+                  {% if review.status == 'submitted' %}
+                    <div class="action">
+                      <span>Grade: {{ review.grade }}</span>
+                      <a data-action="toggle-review-comments" data-review="{{ review.id }}">Show Comments</a>
+                    </div>
+                  {% elseif review.status == 'pending' or review.status == 'accepted' %}
+                    <div class="action">
+                      <a href="{{ path('conference_review_email_reminder', { review: review.id }) }}" class="button">Email Reminder</a>
+                      {% include 'conference/submission/_reminder-summary.twig' with { invitation: review } %}
+                    </div>
+                  {% endif %}
+                  <div class="action">
+                    <a href="{{ path('conference_review_delete', { submission: submission.id, review: review.id }) }}" class="button delete">Delete Invitation</a>
+                  </div>
+                </div>
+                {% if review.submitted %}
+                  <div class="review-comments" data-review="{{ review.id }}">
+                    <pre>{{ review.comments }}</pre>
+                    <div class="review-actions">
+                      <a href="{{ path('conference_review_edit_comments', { review: review.id }) }}" class="button">View/Edit Comments as Shown to the Author</a>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>There are no review invitations for this submission. Use the forms above to invite someone to review.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

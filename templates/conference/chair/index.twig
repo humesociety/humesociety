@@ -1,0 +1,54 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Chairs{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+{% block title %}Chairs{% endblock %}
+    {% block header_right %}
+      {% if conference.acceptedSubmissions|length > 0 %}
+        <div class="input">
+          <label for="show-progress">Progress:</label>
+          <select id="show-progress" data-filter="progress" data-table="submissions">
+            <option value="all">all</option>
+            <option value="invitedLT1">invited &lt; 1</option>
+            <option value="acceptedLT1">1 invited, accepted &lt; 1</option>
+            <option value="accepted1">1 accepted</option>
+          </select>
+        </div>
+      {% endif %}
+    {% endblock %}
+    {% block body %}
+      {% if conference.acceptedSubmissions|length > 0 %}
+        <p>Below is a list of all the <em>accepted</em> submissions to the {{ conference }}, showing the chair invitations for each submission. Using the dropdown menu above you can filter the list by chair assignment progress, to show only papers with no chair invitations or no assigned chair.</p>
+        <p>Click on the title of a submission to view and manage its chair invitations.</p>
+        <div class="list" id="submissions">
+          {% for submission in conference.acceptedSubmissions %}
+            <div class="submission" data-progress="{{ submission.chairProgress }}" data-keyword="{{ submission.keywords }}">
+              <div class="submission-heading">
+                <div class="title">
+                  <h3><a href="{{ path('conference_commentator_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
+                  <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
+                </div>
+              </div>
+              <div class="submission-body">
+                {% if submission.chairs|length > 0 %}
+                  {% for chair in submission.chairs %}
+                    <div class="review-summary">
+                      <div class="user">{{ chair.user }}</div>
+                      {% include 'conference/submission/_invitation-status.twig' with { invitation: chair } %}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <p>No one has been invited to chair the session on this paper.</p>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>There are no accepted submissions for the {{ conference }}.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

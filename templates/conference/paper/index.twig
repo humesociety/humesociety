@@ -1,0 +1,16 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Invited Papers{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Invited Papers{% endblock %}
+    {% block body %}
+      <h2>Invite a Speaker</h2>
+      {% include 'conference/_form/invitation/existing.twig' %}
+      {% include 'conference/_form/invitation/new.twig' %}
+      <h2>Current Invited Speakers</h2>
+      {% include 'conference/paper/_list.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

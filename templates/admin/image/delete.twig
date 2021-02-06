@@ -1,0 +1,15 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Delete Image{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete {{ filename }}{% endblock %}
+    {% block header_right %}
+      <a href="{{ path('admin_image_index') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Image List</a>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/image/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

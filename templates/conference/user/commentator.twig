@@ -1,0 +1,14 @@
+{% extends 'conference/_layout-users.twig' %}
+
+{% block title %}Active Reviewers{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Commentator Volunteers{% endblock %}
+    {% block body %}
+      {% include 'conference/user/_help.twig' %}
+      <p>The list on this page shows users who have explicitly indicated a willingness to comment on a paper for the forthcoming Hume Conference.</p>
+      {% include 'conference/user/_list.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

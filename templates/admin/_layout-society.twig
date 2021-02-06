@@ -1,0 +1,14 @@
+{% extends 'admin/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('admin_candidate_index') }}"{% if subarea == 'candidate' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-user-friends"></i></span>
+      <span class="link-text">Committee</span>
+    </a>
+    <a href="{{ path('admin_election_index') }}"{% if subarea == 'election' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-vote-yea"></i></span>
+      <span class="link-text">Elections</span>
+    </a>
+  </div>
+{% endblock %}

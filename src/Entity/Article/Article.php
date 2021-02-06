@@ -43,11 +43,7 @@ class Article
      * The issue the article is published in.
      *
      * @var Issue
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Issue\Issue",
-     *     inversedBy="articles",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Issue\Issue", inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
      */
     private $issue;

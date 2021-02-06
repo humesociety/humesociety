@@ -1,0 +1,10 @@
+{% extends 'admin/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('admin_member_index') }}"{% if subarea == 'member' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-users"></i></span>
+      <span class="link-text">Members</span>
+    </a>
+  </div>
+{% endblock %}

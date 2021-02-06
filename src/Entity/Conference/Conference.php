@@ -128,10 +128,7 @@ class Conference
      * The submissions to this conference.
      *
      * @var Submission[]
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Submission\Submission",
-     *     mappedBy="conference",
-     *     cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Submission\Submission", mappedBy="conference")
      * @ORM\JoinColumn(nullable=false)
      */
     private $submissions;
@@ -140,10 +137,7 @@ class Conference
      * The papers for this conference.
      *
      * @var Paper[]
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Paper\Paper",
-     *     mappedBy="conference",
-     *     cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Paper\Paper", mappedBy="conference")
      * @ORM\JoinColumn(nullable=false)
      */
     private $papers;
@@ -483,6 +477,42 @@ class Conference
     public function getSubmissions(): Collection
     {
         return $this->submissions;
+    }
+
+    /**
+     * Get the accepted submissions for this conference.
+     *
+     * @return Collection
+     */
+    public function getAcceptedSubmissions(): Collection
+    {
+        return $this->submissions->filter(function ($submission) {
+            return $submission->isAccepted();
+        });
+    }
+
+    /**
+     * Get the confirmed submissions for this conference.
+     *
+     * @return Collection
+     */
+    public function getConfirmedSubmissions(): Collection
+    {
+        return $this->submissions->filter(function ($submission) {
+            return $submission->isConfirmed();
+        });
+    }
+
+    /**
+     * Get the accepted submissions that have not been declined.
+     *
+     * @return Collection
+     */
+    public function getNonDeclinedSubmissions(): Collection
+    {
+        return $this->submissions->filter(function ($submission) {
+            return $submission->isAccepted() && ($submission->isConfirmed() !== false);
+        });
     }
 
     /**

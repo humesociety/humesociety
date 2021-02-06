@@ -1,0 +1,12 @@
+{% extends 'site/invitation/_layout.twig' %}
+
+{% block main %}
+  {% embed 'site/_embed/heading.twig' %}{% endembed %}
+  {% if chairThanks %}{{ chairThanks|raw }}{% endif %}
+  <p><strong>Title:</strong> {{ chair.submission.title }}</p>
+  <p><strong>Authors:</strong> {{ chair.submission.authors }}</p>
+  <p><strong>Paper: </strong> <a href="{{ path('uploads_submission', { submission: chair.submission.id, secret: chair.secret }) }}">{{ chair.submission.filename }}</a></p>
+  <p><strong>Abstract:</strong> {{ chair.submission.abstract }}</p>
+  <p><strong>Commentator:</strong> {% if chair.submission.comment %}{{ chair.submission.comment.user }}{% else %}pending{% endif %}</p>
+  <p><strong>Comments: </strong> {% if chair.submission.comment %}<a href="{{ path('uploads_comment', { comment: chair.submission.comment.id, secret: chair.secret }) }}">{{ chair.submission.comment.filename }}</a>{% else %}pending{% endif %}</p>
+{% endblock %}

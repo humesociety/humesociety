@@ -33,13 +33,6 @@ class TextHandler
     private $conferenceTexts;
 
     /**
-     * Conference text group ids (from `services.yml`).
-     *
-     * @var object
-     */
-    private $conferenceTextGroupIds;
-
-    /**
      * Constructor function.
      *
      * @param EntityManagerInterface $manager The Doctrine entity manager.
@@ -51,7 +44,6 @@ class TextHandler
         $this->manager = $manager;
         $this->repository = $manager->getRepository(Text::class);
         $this->conferenceTexts = $params->get('conference_texts');
-        $this->conferenceTextGroupIds = explode('|', $params->get('conference_text_group_ids'));
     }
 
     /**
@@ -63,7 +55,6 @@ class TextHandler
     private function enrichText(Text $text): Text
     {
         $baseText = $this->conferenceTexts[$text->getLabel()];
-        $text->setGroup($baseText['group']);
         $text->setTitle($baseText['title']);
         $text->setDescription($baseText['description']);
         return $text;
@@ -104,23 +95,6 @@ class TextHandler
     public function getConferenceTexts(): array
     {
         return array_map('self::getTextByLabel', array_keys($this->conferenceTexts));
-    }
-
-    /**
-     * Get conference text variables.
-     *
-     * @return Text[]
-     */
-    public function getConferenceTextGroups(): array
-    {
-        $conferenceTextGroups = [];
-        foreach ($this->conferenceTextGroupIds as $group) {
-            $conferenceTextGroups[$group] = [];
-        }
-        foreach ($this->getConferenceTexts() as $text) {
-            $conferenceTextGroups[$text->getGroup()][] = $text;
-        }
-        return $conferenceTextGroups;
     }
 
     /**

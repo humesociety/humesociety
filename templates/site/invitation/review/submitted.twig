@@ -2,9 +2,5 @@
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
-  {% if reviewThanks %}
-    {{ reviewThanks|raw }}
-  {% else %}
-    <p>Your review has been submitted.</p>
-  {% endif %}
+  <p>Thank you, your review has been submitted.</p>
 {% endblock %}

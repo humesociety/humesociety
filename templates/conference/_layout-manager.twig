@@ -1,0 +1,18 @@
+{% extends 'conference/base.twig' %}
+
+{% block sidebar %}
+  <div class="inner-header">
+    <a href="{{ path('conference_details_index') }}"{% if subarea == 'details' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-file-alt"></i></span>
+      <span class="link-text">Conference Details</span>
+    </a>
+    <a href="{{ path('conference_text_index') }}"{% if subarea == 'text' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-align-left"></i></span>
+      <span class="link-text">Guidance Text</span>
+    </a>
+    <a href="{{ path('conference_deadline_index') }}"{% if subarea == 'deadline' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="far fa-calendar-alt"></i></span>
+      <span class="link-text">Submission Deadline</span>
+    </a>
+  </div>
+{% endblock %}

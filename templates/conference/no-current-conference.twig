@@ -1,0 +1,12 @@
+{% extends 'conference/_layout-manager.twig' %}
+
+{% block title %}No Current Conference{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}No Current Conference{% endblock %}
+    {% block body %}
+      <p>There is no current conference in the database. Please ask the EVPT or Technical Director to create one.</p>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

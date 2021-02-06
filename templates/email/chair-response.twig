@@ -3,5 +3,5 @@
 {% block image %}{{ image }}{% endblock %}
 
 {% block content %}
-  <p>{{ chair.user }} has {{ response }} the invitation to chair the session for the paper {{ comment.submission }} by {{ comment.submission.authors }}.</p>
+  <p>{{ chair.user }} has {{ response }} the invitation to chair the session for the paper {{ chair.submission }} by {{ chair.submission.authors }}.</p>
 {% endblock %}

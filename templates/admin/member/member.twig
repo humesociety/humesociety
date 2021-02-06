@@ -1,0 +1,37 @@
+{% extends 'admin/_layout-members.twig' %}
+
+{% block title %}Member Details{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Details for {{ user.username }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_member_index') }}" class="button"><i class="fas fa-chevron-left"></i>Back to Member List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <table>
+        <tbody>
+          <tr><th>Name</th><td style="width:80%">{{ user.firstname }} {{ user.lastname }}</td></tr>
+          <tr><th>Email</th><td>{{ user.email }}</td></tr>
+          <tr><th>Date Joined</th><td>{{ user.dateJoined|date('m/d/Y') }}</td></tr>
+          <tr><th>Dues</th><td>{{ user.dues|date('F Y') }}</td></tr>
+          <tr><th>Lifetime Member</th><td>{% if user.lifetimeMember %}yes{% else %}no{% endif %}</td></tr>
+          <tr><th>Receives Email</th><td>{% if user.receiveEmail %}yes{% else %}no{% endif %}</td></tr>
+          <tr><th>Receives Hume Studies</th><td>{% if user.receiveHumeStudies %}yes{% else %}no{% endif %}</td></tr>
+          <tr><th>Department</th><td>{{ user.department }}</td></tr>
+          <tr><th>Institution</th><td>{{ user.institution }}</td></tr>
+          <tr><th>City</th><td>{{ user.city }}</td></tr>
+          <tr><th>State</th><td>{{ user.state }}</td></tr>
+          <tr><th>Country</th><td>{{ user.country }}</td></tr>
+          <tr><th>Office Phone</th><td>{{ user.officePhone }}</td></tr>
+          <tr><th>Home Phone</th><td>{{ user.homePhone }}</td></tr>
+          <tr><th>Fax</th><td>{{ user.fax }}</td></tr>
+          <tr><th>Web Page</th><td>{{ user.webpage }}</td></tr>
+          <tr><th>Mailing Address</th><td><pre>{{ user.mailingAddress }}</pre></td></tr>
+        </tbody>
+      </table>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

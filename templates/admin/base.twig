@@ -16,45 +16,21 @@
   <body class="grid">
     <header class="header">
       <div class="header-left">
-        {% if is_granted('ROLE_EVPT') %}
-          <a href="{{ path('admin_content') }}"{% if area == 'content' %} class="is-active"{% endif %}>
-        {% else %}
-          <a class="disabled" title="access restricted to EVPT">
-        {% endif %}
+        <a href="{{ path('admin_page_index') }}"{% if area == 'content' %} class="is-active"{% endif %}>
           <span class="icon"><i class="far fa-file-alt"></i></span>
           <span class="link-text">Site Content</span>
         </a>
-        {% if is_granted('ROLE_ORGANISER') %}
-          <a href="{{ path('admin_conference') }}"{% if area == 'conference' %} class="is-active"{% endif %}>
-        {% else %}
-          <a class="disabled" title="access restricted to conference organisers">
-        {% endif %}
-          <span class="icon"><i class="far fa-calendar-alt"></i></span>
-          <span class="link-text">Hume Conference</span>
-        </a>
-        {% if is_granted('ROLE_EDITOR') %}
-          <a href="{{ path('admin_journal') }}"{% if area == 'journal' %} class="is-active"{% endif %}>
-        {% else %}
-          <a class="disabled" title="access restricted to journal managers">
-        {% endif %}
-          <span class="icon"><i class="far fa-file-pdf"></i></span>
-          <span class="link-text">Hume Studies</span>
-        </a>
-        {% if is_granted('ROLE_EVPT') %}
-          <a href="{{ path('admin_society') }}"{% if area == 'society' %} class="is-active"{% endif %}>
-        {% else %}
-          <a class="disabled" title="access restricted to EVPT">
-        {% endif %}
+      <a href="{{ path('admin_candidate_index') }}"{% if area == 'society' %} class="is-active"{% endif %}>
           <span class="icon"><i class="fas fa-briefcase"></i></span>
           <span class="link-text">Society Business</span>
         </a>
-        {% if is_granted('ROLE_TECH') %}
-          <a href="{{ path('admin_user') }}"{% if area == 'user' %} class="is-active"{% endif %}>
-        {% else %}
-          <a class="disabled" title="access restricted to technical director">
-        {% endif %}
+        <a href="{{ path('admin_email_index') }}"{% if area == 'email' %} class="is-active"{% endif %}>
+          <span class="icon"><i class="far fa-envelope"></i></span>
+          <span class="link-text">Emails</span>
+        </a>
+        <a href="{{ path('admin_member_index') }}"{% if area == 'member' %} class="is-active"{% endif %}>
           <span class="icon"><i class="fas fa-users"></i></span>
-          <span class="link-text">User Management</span>
+          <span class="link-text">Members</span>
         </a>
       </div>
       <div class="header-right">

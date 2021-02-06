@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-emails.twig' %}
+
+{% block title %}Edit Email Templates{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit Email Templates{% endblock %}
+    {% block header_right %}
+    {% endblock %}
+    {% block body %}
+      {% for template in emailTemplates %}
+        <h4><a href="{{ path('admin_email_edit', { label: template.label }) }}">Edit {{ template.title }} Email</a></h4>
+        <p>{{ template.description }}</p>
+      {% endfor %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

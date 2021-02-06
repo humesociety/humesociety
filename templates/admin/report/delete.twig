@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Delete Report{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete Report: {{ filename }} ({{ year }}){% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_report_index', { year: year }) }}" class="button"><i class="fas fa-chevron-left"></i>Back to Report List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/report/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

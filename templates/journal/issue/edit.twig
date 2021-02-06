@@ -1,0 +1,33 @@
+{% extends 'journal/base.twig' %}
+
+{% block title %}Edit Journal Issue{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Edit Issue {{ issue }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('journal_issue_index', { decade: issue.decade }) }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      <div class="tabs">
+        <a data-tab="details"{% if tab == 'details' %} class="is-active"{% endif %}>Details</a>
+        <a data-tab="articles"{% if tab == 'articles' %} class="is-active"{% endif %}>Articles</a>
+      </div>
+      <div class="tab-pane{% if tab == 'details' %} is-active{% endif %}" id="details">
+        {% include 'journal/_form/issue/update.twig' %}
+      </div>
+      <div class="tab-pane{% if tab == 'articles' %} is-active{% endif %}" id="articles">
+        <div class="box-buttons">
+          <a href="{{ path('journal_issue_create_article', { id: issue.id }) }}" class="button create"><i class="fas fa-plus"></i> Upload Article</a>
+        </div>
+        {% if issue.articles|length > 0 %}
+          {% include 'journal/article/_list.twig' %}
+        {% else %}
+          <p>There are no articles associated with this issue.</p>
+        {% endif %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

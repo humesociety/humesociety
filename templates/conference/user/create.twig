@@ -1,0 +1,16 @@
+{% extends 'conference/_layout-users.twig' %}
+
+{% block title %}Create Invited User{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create an Invited User{% endblock %}
+    {% block header_right %}
+      <a href="{{ path('conference_user_index') }}" class="button"><i class="fas fa-chevron-left"></i> Back to All Users</a>
+    {% endblock %}
+    {% block body %}
+      <p>Use the form below to create an invited user on the system. This user will be automatically marked as active, enabling you to invite them to review or comment on a paper, etc.</p>
+      {% include 'conference/_form/user/create.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

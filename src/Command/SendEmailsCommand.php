@@ -67,9 +67,9 @@ class SendEmailsCommand extends Command
      *
      * @param InputInterface $input Symfony's input interface.
      * @param OutputInterface $output Symfony's output interface.
-     * @return void
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $users = $this->users->getMembersExpiringThisMonth();
         $count = 0;
@@ -79,5 +79,6 @@ class SendEmailsCommand extends Command
         }
         $output->writeln(sizeof($users).' member(s) will lapse at the end of this month.');
         $output->writeln($count.' dues reminder emails have been spooled.');
+        return 0; // zero represents success; errors can return error codes
     }
 }

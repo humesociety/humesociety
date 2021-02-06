@@ -1,0 +1,17 @@
+{% extends 'admin/_layout-content.twig' %}
+
+{% block title %}Delete Conference{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Delete the {{ conference }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('admin_conference_index') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Conference List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'admin/_form/conference/delete.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

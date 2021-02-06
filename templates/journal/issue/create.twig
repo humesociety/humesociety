@@ -1,0 +1,17 @@
+{% extends 'journal/base.twig' %}
+
+{% block title %}New Journal Issue{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Create Issue{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('journal_issue_index') }}" class="button"><i class="fas fa-chevron-left"></i> Back to Issues List</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'journal/_form/issue/create.twig' %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Submission Comments{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}{{ submission.id }}. {{ submission }}{% endblock %}
+    {% block header_right %}
+      <div class="input">
+        <a href="{{ path('conference_commentator_index') }}" class="button"><i class="fas fa-chevron-left"></i>All Commentators</a>
+      </div>
+    {% endblock %}
+    {% block body %}
+      {% include 'conference/submission/_submission-tabs.twig' %}
+      {% if submission.comment %}
+        <h2>Commentator Assigned</h2>
+        <div class="list">
+          <div class="invitation">
+            <div class="invitation-heading">
+              <div class="title">
+                <h3>{{ submission.comment.user }}</h3>
+                <h4>Invitation sent on {{ submission.comment.dateInvitationSent|date('m/d/Y') }}
+              </div>
+              {% include 'conference/submission/_invitation-status.twig' with { invitation: submission.comment } %}
+            </div>
+            <div class="invitation-body">
+              <div class="actions">
+                <div class="action">
+                  <a href="{{ path('invitation_comment', { secret: submission.comment.secret }) }}" class="button create">View Invitation Page</a>
+                </div>
+                {% if submission.comment.status == 'pending' or submission.comment.status == 'accepted' %}
+                  <div class="action">
+                    <a href="{{ path('conference_commentator_email_reminder', { comment: submission.comment.id }) }}" class="button">Email Reminder</a>
+                    {% include 'conference/submission/_reminder-summary.twig' with { invitation: submission.comment } %}
+                  </div>
+                {% elseif submission.comment.status == 'submitted' %}
+                  <div class="action">
+                    <a href="{{ path('uploads_comments', { comments: submission.comment.id }) }}">View Comments File</a>
+                  </div>
+                {% endif %}
+                <div class="action">
+                  <a href="{{ path('conference_commentator_delete', { submission: submission.id, comment: submission.comment.id }) }}" class="button delete">Delete Invitation</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <h2>Invite Someone to Comment on this Paper</h2>
+        {% include 'conference/_form/invitation/existing.twig' %}
+        {% include 'conference/_form/invitation/new.twig' %}
+        <h2>Current Invitations</h2>
+        {% if submission.comments|length > 0 %}
+          <div class="list">
+            {% for comment in submission.comments %}
+              <div class="invitation">
+                <div class="invitation-heading">
+                  <div class="title">
+                    <h3>{{ comment.user }}</h3>
+                    <h4>Invitation sent on {{ comment.dateInvitationSent|date('m/d/Y') }}
+                  </div>
+                  {% include 'conference/submission/_invitation-status.twig' with { invitation: comment } %}
+                </div>
+                <div class="invitation-body">
+                  <div class="actions">
+                    <div class="action">
+                      <a href="{{ path('invitation_comment', { secret: comment.secret }) }}" class="button create">View Invitation Page</a>
+                    </div>
+                    {% if comment.status == 'pending' or comment.status == 'accepted' %}
+                      <div class="action">
+                        <a href="{{ path('conference_commentator_email_reminder', { comment: comment.id }) }}" class="button">Email Reminder</a>
+                        {% include 'conference/submission/_reminder-summary.twig' with { invitation: comment } %}
+                      </div>
+                    {% endif %}
+                    <div class="action">
+                      <a href="{{ path('conference_commentator_delete', { submission: submission.id, comment: comment.id }) }}" class="button delete">Delete Invitation</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No one has been invited to comment on this paper.</p>
+        {% endif %}
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

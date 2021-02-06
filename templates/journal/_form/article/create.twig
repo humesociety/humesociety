@@ -1,0 +1,27 @@
+<p>The Project MUSE ID is a six-digit number, which you can find by browsing for this article on the Project MUSE archive. When viewing the page for this article, look at the URL in your browser, which should be something like "muse.jhu.edu/article/123456", where "123456" is the Project MUSE ID. This page will also show you the article's DOI (Digital Object Identifier), which should be something like "10.1353/hms.xxxx.xxxx".</p>
+{{ form_start(articleForm) }}
+  {{ form_row(articleForm.title) }}
+  {{ form_row(articleForm.authors) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(articleForm.startPage) }}
+    </div>
+    <div class="column">
+      {{ form_row(articleForm.endPage) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(articleForm.museId) }}
+    </div>
+    <div class="column">
+      {{ form_row(articleForm.doi) }}
+    </div>
+  </div>
+  {{ form_row(articleForm.file) }}
+  <div class="buttons">
+    {% block buttons %}
+      <button class="button create" type="submit">Create</button>
+    {% endblock %}
+  </div>
+{{ form_end(articleForm) }}

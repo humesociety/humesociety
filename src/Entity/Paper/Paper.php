@@ -36,11 +36,7 @@ class Paper extends Invitation
      * The conference the paper is for.
      *
      * @var Conference
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\Conference\Conference",
-     *     inversedBy="papers",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Conference\Conference", inversedBy="papers")
      * @ORM\JoinColumn(nullable=false)
      */
     private $conference;
@@ -49,11 +45,7 @@ class Paper extends Invitation
      * The user invited to speak.
      *
      * @var User
-     * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User\User",
-     *     inversedBy="papers",
-     *     cascade={"persist", "remove"}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="papers")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;

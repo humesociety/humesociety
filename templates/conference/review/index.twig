@@ -1,0 +1,61 @@
+{% extends 'conference/_layout-papers.twig' %}
+
+{% block title %}Reviews{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Reviews{% endblock %}
+    {% block header_right %}
+      {% if conference.submissions|length > 0 %}
+        <div class="input">
+          <label for="show-progress">Progress:</label>
+          <select id="show-progress" data-filter="progress" data-table="submissions">
+            <option value="all">all</option>
+            <option value="invitedLT2">invited &lt; 2</option>
+            <option value="acceptedLT2">2 invited, accepted &lt; 2</option>
+            <option value="submittedLT2">2 accepted, submitted &lt; 2</option>
+            <option value="submitted2">2 submitted</option>
+          </select>
+        </div>
+      {% endif %}
+    {% endblock %}
+    {% block body %}
+      {% if conference.submissions|length > 0 %}
+        <p>Below is a list of all the submissions to the {{ conference }}, showing the review invitations for each submission. Using the dropdown menu above you can filter the list by review progress, to show only papers with fewer than 2 review invitations, fewer than 2 accepted reviews, and fewer than 2 submitted reviews.</p>
+        <p>Click on the title of a submission to view and manage its review invitations.</p>
+        <div class="list" id="submissions">
+          {% for submission in conference.submissions %}
+            <div class="submission" data-progress="{{ submission.reviewProgress }}">
+              <div class="submission-heading">
+                <div class="title">
+                  <h3><a href="{{ path('conference_review_view', { submission: submission.id }) }}">{{ submission.id }}. {{ submission.title }}</a></h3>
+                  <h4>by {{ submission.authors }} (submitted by {{ submission.user.fullname }})</h4>
+                </div>
+                {% if submission.reviewGradeAverage %}
+                  <div class="status">average score: {{ submission.reviewGradeAverage }}</div>
+                {% endif %}
+              </div>
+              <div class="submission-body">
+                {% if submission.reviews|length > 0 %}
+                  {% for review in submission.reviews %}
+                    <div class="review-summary">
+                      <div class="user">{{ review.user }}</div>
+                      {% if review.gradeNumber %}
+                        <div class="status">score: {{ review.gradeNumber }}</div>
+                      {% endif %}
+                      {% include 'conference/submission/_invitation-status.twig' with { invitation: review } %}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <p>No one has been invited to review this submission.</p>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>There are no submissions for the {{ conference }}.</p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

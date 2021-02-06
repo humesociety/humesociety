@@ -1,0 +1,16 @@
+{% extends 'email/base.twig' %}
+
+{% block image %}{{ image }}{% endblock %}
+
+{% set conference = submission.conference %}
+
+{% block content %}
+  {% if submission.confirmed %}
+    <p>{{ submission.user }} has confirmed they will be attending the {{ conference }}.</p>
+  {% else %}
+    <p>{{ submission.user }} has reported that they will not be attending the {{ conference }}.</p>
+  {% endif %}
+  <p><strong>Title:</strong> {{ submission.title }}</p>
+  <p><strong>Keywords:</strong> {{ submission.keywords }}</p>
+  <p><strong>Abstract:</strong> {{ submission.abstract }}</p>
+{% endblock %}

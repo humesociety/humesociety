@@ -180,6 +180,20 @@ class UserHandler
     }
 
     /**
+     * Get current president.
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return User|null
+     */
+    public function getPresident(): ?User
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.roles LIKE \'%ROLE_PRES%\'')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Get current technical director.
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -222,6 +236,48 @@ class UserHandler
     }
 
     /**
+     * Get users willing to review.
+     *
+     * @return User[]
+     */
+    public function getReviewVolunteers(): array
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToReview = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get users willing to comment.
+     *
+     * @return User[]
+     */
+    public function getCommentVolunteers(): array
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToComment = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get users willing to review.
+     *
+     * @return User[]
+     */
+    public function getChairVolunteers(): array
+    {
+        return $this->repository->createQueryBuilder('u')
+            ->where('u.willingToChair = TRUE')
+            ->orderBy('u.lastname, u.firstname', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Get official society email addresses.
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -232,25 +288,30 @@ class UserHandler
         $evpt = $this->getVicePresident();
         $evptDisplay = $evpt
             ? $evpt->getFullname().' <vicepresident@humesociety.org>'
-            : 'Executive Vice-President Treasrer <vicepresident@humesociety.org>';
+            : 'Executive Vice-President Treasurer <vicepresident@humesociety.org>';
+        $pres = $this->getPresident();
+        $presDisplay = $pres
+            ? $pres->getFullname().' <president@humesociety.org>'
+            : 'President <vicepresident@humesociety.org>';
         $tech = $this->getTechnicalDirector();
         $techDisplay = $tech
             ? $tech->getFullname().' <web@humesociety.org>'
             : 'Technical Director <vicepresident@humesociety.org>';
-        $organisers = $this->getConferenceOrganisers();
         /*
         N.B. will have to fix this properly next year; after we agreed to do it this way, Saul changed
         his mind, so I'm just hard coding it for now so as not to complicate things while the review
         process is underway
+        $organisers = $this->getConferenceOrganisers();
         $organisersDisplay = (sizeof($organisers) > 0)
             ? implode(', ', array_map(function ($organiser) {
                 return $organiser->getFullname();
             }, $organisers)).' <conference@humesociety.org>'
             : 'Conference Organisers <vicepresident@humesociety.org>';
         */
-        $organisersDisplay = 'Ann Level, Saul Traiger <conference@humesociety.org>';
+        $organisersDisplay = 'Ann Levey, Saul Traiger <conference@humesociety.org>';
         return [
             $evptDisplay => 'vicepresident',
+            $presDisplay => 'president',
             $techDisplay => 'web',
             $organisersDisplay => 'conference'
         ];
