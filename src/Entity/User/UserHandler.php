@@ -432,11 +432,8 @@ class UserHandler
             // delete the user's submissions
             $this->submissions->deleteSubmission($submission);
         }
-        if ($user->getReviewer()) {
-            // keep the reviewer (to preserve their reviews), but remove the explicit user association
-            $user->getReviewer()->setUser(null);
-            $this->manager->persist($user->getReviewer());
-        }
+        // TODO: if we try to delete a user who has done something for a conference,
+        // this won't work - we'll have to delete or nullify those connections somehow
         $this->manager->remove($user);
         $this->manager->flush();
     }
@@ -468,16 +465,16 @@ class UserHandler
         switch ($duesPayment->getDescription()) {
             case 'Regular Membership (1 year)': // fallthrough
             case 'Student Membership (1 year)':
-                $user->setDues(1);
+                $user->incrementDues(1);
                 break;
 
             case 'Regular Membership (2 years)': // fallthrough
             case 'Student Membership (2 years)':
-                $user->setDues(2);
+                $user->incrementDues(2);
                 break;
 
             case 'Regular Membership (5 years)':
-                $user->setDues(5);
+                $user->incrementDues(5);
                 break;
         }
         $user->addRole('ROLE_MEMBER');

@@ -773,13 +773,26 @@ class User implements UserInterface
     /**
      * Set the date this user's membership expires.
      *
+     * @param \DateTimeInterface
+     * @throws \Exception
+     * @return self
+     */
+    public function setDues(\DateTimeInterface $dues): self
+    {
+        $this->dues = $dues;
+        return $this;
+    }
+
+    /**
+     * Increment the date this user's membership expires.
+     *
      * Membership expires at the end of June or the end of December.
      *
      * @param int $yearsToAdd How many years to add to this user's membership, starting from today's date.
      * @throws \Exception
      * @return self
      */
-    public function setDues(int $yearsToAdd): self
+    public function incrementDues(int $yearsToAdd): self
     {
         $currentMonth = (int) date('m');
         $currentYear = date('Y');

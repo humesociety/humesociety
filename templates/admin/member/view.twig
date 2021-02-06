@@ -8,143 +8,135 @@
     {% block header_right %}
     {% endblock %}
     {% block body %}
-      <nav class="tabs">
-        <a data-tab="statistics" class="is-active">Membership Statistics</a>
-        <a data-tab="list">Membership List</a>
-      </nav>
-      <div class="tab-pane is-active" id="statistics">
-        <div id="user-statistics">Analyzing data...</div>
-      </div>
-      <div class="tab-pane" id="list">
-        <p>There are {{ users|length }} society members in the database. By default, these are all shown in the table below. Use the form to filter the table in various ways. Leave the date fields blank for no filter.</p>
-        <form id="user-form">
-          <div>
-            <label>Type</label>
-            <div class="columns has-checkboxes">
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="type" value="user" checked="checked" id="type-user">
-                  <label for="type-user">All Members</label>
-                </div>
-              </div>
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="type" value="member" id="type-member">
-                  <label for="type-member">Members in Good Standing</label>
-                </div>
-              </div>
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="type" value="lapsed" id="type-lapsed">
-                  <label for="type-lapsed">Members in Arrears</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <label>Accepting General Email</label>
-            <div class="columns has-checkboxes">
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="email" value="either" checked="checked" id="email-either">
-                  <label for="email-either">Either</label>
-                </div>
-              </div>
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="email" value="yes" id="email-yes">
-                  <label for="email-yes">Yes</label>
-                </div>
-              </div>
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="email" value="no" id="email-no">
-                  <label for="email-no">No</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <label>Accepting Hume Studies Mail</label>
-            <div class="columns has-checkboxes">
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="hs" value="either" checked="checked" id="hs-either">
-                  <label for="hs-either">Either</label>
-                </div>
-              </div>
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="hs" value="yes" id="hs-yes">
-                  <label for="hs-yes">Yes</label>
-                </div>
-              </div>
-              <div class="column has-checkbox">
-                <div>
-                  <input type="radio" name="hs" value="no" id="hs-no">
-                  <label for="hs-no">No</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="columns">
-            <div class="column">
+      <p>There are {{ users|length }} society members in the database. By default, these are all shown in the table below. Use the form to filter the table in various ways. Leave the date fields blank for no filter.</p>
+      <form id="user-form">
+        <div>
+          <label>Type</label>
+          <div class="columns has-checkboxes">
+            <div class="column has-checkbox">
               <div>
-                <label for="joined">Year Joined (YYYY)</label>
-                <input type="number" id="joined">
+                <input type="radio" name="type" value="user" checked="checked" id="type-user">
+                <label for="type-user">All Members</label>
               </div>
             </div>
-            <div class="column">
+            <div class="column has-checkbox">
               <div>
-                <label for="dues">Paid Through (MM/YYYY)</label>
-                <input type="text" id="dues">
+                <input type="radio" name="type" value="member" id="type-member">
+                <label for="type-member">Members in Good Standing</label>
+              </div>
+            </div>
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="type" value="lapsed" id="type-lapsed">
+                <label for="type-lapsed">Members in Arrears</label>
               </div>
             </div>
           </div>
-          <div>
-            <label for="sort">Sort By</label>
-            <select id="sort">
-              <option value="name">Name</option>
-              <option value="joined">Date Joined</option>
-              <option value="dues">Paid Through</option>
-            </select>
+        </div>
+        <div>
+          <label>Accepting General Email</label>
+          <div class="columns has-checkboxes">
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="email" value="either" checked="checked" id="email-either">
+                <label for="email-either">Either</label>
+              </div>
+            </div>
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="email" value="yes" id="email-yes">
+                <label for="email-yes">Yes</label>
+              </div>
+            </div>
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="email" value="no" id="email-no">
+                <label for="email-no">No</label>
+              </div>
+            </div>
           </div>
-          <div class="buttons">
-            <button type="submit">Update</button>
+        </div>
+        <div>
+          <label>Accepting Hume Studies Mail</label>
+          <div class="columns has-checkboxes">
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="hs" value="either" checked="checked" id="hs-either">
+                <label for="hs-either">Either</label>
+              </div>
+            </div>
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="hs" value="yes" id="hs-yes">
+                <label for="hs-yes">Yes</label>
+              </div>
+            </div>
+            <div class="column has-checkbox">
+              <div>
+                <input type="radio" name="hs" value="no" id="hs-no">
+                <label for="hs-no">No</label>
+              </div>
+            </div>
           </div>
-        </form>
-        {% if users|length > 0 %}
-          <p><span id="user-total">{{ users | length }}</span> members match the criteria above.</p>
-          <table>
-            <thead>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div>
+              <label for="joined">Year Joined (YYYY)</label>
+              <input type="number" id="joined">
+            </div>
+          </div>
+          <div class="column">
+            <div>
+              <label for="dues">Paid Through (MM/YYYY)</label>
+              <input type="text" id="dues">
+            </div>
+          </div>
+        </div>
+        <div>
+          <label for="sort">Sort By</label>
+          <select id="sort">
+            <option value="name">Name</option>
+            <option value="joined">Date Joined</option>
+            <option value="dues">Paid Through</option>
+          </select>
+        </div>
+        <div class="buttons">
+          <button type="submit">Update</button>
+        </div>
+      </form>
+      {% if users|length > 0 %}
+        <p><span id="user-total">{{ users | length }}</span> members match the criteria above.</p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Date&nbsp;Joined</th>
+              <th>Paid&nbsp;Through</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="user-table">
+            {% for user in users %}
               <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Date&nbsp;Joined</th>
-                <th>Paid&nbsp;Through</th>
-                <th></th>
+                <td>{{ loop.index }}</td>
+                <td>{{ user.lastname }}, {{ user.firstname }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.dateJoined | date("m/d/Y") }}</td>
+                <td>{{ user.dues | date("m/Y") }}</td>
+                <td class="controls">
+                  <a href="{{ path('admin_member_edit', { username: user.username }) }}">Edit</a>
+                  <a href="{{ path('admin_member_delete', { username: user.username }) }}">Delete</a>
+                </td>
               </tr>
-            </thead>
-            <tbody id="user-table">
-              {% for user in users %}
-                <tr>
-                  <td>{{ loop.index }}</td>
-                  <td>{{ user.lastname }}, {{ user.firstname }}</td>
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.dateJoined | date("m/d/Y") }}</td>
-                  <td>{{ user.dues | date("m/Y") }}</td>
-                  <td class="controls">
-                    <a href="{{ path('admin_member_member', { username: user.username }) }}">Details</a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        {% else %}
-          <p>There are no society members in the database.</p>
-        {% endif %}
-      </div>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>There are no society members in the database.</p>
+      {% endif %}
     {% endblock %}
   {% endembed %}
 {% endblock %}

@@ -6,5 +6,9 @@
       <span class="icon"><i class="fas fa-users"></i></span>
       <span class="link-text">Members</span>
     </a>
+    <a href="{{ path('admin_member_statistics') }}"{% if subarea == 'statistics' %} class="is-active"{% endif %}>
+      <span class="icon"><i class="fas fa-chart-pie"></i></span>
+      <span class="link-text">Membership Statistics</span>
+    </a>
   </div>
 {% endblock %}

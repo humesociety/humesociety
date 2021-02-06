@@ -1,0 +1,14 @@
+{% extends 'admin/_layout-members.twig' %}
+
+{% block title %}Membership Statistics{% endblock %}
+
+{% block main %}
+  {% embed 'admin/_embed/box.twig' %}
+    {% block title %}Membership Statistics{% endblock %}
+    {% block header_right %}
+    {% endblock %}
+    {% block body %}
+      <div id="user-statistics">Analyzing data...</div>
+    {% endblock %}
+  {% endembed %}
+{% endblock %}

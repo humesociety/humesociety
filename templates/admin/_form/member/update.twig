@@ -1,0 +1,77 @@
+{{ form_start(adminForm) }}
+  <h4>Account Details</h4>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(adminForm.username) }}
+    </div>
+    <div class="column">
+      {{ form_row(adminForm.email) }}
+    </div>
+  </div>
+  {{ form_row(adminForm.dateJoined) }}
+  <h4>Membership Details</h4>
+  {{ form_row(adminForm.dues) }}
+  <div class="columns has-checkboxes">
+    <div class="column has-checkbox">
+      {{ form_row(adminForm.lifetimeMember) }}
+    </div>
+  </div>
+  <h4>Personal Details</h4>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(adminForm.firstname) }}
+    </div>
+    <div class="column">
+      {{ form_row(adminForm.lastname) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(adminForm.department) }}
+    </div>
+    <div class="column">
+      {{ form_row(adminForm.institution) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(adminForm.city) }}
+    </div>
+    <div class="column">
+      {{ form_row(adminForm.state) }}
+    </div>
+  </div>
+  {{ form_row(adminForm.country) }}
+  <div class="columns">
+    <div class="column">
+      {{ form_row(adminForm.officePhone) }}
+    </div>
+    <div class="column">
+      {{ form_row(adminForm.homePhone) }}
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      {{ form_row(adminForm.fax) }}
+    </div>
+    <div class="column">
+      {{ form_row(adminForm.webpage) }}
+    </div>
+  </div>
+  <h4>Mailing Preferences</h4>
+  <div class="columns has-checkboxes">
+    <div class="column has-checkbox">
+      {{ form_row(adminForm.receiveEmail) }}
+    </div>
+    <div class="column has-checkbox">
+      {{ form_row(adminForm.receiveHumeStudies) }}
+    </div>
+  </div>
+  {{ form_row(adminForm.mailingAddress) }}
+  {{ form_row(adminForm._token) }}
+  <div class="buttons">
+    {% block buttons %}
+      <button class="button create" type="submit">Update</button>
+    {% endblock %}
+  </div>
+{{ form_end(adminForm) }}

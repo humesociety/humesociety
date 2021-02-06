@@ -25,7 +25,7 @@ class UserFixtures extends Fixture
              ->setEmail('web@humesociety.org')
              ->setFirstname('Technical')
              ->setLastname('Director')
-             ->setDues(1);
+             ->incrementDues(1);
         $encodedPassword = $this->encoder->encodePassword($user, 'password');
         $user->setPassword($encodedPassword);
         $manager->persist($user);
@@ -37,7 +37,7 @@ class UserFixtures extends Fixture
              ->setEmail('vicepresident@humesociety.org')
              ->setFirstname('Vice')
              ->setLastname('President')
-             ->setDues(1);
+             ->incrementDues(1);
         $encodedPassword = $this->encoder->encodePassword($user, 'password');
         $user->setPassword($encodedPassword);
         $manager->persist($user);
@@ -49,7 +49,7 @@ class UserFixtures extends Fixture
              ->setEmail('conference@humesociety.org')
              ->setFirstname('Conference')
              ->setLastname('Organiser')
-             ->setDues(1);
+             ->incrementDues(1);
         $encodedPassword = $this->encoder->encodePassword($user, 'password');
         $user->setPassword($encodedPassword);
         $manager->persist($user);
@@ -61,7 +61,7 @@ class UserFixtures extends Fixture
              ->setEmail('editors@humestudies.org')
              ->setFirstname('Journal')
              ->setLastname('Editor')
-             ->setDues(1);
+             ->incrementDues(1);
         $encodedPassword = $this->encoder->encodePassword($user, 'password');
         $user->setPassword($encodedPassword);
         $manager->persist($user);
@@ -72,7 +72,7 @@ class UserFixtures extends Fixture
              ->setEmail('member@humesociety.org')
              ->setFirstname('Society')
              ->setLastname('Member')
-             ->setDues(1);
+             ->incrementDues(1);
         $encodedPassword = $this->encoder->encodePassword($user, 'password');
         $user->setPassword($encodedPassword);
         $manager->persist($user);
@@ -83,7 +83,7 @@ class UserFixtures extends Fixture
              ->setEmail('lapsed_member@humesociety.org')
              ->setFirstname('Lapsed')
              ->setLastname('Member')
-             ->setDues(0);
+             ->incrementDues(0);
         $encodedPassword = $this->encoder->encodePassword($user, 'password');
         $user->setPassword($encodedPassword);
         $manager->persist($user);
