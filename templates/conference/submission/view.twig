@@ -14,7 +14,26 @@
       {% include 'conference/submission/_submission-tabs.twig' %}
       <h2>Decision</h2>
       {% if submission.decisionEmailed %}
-        <p>This paper has been {{ submission.status }}, and {{ submission.user }} was informed of the decision on {{ submission.dateDecisionEmailed|date('m/d/Y') }}.</p>
+        <p>This paper has been {% if submission.accepted %}accepted{% else %}rejected{% endif %}, and {{ submission.user }} was informed of the decision on {{ submission.dateDecisionEmailed|date('m/d/Y') }}.</p>
+        {% if submission.accepted %}
+          <div class="list">
+            <div class="invitation">
+              <div class="invitation-body">
+                <div class="actions">
+                  {% if submission.status == 'submitted' %}
+                    <div class="action">The final version of this paper has been submitted, and can be downloaded from the link below.</div>
+                  {% else %}
+                    <div class="action">The final version of this paper has not yet been submitted.</div>
+                    <div class="action">
+                      <a href="{{ path('conference_submission_email_reminder', { submission: submission.id }) }}" class="button">Email Reminder</a>
+                      {% include 'conference/submission/_reminder-summary.twig' with { invitation: submission } %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       {% else %}
         <p>Use the dropwdown menu below to record your decision for this paper. Decisions recorded here are provisional and can be changed at any time. Once you send the decision email, however, the decision will be considered final and you will no longer be able to change it.</p>
         <div class="inline-form">

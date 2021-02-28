@@ -175,7 +175,7 @@ class SubmissionController extends AbstractController
     }
 
     /**
-     * Route for sending a submission remdinder email to a user who's paper has been accepted'.
+     * Route for sending a submission remdinder email to a user who's paper has been accepted.
      *
      * @param ConferenceHandler $conferences The conference handler.
      * @param ConferenceEmailHandler $conferenceEmails The conference email handler.
@@ -194,7 +194,7 @@ class SubmissionController extends AbstractController
         }
 
         // check the email can be sent
-        if ($submission->getStatus() !== 'accepted' || !$submission->getDecisionEmailed()) {
+        if (!$submission->isAccepted() || !$submission->getDecisionEmailed()) {
             throw $this->createNotFoundException('Page not found.');
         }
 
@@ -207,6 +207,8 @@ class SubmissionController extends AbstractController
         }
 
         // return a redirect to the submission page
-        return $this->redirectToRoute('conference_submission_view');
+        return $this->redirectToRoute('conference_submission_view', [
+            'submission' => $submission->getId()
+        ]);
     }
 }
