@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment\Commment;
 use App\Entity\Issue\IssueHandler;
 use App\Entity\Paper\Paper;
 use App\Entity\Submission\Submission;
