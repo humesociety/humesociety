@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment\Comment;
 use App\Entity\Issue\IssueHandler;
 use App\Entity\Paper\Paper;
 use App\Entity\Submission\Submission;
@@ -182,6 +183,28 @@ class UploadsController extends AbstractController
         // return the response
         $response = new BinaryFileResponse($path);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $submission->getFinalFilename());
+        return $response;
+    }
+
+    /**
+     * Show conference submission comment file.
+     *
+     * @param Comment $comment The submission to download.
+     * @return Response
+     * @Route("/comment/{comment}", name="comment")
+     */
+    public function comment(Comment $comment): Response
+    {
+        // look for the file
+        $path = $this->container->get('parameter_bag')->get('uploads_directory');
+        $path .= $comment->getPath().$comment->getFilename();
+        if (!file_exists($path)) {
+            throw new NotFoundHttpException('File not found.');
+        }
+
+        // return the response
+        $response = new BinaryFileResponse($path);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $comment->getFilename());
         return $response;
     }
 
