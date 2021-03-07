@@ -35,7 +35,7 @@
                   </div>
                 {% elseif submission.comment.status == 'submitted' %}
                   <div class="action">
-                    <a href="{{ path('uploads_comment', { comments: submission.comment.id }) }}">View Comments File</a>
+                    <a href="{{ path('uploads_comment', { comment: submission.comment.id }) }}">View Comments File</a>
                   </div>
                 {% endif %}
                 <div class="action">
