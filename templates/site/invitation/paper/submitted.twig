@@ -2,9 +2,14 @@
 
 {% block main %}
   {% embed 'site/_embed/heading.twig' %}{% endembed %}
-  {% if paperThanks %}
-    {{ paperThanks|raw }}
-  {% else %}
-    <p>Your paper has been submitted.</p>
-  {% endif %}
+  <p>Thank you, your paper has been submitted. If you want to modify your paper, you can upload an edited file using the form below.</p>
+  {{ form_start(paperForm) }}
+    {{ form_row(paperForm.title) }}
+    {{ form_row(paperForm.abstract) }}
+    {{ form_row(paperForm.file) }}
+    {{ form_row(paperForm._token) }}
+    <div class="buttons">
+      <button type="submit">Resubmit Paper</button>
+    </div>
+  {{ form_end(paperForm) }}
 {% endblock %}

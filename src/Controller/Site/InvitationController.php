@@ -218,6 +218,17 @@ class InvitationController extends AbstractController
                 return $this->render('site/invitation/comment/declined.twig', $twigs);
 
             case 'submitted':
+                // create and handle the comment form (to allow edited versions to be uploaded)
+                $commentForm = $this->createForm(CommentType::class, $comment);
+                $commentForm->handleRequest($request);
+                if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+                    // save the comment
+                    $comments->saveComment($comment);
+                }
+
+                // add the comment guidance text and form to the twig variables
+                $twigs['commentForm'] = $commentForm->createView();
+
                 // render and return the page
                 return $this->render('site/invitation/comment/submitted.twig', $twigs);
         }
@@ -373,6 +384,17 @@ class InvitationController extends AbstractController
                 return $this->render('site/invitation/paper/submit.twig', $twigs);
 
             case 'submitted':
+                // create and handle the paper form (to allow modified versions to be uploaded)
+                $paperForm = $this->createForm(PaperType::class, $paper);
+                $paperForm->handleRequest($request);
+                if ($paperForm->isSubmitted() && $paperForm->isValid()) {
+                    // save the paper
+                    $papers->savePaper($paper);
+                }
+
+                // add the form to the twig variables
+                $twigs['paperForm'] = $paperForm->createView();
+
                 // render and return the page
                 return $this->render('site/invitation/paper/submitted.twig', $twigs);
         }
