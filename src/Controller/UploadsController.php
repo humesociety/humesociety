@@ -186,6 +186,28 @@ class UploadsController extends AbstractController
     }
 
     /**
+     * Show conference submission comment file.
+     *
+     * @param Comment $comment The comment file to download.
+     * @return Response
+     * @Route("/comment/{comment}", name="comment")
+     */
+    public function comment(Comment $comment): Response
+    {
+        // look for the file
+        $path = $this->container->get('parameter_bag')->get('uploads_directory');
+        $path .= $comment->getPath().$comment->getFilename();
+        if (!file_exists($path)) {
+            throw new NotFoundHttpException('File not found.');
+        }
+
+        // return the response
+        $response = new BinaryFileResponse($path);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $comment->getFilename());
+        return $response;
+    }
+
+    /**
      * Show invited paper file.
      *
      * @param Paper $paper The invited paper to download.
