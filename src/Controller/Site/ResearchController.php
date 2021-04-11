@@ -145,8 +145,10 @@ class ResearchController extends AbstractController
                 $systemEmails->sendSubmissionConfirmationNotification($submission);
             }
 
-            // if the author has confirmed, but the final version hasn't been uploaded yet...
-            if ($submission->isConfirmed() && $submission->getFinalFilename() === null) {
+            // if the author has confirmed...
+            // note: we include this form whether or not the final version has been submitted,
+            // to allow users to upload new versions after the initial upload
+            if ($submission->isConfirmed()) {
                 // create and handle the submission final version upload form
                 $finalSubmissionForm = $this->createForm(SubmissionTypeFinal::class, $submission);
                 $finalSubmissionForm->handleRequest($request);

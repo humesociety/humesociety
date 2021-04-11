@@ -41,7 +41,8 @@
               <p>Thank you for confirming your attendance at the {{ conference }}. Please use the form below to upload the final version of your paper.</p>
               {% include 'site/_form/conference-submission-final.twig' %}
             {% else %}
-              <p>Thank you for uploading the final version of your paper.</p>
+              <p>Thank you for uploading the final version of your paper. Use the form below to upload a new version if you wish to make any changes.</p>
+              {% include 'site/_form/conference-submission-final.twig' %}
             {% endif %}
           {% endif %}
         </div>
